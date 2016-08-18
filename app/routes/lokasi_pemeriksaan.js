@@ -1,35 +1,6 @@
 var lokasi = require('../controllers/lokasi_pemeriksaan');
 var jwt = require('jsonwebtoken');
-
-function token_cek(req, res, next) {
-	var token = req.body.token || req.query.token || req.headers['x-access-token'];
-
-  	// decode token
-  	if (token) {
-
-    	// verifies secret and checks exp
-    	jwt.verify(token, 'comradeapp', function(err, decoded) {      
-    	  if (err) {
-    	    return res.json({ success: false, message: 'Failed to authenticate token.' });    
-    	  } else {
-    	    // if everything is good, save to request for use in other routes
-    	    req.decoded = decoded;    
-    	    next();
-    	  }
-    	});
-
-  	} else {
-
-    	// if there is no token
-    	// return an error
-    	return res.status(403).send({ 
-    	    success: false, 
-    	    message: 'No token provided.' 
-    	});
-    
-  	}
-}
-
+var cek = require('../../config/cektoken');
 function isLoggedIn(req, res, next) {
 
     // if user is authenticated in the session, carry on 
@@ -46,8 +17,8 @@ function isLoggedIn(req, res, next) {
 
 module.exports = function(app) {
 
-    app.route('/lokasi_pemeriksaan').all(token_cek).get(lokasi.lokasi_pemeriksaan);
+    app.route('/lokasi_pemeriksaan').all(cek.cektoken).get(lokasi.lokasi_pemeriksaan);
 
-    app.route('/lokasi_pemeriksaan/:id').all(token_cek).get(lokasi.idlokasi_pemeriksaan);
+    app.route('/lokasi_pemeriksaan/:id').all(cek.cektoken).get(lokasi.idlokasi_pemeriksaan);
 
 };

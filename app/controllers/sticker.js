@@ -9,9 +9,6 @@ exports.sticker = function(req,res,next) {
 			if(err){
                 res.json({status:'400',message:err.code,result:[]});
                 koneksi.release();
-            }else if(data.length<1){
-                res.json({status:'400',message: 'Data not found',result:'Failed'})
-                koneksi.release();
             }
             res.json({status:'200',message:'success',result:data});
     	    koneksi.release();

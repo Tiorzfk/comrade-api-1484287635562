@@ -1,34 +1,6 @@
 var sa = require('../controllers/sahabatodha');
 var jwt = require('jsonwebtoken');
-
-function token_cek(req, res, next) {
-	var token = req.body.token || req.query.token || req.headers['x-access-token'];
-
-  	// decode token
-  	if (token) {
-
-    	// verifies secret and checks exp
-    	jwt.verify(token, 'comradeapp', function(err, decoded) {      
-    	  if (err) {
-    	    return res.json({ success: false, message: 'Failed to authenticate token.' });    
-    	  } else {
-    	    // if everything is good, save to request for use in other routes
-    	    req.decoded = decoded;    
-    	    next();
-    	  }
-    	});
-
-  	} else {
-
-    	// if there is no token
-    	// return an error
-    	return res.status(403).send({ 
-    	    success: false, 
-    	    message: 'No token provided.' 
-    	});
-    
-  	}
-}
+var cek = require('../../config/cektoken');
 
 function isLoggedIn(req, res, next) {
 
@@ -45,11 +17,11 @@ function isLoggedIn(req, res, next) {
 }
 
 module.exports = function(app) {
-    app.route('/user/sahabatodha').all(token_cek).get(sa.allsahabatodha);
+    app.route('/user/sahabatodha').all(cek.cektoken).get(sa.allsahabatodha);
 
-    app.route('/user/sahabatodha/:iduser').all(token_cek).get(sa.sahabatodha);
+    app.route('/user/sahabatodha/:iduser').all(cek.cektoken).get(sa.sahabatodha);
 
-    app.route('/user/sahabatodha/:iduser').all(token_cek).put(sa.editsahabatodha);
+    app.route('/user/sahabatodha/:iduser').all(cek.cektoken).put(sa.editsahabatodha);
 
-    app.route('/user/sahabatodha/rate/:iduser').all(token_cek).post(sa.rate);
+    app.route('/user/sahabatodha/rate/:iduser').all(cek.cektoken).post(sa.rate);
 };
