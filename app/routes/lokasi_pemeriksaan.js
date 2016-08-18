@@ -46,8 +46,8 @@ function isLoggedIn(req, res, next) {
 
 module.exports = function(app) {
 
-    app.route('/lokasi_pemeriksaan').all(isLoggedIn,token_cek).get(lokasi.lokasi_pemeriksaan);
+    app.route('/lokasi_pemeriksaan').all(token_cek).get(lokasi.lokasi_pemeriksaan);
 
-    app.route('/lokasi_pemeriksaan/:id').all(isLoggedIn,token_cek).get(lokasi.idlokasi_pemeriksaan);
+    app.route('/lokasi_pemeriksaan/:id').all(token_cek).get(lokasi.idlokasi_pemeriksaan);
 
 };

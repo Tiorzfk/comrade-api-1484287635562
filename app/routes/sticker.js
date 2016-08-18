@@ -45,11 +45,11 @@ function isLoggedIn(req, res, next) {
 }
 
 module.exports = function(app) {
-    app.route('/sticker').all(isLoggedIn,token_cek).get(sticker.sticker);
+    app.route('/sticker').all(token_cek).get(sticker.sticker);
 
-    app.route('/sendpicsticker').all(isLoggedIn,token_cek).post(sticker.sendpicsticker);
+    app.route('/sendpicsticker').all(token_cek).post(sticker.sendpicsticker);
 
-    app.route('/sendsticker').all(isLoggedIn,token_cek).post(sticker.sendsticker);
+    app.route('/sendsticker').all(token_cek).post(sticker.sendsticker);
 
     app.route('/sticker/list').get(sticker.pic_sticker);
 };

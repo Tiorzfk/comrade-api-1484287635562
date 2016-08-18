@@ -45,11 +45,11 @@ function isLoggedIn(req, res, next) {
 }
 
 module.exports = function(app) {
-    app.route('/user/sahabatodha').all(isLoggedIn,token_cek).get(sa.allsahabatodha);
+    app.route('/user/sahabatodha').all(token_cek).get(sa.allsahabatodha);
 
-    app.route('/user/sahabatodha/:iduser').all(isLoggedIn,token_cek).get(sa.sahabatodha);
+    app.route('/user/sahabatodha/:iduser').all(token_cek).get(sa.sahabatodha);
 
-    app.route('/user/sahabatodha/:iduser').all(isLoggedIn,token_cek).put(sa.editsahabatodha);
+    app.route('/user/sahabatodha/:iduser').all(token_cek).put(sa.editsahabatodha);
 
-    app.route('/user/sahabatodha/rate/:iduser').all(isLoggedIn,token_cek).post(sa.rate);
+    app.route('/user/sahabatodha/rate/:iduser').all(token_cek).post(sa.rate);
 };

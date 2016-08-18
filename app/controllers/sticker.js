@@ -8,7 +8,7 @@ exports.sticker = function(req,res,next) {
 		koneksi.query('SELECT * FROM sticker',function(err,data){
 			if(err){
                 res.json({status:'400',message:err.code,result:[]});
-            }else if(!data.length){
+            }else if(data.length<1){
                 res.json({status:'400',message: 'Data not found',result:'Failed'})
             }
             res.json({status:'200',message:'success',result:data});

@@ -89,11 +89,11 @@ module.exports = function(app,passport) {
 
     app.route('/user/register').post(user.register);
 
-    app.route('/user/profile/:id').all(isLoggedIn,token_cek).get(user.profile);
+    app.route('/user/profile/:id').all(token_cek).get(user.profile);
 
-    app.route('/user/setting_profile/:id').all(isLoggedIn,token_cek).post(user.setting_profile);
+    app.route('/user/setting_profile/:id').all(token_cek).post(user.setting_profile);
 
-    app.route('/user/change_password/:id').all(isLoggedIn,token_cek).post(user.change_password);
+    app.route('/user/change_password/:id').all(token_cek).post(user.change_password);
 
-    app.route('/user/sahabat_odha').all(isLoggedIn,token_cek).get(user.sahabat_odha);
+    app.route('/user/sahabat_odha').all(token_cek).get(user.sahabat_odha);
 };
