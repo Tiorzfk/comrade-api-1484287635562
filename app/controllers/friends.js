@@ -37,3 +37,7 @@ exports.addfriends = function(req,res,next){
 		});
 	});
 };
+
+exports.konfirmasi = function(req,res,next){
+	
+}

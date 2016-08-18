@@ -82,6 +82,7 @@ exports.sendsticker = function(req,res,next) {
         }
         db.getConnection(function(err,koneksi){
             koneksi.query('INSERT INTO sticker SET ? ',data,function(err){
+                koneksi.release();
                 if(err){
 				    return res.json(err)
                 }
@@ -91,7 +92,7 @@ exports.sendsticker = function(req,res,next) {
             	   status_code: 201,
     	    	  message: 'Sticker has been saved.' 
                 });
-                koneksi.release();
+                
             });
         });
     }
