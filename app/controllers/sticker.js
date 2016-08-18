@@ -76,7 +76,7 @@ exports.sendsticker = function(req,res,next) {
       });
     } else {
         var data = {
-            id_pengirim: req.user.id_user,
+            id_pengirim: req.body.id_user,
   		    message: req.body.message,
   		    id_picsticker: req.body.id_sticker
         }

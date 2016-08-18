@@ -47,6 +47,7 @@ require('./app/routes/lokasi_obat.js')(app);
 require('./app/routes/lokasi_pemeriksaan.js')(app);
 require('./app/routes/sticker.js')(app);
 require('./app/routes/sahabatodha.js')(app);
+require('./app/routes/friend.js')(app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
