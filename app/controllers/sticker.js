@@ -8,8 +8,10 @@ exports.sticker = function(req,res,next) {
 		koneksi.query('SELECT * FROM sticker',function(err,data){
 			if(err){
                 res.json({status:'400',message:err.code,result:[]});
+                koneksi.release();
             }else if(data.length<1){
                 res.json({status:'400',message: 'Data not found',result:'Failed'})
+                koneksi.release();
             }
             res.json({status:'200',message:'success',result:data});
     	    koneksi.release();
@@ -42,7 +44,6 @@ exports.sendpicsticker = function(req,res,next) {
     upload(req,res,function(err) {
         if(err)
             return res.json({result:'Failed', message: err});
-
         var data = {
             pic_sticker: req.file.filename
         }
@@ -51,6 +52,7 @@ exports.sendpicsticker = function(req,res,next) {
                 if(err){
                     fs.unlink('public/pic_sticker/'+req.file.filename);
                     return res.json(err)
+                    koneksi.release();
                 }
             
                 return res.status(201).send({ 
@@ -101,12 +103,12 @@ exports.sendsticker = function(req,res,next) {
 exports.pic_sticker = function(req,res,next){
     db.getConnection(function(err,koneksi){
         koneksi.query("select * from pic_sticker",function(err,rows){
+            koneksi.release();
             if(err){
                 res.json({status:400,message:'Error',result:[]});
             }else{
                 res.json({status:200,message:'success',result:rows});
             }
-            koneksi.release();
         });
     })
 }
