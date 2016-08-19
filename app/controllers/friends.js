@@ -39,5 +39,25 @@ exports.addfriends = function(req,res,next){
 };
 
 exports.konfirmasi = function(req,res,next){
-	
-}
+	db.getConnection(function(err,koneksi){
+		koneksi.query("select * from friends where id_friends=?",req.body.id_friends,function(err,rows){
+			if(rows.lenght>0){
+				if(status==0){
+					koneksi.query("delete from friends where id_friends=?",req.body.id_friends,function(err,rows2) {
+						koneksi.release();
+						if(!err){
+							res.json({status:200,message:'Pertemanan dihapus',result:[]});
+						}
+					});
+				}else{
+					koneksi.query("update friends set status='1' where id_friends=?",req.body.id_friends,function(err,rows) {
+						koneksi.release();
+						if(!err){
+							res.json({status:200,message:'Pertemanan berhasil di konfirmasi',result:[]});
+						}					
+					});
+				}
+			}
+		});
+	});
+};
