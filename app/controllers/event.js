@@ -9,9 +9,9 @@ exports.event = function(req, res, next) {
 		var arr = {};
     	koneksi.query(sql, function(err,data){
     	    if(err)
-               res.json({status:'400',message:err.code,result:[]});
+               	return res.json({status:'400',message:err.code,result:[]});
             else if(!data.length)
-                res.json({status:'400',message: 'Data not found',result:'Failed'})
+                return res.json({status:'400',message: 'Data not found',result:'Failed'})
 			else{
 				/*
 				arr = data; 
@@ -26,7 +26,7 @@ exports.event = function(req, res, next) {
 					});
 				}
 				*/
-				res.json({status:200,message:'success',result:data});
+				return res.json({status:200,message:'success',result:data});
 			}
     	    koneksi.release();
     	});
@@ -37,11 +37,11 @@ exports.eventID = function(req, res, next) {
 	db.getConnection(function(err,koneksi){
     	koneksi.query('SELECT id_event,admin.nama as pengirim,event.nama,deskripsi,foto,event.status,tgl_event,tgl_posting,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" AND id_event='+req.params.id+' ORDER BY tgl_posting', function(err,data){
     	    if(err){
-                res.json({status:'400',message:err.code,result:[]});
+                return res.json({status:'400',message:err.code,result:[]});
             }else if(!data.length){
-                res.json({status:'400',message: 'Data not found',result:'Failed'})
+                return res.json({status:'400',message: 'Data not found',result:'Failed'})
             }
-            res.json({status:'200',message:'success',result:data});
+            return res.json({status:'200',message:'success',result:data});
     	    koneksi.release();
     	});
     });

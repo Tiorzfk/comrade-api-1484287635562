@@ -10,7 +10,7 @@ function isLoggedIn(req, res, next) {
         return next();
 
     // if they aren't redirect them to the home page
-    res.json({
+    return res.json({
         result: 'forbidden',
         status_code: 403,
         message: "You dont't have access"
@@ -18,7 +18,7 @@ function isLoggedIn(req, res, next) {
 }
 
 module.exports = function(app) {
-    app.route('/sticker').all(cek.cektoken).get(sticker.sticker);
+    app.route('/sticker').all(isLoggedIn,cek.cektoken).get(sticker.sticker);
 
     app.route('/sendpicsticker').all(cek.cektoken).post(sticker.sendpicsticker);
 

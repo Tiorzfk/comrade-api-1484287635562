@@ -37,7 +37,7 @@ function isLoggedIn(req, res, next) {
         return next();
 
     // if they aren't redirect them to the home page
-    res.json({
+    return res.json({
         result: 'forbidden',
         status_code: 403,
         message: "You dont't have access"
@@ -57,7 +57,7 @@ module.exports = function(app,passport) {
         var token = jwt.sign(req.user[0], 'comradeapp', {
             expiresIn: "24h" // expires in 24 hours
         });
-        res.json({
+        return res.json({
             result: 'Success',
             status_code: 200,
             token: token,
@@ -66,7 +66,7 @@ module.exports = function(app,passport) {
     });
 
     app.get('/failurelogin', function(req, res) {
-        res.json({result: 'Failed', message: req.flash('loginMessage') });
+        return res.json({result: 'Failed', message: req.flash('loginMessage') });
     });
 
     /*app.post('/user/register', passport.authenticate('local-signup',{
@@ -76,7 +76,7 @@ module.exports = function(app,passport) {
     }));
 
     app.get('/successSignup', function(req, res) {
-        res.json({
+        return res.json({
             result: 'Created',
             status_code: 201,
             message: 'Registration is successful, check your email to activate your account.'
@@ -84,7 +84,7 @@ module.exports = function(app,passport) {
     });
 
     app.get('/failureSignup', function(req, res) {
-        res.json({result: 'Failed', message: req.flash('signupMessage') });
+        return res.json({result: 'Failed', message: req.flash('signupMessage') });
     });*/
 
     app.route('/user/register').post(user.register);

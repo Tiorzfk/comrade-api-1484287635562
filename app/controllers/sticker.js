@@ -7,10 +7,10 @@ exports.sticker = function(req,res,next) {
 	db.getConnection(function(err,koneksi){
 		koneksi.query('SELECT * FROM sticker',function(err,data){
 			if(err){
-                res.json({status:'400',message:err.code,result:[]});
+                return res.json({status:'400',message:err.code,result:[]});
                 koneksi.release();
             }
-            res.json({status:'200',message:'success',result:data});
+            return res.json({status:'200',message:'success',result:data});
     	    koneksi.release();
 		});
 	});
@@ -103,9 +103,9 @@ exports.pic_sticker = function(req,res,next){
         koneksi.query("select * from pic_sticker",function(err,rows){
             koneksi.release();
             if(err){
-                res.json({status:400,message:'Error',result:[]});
+                return res.json({status:400,message:'Error',result:[]});
             }else{
-                res.json({status:200,message:'success',result:rows});
+                return res.json({status:200,message:'success',result:rows});
             }
         });
     })
