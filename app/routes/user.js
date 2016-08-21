@@ -61,7 +61,16 @@ module.exports = function(app,passport) {
             result: 'Success',
             status_code: 200,
             token: token,
-            data: req.user[0]
+            id_user: req.user[0].id_user,
+            nama: req.user[0].nama,
+            email: req.user[0].email,
+            password: req.user[0].password,
+            jenis_kelamin: req.user[0].jk,
+            telp: req.user[0].telp,
+            tgl_lahir: req.user[0].tgl_lahir,
+            status: req.user[0].status,
+            jenis_user: req.user[0].jenis_user,
+            foto: req.user[0].foto
         });
     });
 

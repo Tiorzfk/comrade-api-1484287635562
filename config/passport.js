@@ -16,6 +16,7 @@ module.exports = function(passport) {
             koneksi.query('SELECT * FROM user where id_user= ?',[id],function(err,user){
                 done(err, user);
             });
+            koneksi.release();
         });
     });
 
@@ -95,9 +96,8 @@ module.exports = function(passport) {
 
                     // all is well, return successful user
                     return done(null, user[0]);  
-                        
-                    koneksi.release();
                 });
+                koneksi.release();
             });
         
     }));

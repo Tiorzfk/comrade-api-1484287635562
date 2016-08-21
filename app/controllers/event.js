@@ -28,8 +28,8 @@ exports.event = function(req, res, next) {
 				*/
 				return res.json({status:200,message:'success',result:data});
 			}
-    	    koneksi.release();
     	});
+    	koneksi.release();
 	});
 };
 
@@ -42,7 +42,7 @@ exports.eventID = function(req, res, next) {
                 return res.json({status:'400',message: 'Data not found',result:'Failed'})
             }
             return res.json({status:'200',message:'success',result:data});
-    	    koneksi.release();
     	});
+    	koneksi.release();
     });
 };

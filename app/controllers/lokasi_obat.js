@@ -9,8 +9,8 @@ exports.lokasi_obat = function(req,res,next){
                 res.json({status:'400',message: 'Data not found',result:'Failed'})
             }
             res.json({status:'200',message:'success',result:data});
-    	    koneksi.release();
 		});
+        koneksi.release();
 	});
 }
 exports.idlokasi_obat = function(req,res,next){
@@ -22,7 +22,7 @@ exports.idlokasi_obat = function(req,res,next){
                 res.json({status:'400',message: 'Data not found',result:'Failed'})
             }
             res.json({status:'200',message:'success',result:data});
-    	    koneksi.release();
 		});
+        koneksi.release();
 	});
 }

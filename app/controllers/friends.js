@@ -7,8 +7,8 @@ exports.getfriend = function(req,res,next) {
 				res.json({status:'200',message:'success',result:data});
 			else 
 				res.json({status:'400',message:err.code,result:[],id_usr:req.params.id_user});
-			koneksi.release();
 		});
+		koneksi.release();
 	});
 };
 
@@ -20,8 +20,8 @@ exports.addfriends = function(req,res,next){
 			}else{
 				res.json({status:200,message:'success',result:[]});
 			}
-
 		});
+		koneksi.release();
 	});
 };
 
@@ -31,14 +31,12 @@ exports.konfirmasi = function(req,res,next){
 			if(rows.lenght>0){
 				if(status==0){
 					koneksi.query("delete from friends where id_friends=?",req.body.id_friends,function(err,rows2) {
-						koneksi.release();
 						if(!err){
 							res.json({status:200,message:'Pertemanan dihapus',result:[]});
 						}
 					});
 				}else{
 					koneksi.query("update friends set status='1' where id_friends=?",req.body.id_friends,function(err,rows) {
-						koneksi.release();
 						if(!err){
 							res.json({status:200,message:'Pertemanan berhasil di konfirmasi',result:[]});
 						}					
@@ -46,5 +44,6 @@ exports.konfirmasi = function(req,res,next){
 				}
 			}
 		});
+		koneksi.release();
 	});
 };

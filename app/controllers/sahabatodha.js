@@ -7,11 +7,11 @@ exports.allsahabatodha = function(req,res,next) {
   db.getConnection(function(err,koneksi){
     koneksi.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,telp,tgl_lahir,foto,komunitas,rating,about_sahabatodha FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user WHERE user.jenis_user="Sahabat Odha" AND user.status="1" ',function(err,data){
       if(err){
-				res.json({status:'400',message:err.code,result:[]});
+				return res.json({status:'400',message:err.code,result:[]});
 			}
-				res.json({status:'200',message:'success',result:data});
-    	  koneksi.release();
+				return res.json({status:'200',message:'success',result:data});
     });
+    koneksi.release();
   });
 }
 
@@ -20,23 +20,23 @@ exports.sahabatodha = function(req,res,next) {
     if(!isNaN(req.params.iduser)) {
 		  koneksi.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,telp,tgl_lahir,foto,komunitas,rating,about_sahabatodha FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user WHERE jenis_user="Sahabat Odha" AND user.status="1" AND user.id_user='+req.params.iduser,function(err,data){
 		  	if(err){
-                res.json({status:'400',message:err.code,result:[]});
+                return res.json({status:'400',message:err.code,result:[]});
             }else if(!data.length){
-                res.json({status:'400',message: 'Data not found',result:'Failed'})
+                return res.json({status:'400',message: 'Data not found',result:'Failed'})
             }
-            res.json({status:'200',message:'success',result:data});
-    	    koneksi.release();
+            return res.json({status:'200',message:'success',result:data});
 		  });
+      koneksi.release();
     }else{
       koneksi.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,telp,tgl_lahir,foto,komunitas,rating,about_sahabatodha FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user WHERE jenis_user="Sahabat Odha" AND user.status="1" AND user.jk="'+req.params.iduser+'"',function(err,data){
        if(err){
-                res.json({status:'400',message:err.code,result:[]});
+                return res.json({status:'400',message:err.code,result:[]});
             }else if(!data.length){
-                res.json({status:'400',message: 'Data not found',result:'Failed'})
+                return res.json({status:'400',message: 'Data not found',result:'Failed'})
             }
-            res.json({status:'200',message:'success',result:data});
-    	    koneksi.release();
+            return res.json({status:'200',message:'success',result:data});
       });
+      koneksi.release();
     }
 	});
 }
@@ -106,10 +106,10 @@ exports.editsahabatodha = function(req,res,next) {
               status_code: 200,
               message: 'Profile Sahabat Odha has been Updated.' 
             });
-            koneksi.release();
           });
         });
 			});
+      koneksi.release();
 		});
 	});
 }
@@ -136,5 +136,6 @@ exports.rate = function(req,res,next){
     			message: 'Rating has been saved.' 
     		});
 		});
+    koneksi.release();
 	});
 }

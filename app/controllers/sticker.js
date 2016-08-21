@@ -11,8 +11,8 @@ exports.sticker = function(req,res,next) {
                 koneksi.release();
             }
             return res.json({status:'200',message:'success',result:data});
-    	    koneksi.release();
 		});
+        koneksi.release();
 	});
 }
 
@@ -49,7 +49,6 @@ exports.sendpicsticker = function(req,res,next) {
                 if(err){
                     fs.unlink('public/pic_sticker/'+req.file.filename);
                     return res.json(err)
-                    koneksi.release();
                 }
             
                 return res.status(201).send({ 
@@ -57,8 +56,8 @@ exports.sendpicsticker = function(req,res,next) {
                     status_code: 201,
                     message: 'Sticker has been saved.' 
                 });
-                koneksi.release();
             });
+            koneksi.release();
         });
     });
 }
@@ -82,7 +81,6 @@ exports.sendsticker = function(req,res,next) {
         }
         db.getConnection(function(err,koneksi){
             koneksi.query('INSERT INTO sticker SET ? ',data,function(err){
-                koneksi.release();
                 if(err){
 				    return res.json(err)
                 }
@@ -91,9 +89,9 @@ exports.sendsticker = function(req,res,next) {
             	   result: 'Created',
             	   status_code: 201,
     	    	  message: 'Sticker has been saved.' 
-                });
-                
+                });            
             });
+            koneksi.release();
         });
     }
 }
@@ -101,12 +99,12 @@ exports.sendsticker = function(req,res,next) {
 exports.pic_sticker = function(req,res,next){
     db.getConnection(function(err,koneksi){
         koneksi.query("select * from pic_sticker",function(err,rows){
-            koneksi.release();
             if(err){
                 return res.json({status:400,message:'Error',result:[]});
             }else{
                 return res.json({status:200,message:'success',result:rows});
             }
         });
+        koneksi.release();
     })
 }

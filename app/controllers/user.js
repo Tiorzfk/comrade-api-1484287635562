@@ -17,7 +17,6 @@ exports.auth_user = function(req,res,next) {
   	} else {
   		db.getConnection(function(err,koneksi){
 			koneksi.query('SELECT * FROM user WHERE email="'+req.body.email+'"', function(err,data){
-			  koneksi.release();
       	if(!data.length){
 					return res.json({ result: 'Failed', message: 'Authentication failed. Email not found.' });
 				}else if(data){
@@ -41,6 +40,7 @@ exports.auth_user = function(req,res,next) {
 					});
 				}
 			});
+      koneksi.release();
 		});
   	}
 
@@ -69,11 +69,9 @@ exports.register = function(req,res,next) {
     	    koneksi.query("select * from user where email = '"+req.body.email+"'",function(err,rows){
                 if (err){
                     res.json(err);
-                    koneksi.release();
                 }
                  if (rows.length) {
                     res.json({status:'400',result:'Failed',message:'That email is already taken.'});
-                    koneksi.release();
                 } else {
     	    		     koneksi.query('INSERT INTO user SET ? ',data,function(err,result){
     	    		    //error simpan ke database
@@ -85,7 +83,6 @@ exports.register = function(req,res,next) {
     	    		        	errors: err,
 								        data:data
     	    		        });
-                      koneksi.release();
     	    		    }
     	    		    else{
     					   	   res.json({ 
@@ -93,11 +90,11 @@ exports.register = function(req,res,next) {
     	    		       		status: 201,
     				        		message: 'Registration is successful, check your email to activate your account.' 
     					   	    });
-                      koneksi.release();
     					    }
     	    		});
     	    	}
     	  });
+          koneksi.release();
 		});
 	}
 }
@@ -194,8 +191,8 @@ exports.profile = function(req,res,next){
 				});
 			}
 			return res.json(data);
-			koneksi.release();
 		});
+    koneksi.release();
 	});
 }
 
@@ -234,8 +231,8 @@ exports.setting_profile = function(req,res,next){
     	        	status_code: 200,
     		    	message: 'Data has been changed.' 
     			});
-    			koneksi.release();
 			});
+      koneksi.release();
 		});
 	}
 }
@@ -267,11 +264,11 @@ exports.change_password = function(req,res,next){
 							status_code: 200,
 							message: 'Password has been changed'
 						});
-						koneksi.release();
 					});
 				}
 			});
 		});
+    koneksi.release();
 	});
 }
 
