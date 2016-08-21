@@ -17,7 +17,8 @@ exports.auth_user = function(req,res,next) {
   	} else {
   		db.getConnection(function(err,koneksi){
 			koneksi.query('SELECT * FROM user WHERE email="'+req.body.email+'"', function(err,data){
-				if(!data.length){
+			  koneksi.release();
+      	if(!data.length){
 					return res.json({ result: 'Failed', message: 'Authentication failed. Email not found.' });
 				}else if(data){
 					data.forEach(function(data){
@@ -35,7 +36,7 @@ exports.auth_user = function(req,res,next) {
                     jenis_user:data.jenis_user,
     	    				  token: token,
     	    				});
-    	    				koneksi.release();
+    	    				
 						}
 					});
 				}

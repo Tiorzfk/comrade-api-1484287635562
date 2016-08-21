@@ -13,27 +13,14 @@ exports.getfriend = function(req,res,next) {
 };
 
 exports.addfriends = function(req,res,next){
-	req.checkBody("id_sahabatodha", "ID sahabat odha tidak boleh kosong").notEmpty();
-	req.checkBody("id_user", "ID user tidak boleh kosong").notEmpty();
-	var errors = req.validationErrors();
-  	if (errors) {
-  	  return res.send({
-  	  	result: 'Failed',
-  	  	status_code: 400,
-  	  	errors: errors
-  	  });
-  	}  
-	db.getConnection(function(err,koneksi){
-		var data={
-			id_sahabatodha:req.body.id_sahabatodha,
-			id_user : req.body.id_user
-		}
-		koneksi.query('insert into friends set ?',data,function(err,rows) {
-			koneksi.release();
-			if(err)
-				res.json({status:200,message:'Permintaan pertemanan dikirim',result:[]});
-			else
-				res.json({status:400,message:'Failed',result:[]});
+	db.getConnection(function(e,koneksi){
+		koneksi.query("insert into friends set id_user=? and id_sahabatodha=? and status='0'",[req.body.id_user,req.body.id_sahabatodha],function(err,rows){
+			if(err){
+				res.json({status:400,message:err,result:[]});
+			}else{
+				res.json({status:200,message:'success',result:[]});
+			}
+
 		});
 	});
 };
