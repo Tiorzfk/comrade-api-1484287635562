@@ -42,76 +42,26 @@ exports.sahabatodha = function(req,res,next) {
 }
 
 exports.editsahabatodha = function(req,res,next) {
-	var storage = multer.diskStorage({
-       	destination: function (req, file, callback) {
-       	    callback(null, 'public/pic_sahabatodha');
-       	},
-       	filename: function (req, file, callback) {
-       	    callback(null, Date.now() + '-' + file.originalname);
-       	}
-    });
-    var upload = multer({
-       	fileFilter: function (req,file,callback) {
-       		var filetypes = /jpeg|jpg|png/;
-   			var mimetype = filetypes.test(file.mimetype);
-   			var extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-
-   			if (mimetype && extname) {
-   			  return callback(null, true);
-   			}
-   			callback("Error: File upload only supports the following filetypes - " + filetypes);
-   		},
-   	storage : storage}).single('foto');
-   	upload(req,res,function(err) {
-   		if(err)
-   			return res.json({result:'Failed', message: err});
-
-  		var dataUser = {
-  			nama: req.body.nama,
-        jk: req.body.jenis_kelamin,
-        telp: req.body.telepon,
-        tgl_lahir: req.body.tgl_lahir,
-  		}
-      var dataSahabatOdha = [{
-        nama: req.body.nama,
-        komunitas: req.body.komunitas,
-        telepon: req.body.telepon,
-        about_sahabatodha: req.body.about_sahabatodha
-      }];
-
-      if(req.file){
-        dataSahabatOdha[0].foto = req.file.filename;
-      }
+    var dataSahabatOdha = {
+      komunitas: req.body.komunitas,
+      about_sahabatodha: req.body.about_sahabatodha
+    };
 
 		db.getConnection(function(err,koneksi){
-      koneksi.query('UPDATE user SET ? WHERE id_user='+req.params.iduser,dataUser,function(err,data){
-				if(err){
-          if(req.file){            
-					  fs.unlink('public/pic_sahabatodha/'+req.file.filename);
-          }
-          return res.json(err);
-				}else if(!data.affectedRows){
-          if(req.file){
-					  fs.unlink('public/pic_sahabatodha/'+req.file.filename);
-          }
-          return res.json({result: 'Failed',message: 'User not found'});
-				}
         koneksi.query('SELECT * FROM sahabat_odha WHERE id_user='+req.params.iduser,function(err,data){
             if(req.file){
               fs.unlink('public/pic_sahabatodha/'+data[0].foto);
             }
             koneksi.query('UPDATE sahabat_odha SET ? WHERE id_user='+req.params.iduser,dataSahabatOdha,function(err,data){
-            return res.status(200).send({ 
-              result: 'Success',
-              status_code: 200,
-              message: 'Profile Sahabat Odha has been Updated.' 
+              return res.status(200).send({ 
+                result: 'Success',
+                status_code: 200,
+                message: 'Profile Sahabat Odha has been Updated.' 
+              });
             });
-          });
         });
-			});
-      koneksi.release();
+        koneksi.release();
 		});
-	});
 }
 
 exports.rate = function(req,res,next){

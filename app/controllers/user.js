@@ -2,7 +2,9 @@ var db 	= require('../../config/db').DB;
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt-nodejs');
 var multer  = require('multer');
+var multer  = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 exports.auth_user = function(req,res,next) {
 	req.checkBody("email", "Enter a valid email address.").isEmail();
@@ -63,7 +65,8 @@ exports.register = function(req,res,next) {
     	    email: req.body.email,
     	    password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8), null),
     	    jenis_user: 'User',
-          status  : '0'
+          status  : '0',
+          foto : 'default.png'
     	}
 		db.getConnection(function(err,koneksi){
     	    koneksi.query("select * from user where email = '"+req.body.email+"'",function(err,rows){
@@ -197,44 +200,85 @@ exports.profile = function(req,res,next){
 }
 
 exports.setting_profile = function(req,res,next){
-	req.checkBody("email", "Enter a valid email address.").isEmail();
-	req.checkBody("nama", "Nama cannot be blank.").notEmpty();
-	var errors = req.validationErrors();
-  	if (errors) {
-  		return res.send({
-  	  		result: 'Failed',
-  	  		status_code: 400,
-  	  		errors: errors
-  	  	});
-  	} else {
-  		var data = {
-  			email : req.body.email,
-  			nama : req.body.nama
-  		}
-		db.getConnection(function(err,koneksi){
-			koneksi.query('UPDATE user SET ? WHERE id_user='+req.params.id,data, function(err,data){
-				if (err) {
-    	            return res.json({
-    	            	result: 'Failed',
-    	            	status_code: 403,
-    	            	message: 'Invalid Data',
-    	            	errors: err
-    	            });
-    	        }else if(!data.affectedRows){
-    	        	return res.json({
-						result: 'Failed',
-						message: 'Data not found'
-					});
-    	        }
-    	        return res.status(201).send({ 
-    	        	result: 'Success',
-    	        	status_code: 200,
-    		    	message: 'Data has been changed.' 
-    			});
-			});
-      koneksi.release();
-		});
-	}
+      var storage = multer.diskStorage({
+          destination: function (req, file, callback) {
+              callback(null, 'public/pic_user');
+          },
+          filename: function (req, file, callback) {
+              callback(null, Date.now() + '-' + file.originalname);
+          }
+      });
+      var upload = multer({
+          fileFilter: function (req,file,callback) {
+            var filetypes = /jpeg|jpg|png/;
+            var mimetype = filetypes.test(file.mimetype);
+            var extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+            if (mimetype && extname) {
+              return callback(null, true);
+            }
+            callback("Error: File upload only supports the following filetypes - " + filetypes);
+          },storage : storage}).single('foto');
+        upload(req,res,function(err) {
+          if(err)
+            return res.json({result:'Failed', message: err});
+            
+            req.checkBody("email", "Enter a valid email address.").isEmail();
+            req.checkBody("telepon", "Telepon must be integer.").isInt();
+            var errors = req.validationErrors();
+              if (errors) {
+                if(req.file){            
+                  fs.unlink('public/pic_sahabatodha/'+req.file.filename);
+                }
+                return res.send({
+                  result: 'Failed',
+                  status_code: 400,
+                  errors: errors
+                });
+              }
+
+  		      var data = [{
+  		      	email : req.body.email,
+  		      	nama : req.body.nama,
+              jk : req.body.jenis_kelamin,
+              telp : req.body.telepon,
+              tgl_lahir : req.body.tgl_lahir,
+              jenis_user : req.body.jenis_user
+  		      }];
+
+            if(req.file){
+              data[0].foto = req.file.filename;
+            }
+		        db.getConnection(function(err,koneksi){
+		        	koneksi.query('UPDATE user SET ? WHERE id_user='+req.params.id,data, function(err,data){
+		        		if (err) {
+                  if(req.file){            
+                    fs.unlink('public/pic_sahabatodha/'+req.file.filename);
+                  }
+            	    return res.json({
+            	    	result: 'Failed',
+            	    	status_code: 403,
+            	    	message: 'Invalid Data',
+            	    	errors: err
+            	    });
+            	  }else if(!data.affectedRows){
+                  if(req.file){            
+                    fs.unlink('public/pic_sahabatodha/'+req.file.filename);
+                  }
+            	    return res.json({
+		        				result: 'Failed',
+		        				message: 'Data not found'
+		        			});
+            	 }
+            	 return res.status(201).send({ 
+            	  	result: 'Success',
+            	  	status_code: 200,
+            	    message: 'Data has been changed.' 
+            	 });
+		        });
+            koneksi.release();
+          });
+        });
 }
 
 exports.change_password = function(req,res,next){
