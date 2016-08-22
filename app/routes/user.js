@@ -103,6 +103,7 @@ module.exports = function(app,passport) {
     app.get('/failureSignup', function(req, res) {
         return res.json({result: 'Failed', message: req.flash('signupMessage') });
     });*/
+    app.route('/user/auth').post(user.auth_user);
 
     app.route('/user/register').post(user.register);
 

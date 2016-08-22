@@ -9,7 +9,7 @@ module.exports = function(passport) {
 
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
-        done(null, user);
+        done(null, user.id_user);
     });
 
     // used to deserialize the user
@@ -75,10 +75,6 @@ module.exports = function(passport) {
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, email, password, done) { // callback with email and password from our form
-            req.checkBody("email", "Enter a valid email address.").isEmail();
-            var errors = req.validationErrors();
-            if (errors)
-              return done(null, false, req.flash('loginMessage', errors));
             // find a user whose email is the same as the forms email
             // we are checking to see if the user trying to login already exists
             db.getConnection(function(err,koneksi){
@@ -86,6 +82,11 @@ module.exports = function(passport) {
                     // if there are any errors, return the error before anything else
                     if (err)
                         return done(err);
+
+                    req.checkBody("email", "Enter a valid email address.").isEmail();
+                    var errors = req.validationErrors();
+                    if (errors)
+                      return done(null, false, req.flash('loginMessage', errors[0].msg));
 
                     // if no user is found, return the message
                     if (!user.length)
