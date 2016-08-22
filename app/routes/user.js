@@ -55,7 +55,7 @@ module.exports = function(app,passport) {
 
     app.get('/successlogin', function(req, res) {
         var token = jwt.sign(req.user[0], 'comradeapp', {
-            expiresIn: "24h" // expires in 24 hours
+            //expiresIn: "24h" // expires in 24 hours
         });
         return res.json({
             result: 'Success',

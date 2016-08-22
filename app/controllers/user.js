@@ -76,27 +76,41 @@ exports.register = function(req,res,next) {
                  if (rows.length) {
                     res.json({status:'400',result:'Failed',message:'That email is already taken.'});
                 } else {
-    	    		     koneksi.query('INSERT INTO user SET ? ',data,function(err,result){
-    	    		    //error simpan ke database
-    	    		    if (err) {
-    	    		        res.json({
-    	    		        	result: 'Failed',
-    	    		        	status: 403,
-    	    		        	message: 'Invalid Data',
-    	    		        	errors: err,
-								        data:data
-    	    		        });
-    	    		    }
-    	    		    else{
-    					   	   res.json({ 
-    	    		       		result: 'Created',
-    	    		       		status: 201,
-    				        		message: 'Registration is successful, check your email to activate your account.' 
-    					   	    });
-    					    }
-    	    		});
-    	    	}
-    	  });
+    	    		    koneksi.query('INSERT INTO user SET ? ',data,function(err,result){
+    	    		       //error simpan ke database
+    	    		       if (err) {
+    	    		           res.json({
+    	    		           	result: 'Failed',
+    	    		           	status: 403,
+    	    		           	message: 'Invalid Data',
+    	    		           	errors: err,
+								          data:data
+    	    		           });
+    	    		       }else{
+    					   	    if(result.jenis_user = "Sahabat Odha"){
+                        var sa = {
+                          id_user : result.insertId
+                        }
+                        koneksi.query('INSERT INTO sahabat_odha SET ?',sa,function(err){
+                          if (err) {
+                              return res.json({
+                                result: 'Failed',
+                                status_code: 403,
+                                message: 'Invalid Data',
+                                errors: err
+                              });
+                          }
+                        });
+                      }
+                      return res.status(201).send({ 
+                        result: 'Created',
+                        status_code: 201,
+                        message: 'Registration is successful, check your email to activate your account.' 
+                      });
+    					      }
+    	    		    });
+    	    	    }
+    	    });
           koneksi.release();
 		});
 	}
@@ -143,7 +157,7 @@ exports.registerbak = function(req,res,next) {
                         status_code: 403,
                         message: 'Invalid Data',
                         errors: err,
-                data:data
+                        data:data
                       });
                   }
                   if(result.jenis_user = "Sahabat Odha"){

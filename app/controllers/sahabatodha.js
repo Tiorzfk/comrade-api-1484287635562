@@ -48,19 +48,14 @@ exports.editsahabatodha = function(req,res,next) {
     };
 
 		db.getConnection(function(err,koneksi){
-        koneksi.query('SELECT * FROM sahabat_odha WHERE id_user='+req.params.iduser,function(err,data){
-            if(req.file){
-              fs.unlink('public/pic_sahabatodha/'+data[0].foto);
-            }
-            koneksi.query('UPDATE sahabat_odha SET ? WHERE id_user='+req.params.iduser,dataSahabatOdha,function(err,data){
-              return res.status(200).send({ 
-                result: 'Success',
-                status_code: 200,
-                message: 'Profile Sahabat Odha has been Updated.' 
-              });
-            });
+      koneksi.query('UPDATE sahabat_odha SET ? WHERE id_user='+req.params.iduser,dataSahabatOdha,function(err,data){
+        return res.status(200).send({ 
+          result: 'Success',
+          status_code: 200,
+          message: 'Profile Sahabat Odha has been Updated.' 
         });
-        koneksi.release();
+      });
+      koneksi.release();
 		});
 }
 
