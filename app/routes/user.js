@@ -75,8 +75,16 @@ module.exports = function(app,passport) {
     });
 
     app.get('/failurelogin', function(req, res) {
-        return res.json({result: 'Failed', message: req.flash('loginMessage') });
+        return res.json({result: 'Failed',status_code:400, message: ''+req.flash('loginMessage') });
     });
+
+    app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+
+    // the callback after google has authenticated the user
+    app.get('/auth/google/callback', passport.authenticate('google', {
+        successRedirect : '/successlogin',
+        failureRedirect : '/failurelogin'
+    }));
 
     /*app.post('/user/register', passport.authenticate('local-signup',{
         successRedirect : '/successSignup',

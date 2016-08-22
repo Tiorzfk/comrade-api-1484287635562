@@ -1,13 +1,15 @@
 var LocalStrategy   = require('passport-local').Strategy,
+    GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
     db = require('./db').DB,
     bcrypt = require('bcrypt-nodejs');
 
+var configAuth = require('./auth');
 
 module.exports = function(passport) {
 
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
-        done(null, user.id_user);
+        done(null, user);
     });
 
     // used to deserialize the user
@@ -99,7 +101,55 @@ module.exports = function(passport) {
                 });
                 koneksi.release();
             });
-        
+    }));
+
+    passport.use('google', new GoogleStrategy({
+        clientID        : configAuth.googleAuth.clientID,
+        clientSecret    : configAuth.googleAuth.clientSecret,
+        callbackURL     : configAuth.googleAuth.callbackURL,
+    },
+    function(token, refreshToken, profile, done) {
+        console.log(profile.photos[0].value);
+        console.log(profile.displayName);
+        // User.findOne won't fire until we have all our data back from Google
+        process.nextTick(function() {
+
+            // try to find the user based on their google id
+            db.getConnection(function(err,koneksi){
+                koneksi.query('SELECT * FROM user where email = ? ',[profile.emails[0].value],function(err,user){
+                    if (err)
+                        return done(err);
+
+                    if (user) {
+                        // if a user is found, log them in
+                        return done(null, user);
+                    } else {
+                        // if the user isnt in our database, create a new user
+                        var data = {
+                            nama: profile.displayName,
+                            email: profile.emails[0].value,
+                            jenis_user: 'User',
+                            status  : '1',
+                            foto: profile.photos[0].value
+                        }
+
+                        koneksi.query('INSERT INTO user SET ? ',data,function(err,result){
+                            if (err) {
+                               res.json({
+                                result: 'Failed',
+                                status: 403,
+                                message: 'Invalid Data',
+                                errors: err
+                               });
+                            }
+                        });
+                        return done(null, data);
+                    }
+                });
+                koneksi.release();
+            });
+        });
+
     }));
 
 };

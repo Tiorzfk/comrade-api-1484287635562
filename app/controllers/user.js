@@ -2,7 +2,8 @@ var db 	= require('../../config/db').DB;
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt-nodejs');
 var multer  = require('multer');
-var multer  = require('multer');
+var transport = require('../../config/mail').transport;
+var EmailTemplates = require('swig-email-templates');
 const path = require('path');
 const fs = require('fs');
 
@@ -87,25 +88,35 @@ exports.register = function(req,res,next) {
 								          data:data
     	    		           });
     	    		       }else{
-    					   	    if(result.jenis_user = "Sahabat Odha"){
-                        var sa = {
-                          id_user : result.insertId
-                        }
-                        koneksi.query('INSERT INTO sahabat_odha SET ?',sa,function(err){
+                      var templates = new EmailTemplates({root: '/comradeapi/app/views/emails'});
+                      var locals = {
+                          email: req.body.email,
+                          url: 'http://acme.com/confirm/xxx-yyy-zzz'
+                      };
+
+                      templates.render('confirm-email.html', locals, function(err, html) {
                           if (err) {
-                              return res.json({
-                                result: 'Failed',
-                                status_code: 403,
-                                message: 'Invalid Data',
-                                errors: err
-                              });
+                            console.log(err);
+                          } else {
+                              transport.sendMail({
+                                  from: 'Comrade app <no-reply@comrade.com>',
+                                  to: locals.email,
+                                  subject: 'Confirmation Email.',
+                                  html: html
+                                  }, function(err, responseStatus) {
+                                      if (err) {
+                                          console.log(err);
+                                      } else {
+                                          console.log(responseStatus.message);
+                                          return res.status(201).send({ 
+                                            result: 'Created',
+                                            status_code: 201,
+                                            message: 'Registration is successful, check your email to activate your account.' 
+                                          });
+                                      }
+                                  }
+                              );
                           }
-                        });
-                      }
-                      return res.status(201).send({ 
-                        result: 'Created',
-                        status_code: 201,
-                        message: 'Registration is successful, check your email to activate your account.' 
                       });
     					      }
     	    		    });
