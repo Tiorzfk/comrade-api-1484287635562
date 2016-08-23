@@ -2,11 +2,11 @@ var db = require('../../config/db').DB;
 
 exports.getfriend = function(req,res,next) {
 	db.getConnection(function(err,koneksi){
-		koneksi.query('SELECT * FROM friends where id_user=?',req.params.id_user, function(err,data){
-			if(!err)
-				res.json({status:'200',message:'success',result:data});
-			else 
+		koneksi.query('SELECT * FROM friends where id_user='+req.params.id_user, function(err,data){
+			if(err)
 				res.json({status:'400',message:err.code,result:[],id_usr:req.params.id_user});
+
+			res.json({status:'200',message:'success',result:data});
 		});
 		koneksi.release();
 	});

@@ -61,7 +61,7 @@ exports.editsahabatodha = function(req,res,next) {
 
 exports.rate = function(req,res,next){
 	var data = {
-		id_user: req.user.id_user,
+		id_user: req.params.iduser,
 		rating : req.body.rating,
 		testimoni: req.body.testimoni
 	}
