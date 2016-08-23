@@ -2,11 +2,11 @@ var db = require('../../config/db').DB;
 
 exports.getfriend = function(req,res,next) {
 	db.getConnection(function(err,koneksi){
-		koneksi.query('SELECT * FROM friends where id_user='+req.params.id_user, function(err,data){
+		koneksi.query('SELECT friends.id_sahabatodha,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,komunitas,id_rating,about_sahabatodha FROM friends INNER JOIN user ON user.id_user=friends.id_sahabatodha INNER JOIN sahabat_odha ON sahabat_odha.id_user=friends.id_sahabatodha where friends.id_user='+req.params.id_user, function(err,data){
 			if(err)
-				res.json({status:'400',message:err.code,result:[],id_usr:req.params.id_user});
+				return res.json({status:400,message:err.code,result:[],id_usr:req.params.id_user});
 
-			res.json({status:'200',message:'success',result:data});
+			return res.json({status:200,message:'success',result:data});
 		});
 		koneksi.release();
 	});
@@ -14,12 +14,26 @@ exports.getfriend = function(req,res,next) {
 
 exports.addfriends = function(req,res,next){
 	db.getConnection(function(e,koneksi){
-		koneksi.query("insert into friends set id_user=? and id_sahabatodha=? and status='0'",[req.body.id_user,req.body.id_sahabatodha],function(err,rows){
-			if(err){
-				res.json({status:400,message:err,result:[]});
-			}else{
-				res.json({status:200,message:'success',result:[]});
-			}
+		req.checkBody("id_user", "Id User cannot be blank.").notEmpty();
+  		req.checkBody("id_sahabatodha", "Id Sahabat Odha cannot be blank.").notEmpty();
+  		var errors = req.validationErrors();
+  		if (errors) {
+  		    return res.send({
+  		        result: 'Failed',
+  		        status_code: 400,
+  		        errors: errors
+  		      });
+    	}
+    	var data = {
+    		id_user: req.body.id_user,
+    		id_sahabatodha: req.body.id_sahabatodha,
+    		status: '0'
+    	}
+		koneksi.query("insert into friends set ?",[data],function(err,rows){
+			if(err)
+				return res.json({result:'Failed',status:400,message:err,result:[]});
+
+			return res.json({result: 'success',status:200,message:'Berhasil menambahkan teman'});
 		});
 		koneksi.release();
 	});

@@ -3,5 +3,5 @@ var cek	   = require('../../config/cektoken');
 
 module.exports = function(app) {
     app.route('/friends/:id_user').all(cek.cektoken).get(friend.getfriend);
-    app.route('/friends').all(cek.cektoken).post(friend.addfriends);
+    app.route('/addfriend').all(cek.cektoken).post(friend.addfriends);
 };

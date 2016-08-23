@@ -7,10 +7,10 @@ exports.sticker = function(req,res,next) {
 	db.getConnection(function(err,koneksi){
 		koneksi.query('SELECT * FROM sticker',function(err,data){
 			if(err){
-                return res.json({status:'400',message:err.code,result:[]});
+                return res.json({status:400,message:err.code,result:[]});
                 koneksi.release();
             }
-            return res.json({status:'200',message:'success',result:data});
+            return res.json({status:200,message:'success',result:data});
 		});
         koneksi.release();
 	});
