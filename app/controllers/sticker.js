@@ -5,7 +5,7 @@ const fs = require('fs');
 
 exports.sticker = function(req,res,next) {
 	db.getConnection(function(err,koneksi){
-		koneksi.query('SELECT * FROM sticker',function(err,data){
+		koneksi.query('SELECT id_sticker,user.nama as pengirim,pic_sticker,message FROM sticker INNER JOIN user on user.id_user=sticker.id_pengirim INNER JOIN pic_sticker on pic_sticker.id_pic=sticker.id_picsticker',function(err,data){
 			if(err){
                 return res.json({status:400,message:err.code,result:[]});
                 koneksi.release();
@@ -77,7 +77,7 @@ exports.sendsticker = function(req,res,next) {
         var data = {
             id_pengirim: req.body.id_user,
   		    message: req.body.message,
-  		    id_picsticker: req.body.id_sticker
+  		    id_sticker: req.body.id_sticker
         }
         db.getConnection(function(err,koneksi){
             koneksi.query('INSERT INTO sticker SET ? ',data,function(err){
