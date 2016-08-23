@@ -9,7 +9,7 @@ module.exports = function(passport) {
 
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
-        done(null, user.id_user);
+        done(null, user);
     });
 
     // used to deserialize the user
@@ -110,8 +110,7 @@ module.exports = function(passport) {
         callbackURL     : configAuth.googleAuth.callbackURL,
     },
     function(token, refreshToken, profile, done) {
-        console.log(profile.photos[0].value);
-        console.log(profile.displayName);
+        console.log(profile);
         // User.findOne won't fire until we have all our data back from Google
         process.nextTick(function() {
 

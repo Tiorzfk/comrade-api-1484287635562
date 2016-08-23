@@ -34,10 +34,15 @@ exports.auth_user = function(req,res,next) {
     	    				return res.json({
     	    				  result: 'Success',
     	    				  status_code: 200,
-    	    				  id_user: data.id_user,
-    	    				  nama: data.nama,
+                    token: token,
+                    id_user: data.id_user,
+                    nama: data.nama,
+                    email: data.email,
+                    password: data.password,
+                    jenis_kelamin: data.jk,
+                    telepon: data.telp,
                     jenis_user:data.jenis_user,
-    	    				  token: token,
+                    foto: data.foto
     	    				});
     	    				
 						}
