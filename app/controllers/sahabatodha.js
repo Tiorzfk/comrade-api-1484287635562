@@ -18,7 +18,7 @@ exports.allsahabatodha = function(req,res,next) {
 exports.sahabatodha = function(req,res,next) {
 	db.getConnection(function(err,koneksi){
     if(!isNaN(req.params.iduser)) {
-		  koneksi.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,telp,tgl_lahir,foto,komunitas,rating,about_sahabatodha FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user WHERE jenis_user="Sahabat Odha" AND user.status="1" AND user.id_user='+req.params.iduser,function(err,data){
+		  koneksi.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,telp,tgl_lahir,foto,komunitas,id_rating,about_sahabatodha FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user WHERE jenis_user="Sahabat Odha" AND user.status="1" AND user.id_user='+req.params.iduser,function(err,data){
 		  	if(err){
                 return res.json({status:'400',message:err.code,result:[]});
             }else if(!data.length){
@@ -28,7 +28,7 @@ exports.sahabatodha = function(req,res,next) {
 		  });
       koneksi.release();
     }else{
-      koneksi.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,telp,tgl_lahir,foto,komunitas,rating,about_sahabatodha FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user WHERE jenis_user="Sahabat Odha" AND user.status="1" AND user.jk="'+req.params.iduser+'"',function(err,data){
+      koneksi.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,telp,tgl_lahir,foto,komunitas,id_rating,about_sahabatodha FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user WHERE jenis_user="Sahabat Odha" AND user.status="1" AND user.jk="'+req.params.iduser+'"',function(err,data){
        if(err){
                 return res.json({status:'400',message:err.code,result:[]});
             }else if(!data.length){
@@ -61,20 +61,30 @@ exports.editsahabatodha = function(req,res,next) {
 
 exports.rate = function(req,res,next){
 	var data = {
-		id_user: req.params.iduser,
+		id_pengerate: req.body.pengerate,
+    id_user: req.body.id_user,
 		rating : req.body.rating,
 		testimoni: req.body.testimoni
 	}
+  req.checkBody("rating", "Rating must be integer.").isInt();
+    var errors = req.validationErrors();
+    if (errors) {
+      return res.send({
+        result: 'Failed',
+        status_code: 400,
+        errors: errors
+      });
+    }
 	db.getConnection(function(err,koneksi){
 		koneksi.query('INSERT INTO rating SET ? ',data,function(err,data){
 			if (err) {
-    	    	return res.json({
-    	    		result: 'Failed',
-    	    		status_code: 403,
-    	    		message: 'Invalid Data',
-    	    		errors: err
-    	    	});
-    		}
+    	  return res.json({
+    	  	result: 'Failed',
+    	  	status_code: 403,
+    	  	message: 'Invalid Data',
+    	  	errors: err
+    	  });
+    	}
     		return res.status(201).send({ 
     	    result: 'Created',
     	    status_code: 201,

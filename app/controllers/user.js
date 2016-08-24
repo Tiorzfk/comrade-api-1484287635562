@@ -77,16 +77,16 @@ exports.register = function(req,res,next) {
     	}
 		db.getConnection(function(err,koneksi){
     	    koneksi.query("select * from user where email = '"+req.body.email+"'",function(err,rows){
-                if (err){
-                    res.json(err);
-                }
-                 if (rows.length) {
-                    res.json({status:'400',result:'Failed',message:'That email is already taken.'});
-                } else {
+                if (err)
+                    return res.json(err);
+
+                 if (rows.length) 
+                    return res.json({status:'400',result:'Failed',message:'That email is already taken.'});
+
     	    		    koneksi.query('INSERT INTO user SET ? ',data,function(err,result){
     	    		       //error simpan ke database
     	    		       if (err) {
-    	    		           res.json({
+    	    		           return res.json({
     	    		           	result: 'Failed',
     	    		           	status: 403,
     	    		           	message: 'Invalid Data',
@@ -94,26 +94,34 @@ exports.register = function(req,res,next) {
 								          data:data
     	    		           });
     	    		       }else{
-                      var templates = new EmailTemplates({root: '/comradeapi/app/views/emails'});
+                      var templates = new EmailTemplates({root: 'app/views/emails'});
                       var locals = {
                           email: req.body.email,
                           url: 'http://acme.com/confirm/xxx-yyy-zzz'
                       };
 
-                      templates.render('confirm-email.html', locals, function(err, html) {
+                      templates.render('confirm-email.ejs', locals, function(err, html) {
                           if (err) {
-                            console.log(err);
+                            return res.json({
+                              result: 'Failed',
+                              status: 403,
+                              errors: err,
+                            });
                           } else {
                               transport.sendMail({
-                                  from: 'Comrade app <no-reply@comrade.com>',
+                                  from: 'Comrade app <Admin@comrade.com>',
                                   to: locals.email,
                                   subject: 'Confirmation Email.',
                                   html: html
                                   }, function(err, responseStatus) {
                                       if (err) {
-                                          console.log(err);
+                                          return res.json({
+                                            result: 'Failed',
+                                            status: 403,
+                                            errors: err,
+                                          });
                                       } else {
-                                          console.log(responseStatus.message);
+                                          console.log(responseStatus);
                                           return res.status(201).send({ 
                                             result: 'Created',
                                             status_code: 201,
@@ -126,7 +134,7 @@ exports.register = function(req,res,next) {
                       });
     					      }
     	    		    });
-    	    	    }
+    	    	    
     	    });
           koneksi.release();
 		});
