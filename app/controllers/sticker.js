@@ -77,7 +77,7 @@ exports.sendsticker = function(req,res,next) {
         var data = {
             id_pengirim: req.body.id_user,
   		    message: req.body.message,
-  		    id_sticker: req.body.id_sticker
+  		    id_picsticker: req.body.id_picsticker
         }
         db.getConnection(function(err,koneksi){
             koneksi.query('INSERT INTO sticker SET ? ',data,function(err){

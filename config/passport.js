@@ -10,7 +10,7 @@ module.exports = function(passport) {
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
         console.log(user);
-        done(null, user.id_user);
+        done(null, user.google_id);
     });
 
     // used to deserialize the user
@@ -114,37 +114,41 @@ module.exports = function(passport) {
         //console.log(profile);
         // User.findOne won't fire until we have all our data back from Google
         process.nextTick(function() {
-
+            console.log('email : '+profile.emails[0].value)
             // try to find the user based on their google id
             db.getConnection(function(err,koneksi){
-                koneksi.query('SELECT * FROM user where email = ? ',[profile.emails[0].value],function(err,user){
+                koneksi.query("SELECT * FROM user where email ='"+profile.emails[0].value+"'",function(err,user){
                     if (err)
                         return done(err);
 
-                    if (user) {
+                    if (user.length) {
+                        console.log('user sudah ada di db');
                         // if a user is found, log them in
                         return done(null, user);
                     } else {
+                        console.log('user belum ada di db');
                         // if the user isnt in our database, create a new user
                         var data = {
                             nama: profile.displayName,
                             email: profile.emails[0].value,
                             jenis_user: 'User',
                             status  : '1',
-                            foto: profile.photos[0].value
+                            foto: profile.photos[0].value,
+                            google_id: profile.id
                         }
 
                         koneksi.query('INSERT INTO user SET ? ',data,function(err,result){
                             if (err) {
-                               res.json({
+                               return done(null, false);
+                               /*return res.json({
                                 result: 'Failed',
                                 status: 403,
                                 message: 'Invalid Data',
                                 errors: err
-                               });
+                               });*/
                             }
+                            return done(null, data);
                         });
-                        return done(null, data);
                     }
                 });
                 koneksi.release();
