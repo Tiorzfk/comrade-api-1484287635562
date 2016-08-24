@@ -114,7 +114,7 @@ module.exports = function(passport) {
         //console.log(profile);
         // User.findOne won't fire until we have all our data back from Google
         process.nextTick(function() {
-            console.log('email : '+profile.emails[0].value)
+            console.log('email : '+profile.id)
             // try to find the user based on their google id
             db.getConnection(function(err,koneksi){
                 koneksi.query("SELECT * FROM user where email ='"+profile.emails[0].value+"'",function(err,user){
@@ -125,7 +125,7 @@ module.exports = function(passport) {
                         console.log('user sudah ada di db');
                         // if a user is found, log them in
                         return done(null, user);
-                    } else {
+                    } 
                         console.log('user belum ada di db');
                         // if the user isnt in our database, create a new user
                         var data = {
@@ -140,6 +140,7 @@ module.exports = function(passport) {
                         koneksi.query('INSERT INTO user SET ? ',data,function(err,result){
                             if (err) {
                                return done(null, false);
+                               console.log('AAAAAAAAAAAAAAAAAAAAAAAa :'+data);
                                /*return res.json({
                                 result: 'Failed',
                                 status: 403,
@@ -149,7 +150,7 @@ module.exports = function(passport) {
                             }
                             return done(null, data);
                         });
-                    }
+                    
                 });
                 koneksi.release();
             });
