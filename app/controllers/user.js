@@ -29,7 +29,7 @@ exports.auth_user = function(req,res,next) {
 							return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
 						}else{
 							var token = jwt.sign(data, 'comradeapp', {
-    	      					expiresIn: "24h" // expires in 24 hours
+    	      					//expiresIn: "24h" // expires in 24 hours
     	    				});
     	    				return res.json({
     	    				  result: 'Success',
@@ -88,7 +88,7 @@ exports.register = function(req,res,next) {
     	    		       if (err) {
     	    		           return res.json({
     	    		           	result: 'Failed',
-    	    		           	status: 403,
+    	    		           	status_code: 403,
     	    		           	message: 'Invalid Data',
     	    		           	errors: err,
 								          data:data
@@ -100,11 +100,11 @@ exports.register = function(req,res,next) {
                           url: 'http://acme.com/confirm/xxx-yyy-zzz'
                       };
 
-                      templates.render('confirm-email.ejs', locals, function(err, html) {
+                      templates.render('confirm-email.html', locals, function(err, html) {
                           if (err) {
                             return res.json({
                               result: 'Failed',
-                              status: 403,
+                              status_code: 403,
                               errors: err,
                             });
                           } else {
@@ -117,7 +117,7 @@ exports.register = function(req,res,next) {
                                       if (err) {
                                           return res.json({
                                             result: 'Failed',
-                                            status: 403,
+                                            status_code: 403,
                                             errors: err,
                                           });
                                       } else {
