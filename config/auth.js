@@ -1,9 +1,9 @@
 module.exports = {
 
     'googleAuth' : {
-        'clientID'      : '682030206564-fv47pe0tdldplqsgqvmvdtkjsropn8d4.apps.googleusercontent.com',
-        'clientSecret'  : 'RAANyN98wVk8r630Y1uzpzAf',
-        'callbackURL'   : 'http://localhost:3000/auth/google/callback'
+        'clientID'      : '682030206564-5g9tdtfck0lqdblku8vqquufa0hb4tq9.apps.googleusercontent.com',
+        'clientSecret'  : 'jnZPk_Rk3gXZ0gZMbIw_i8hf',
+        'callbackURL'   : 'comrade-api.azurewebsites.net/auth/google/callback'
     }
 
 };
