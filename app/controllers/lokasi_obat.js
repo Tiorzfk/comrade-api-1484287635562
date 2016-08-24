@@ -2,7 +2,7 @@ var db = require('../../config/db').DB;
 
 exports.lokasi_obat = function(req,res,next){
 	db.getConnection(function(err,koneksi){
-		koneksi.query('SELECT nama,alamat,longitude,latitude,foto,open_timeinfo,jenis_lokasi FROM lokasi_obat', function(err,data){
+		koneksi.query('SELECT nama,alamat,longitude,latitude,foto,deskripsi,open_timeinfo,jenis_lokasi FROM lokasi_obat', function(err,data){
 			if(err){
                 res.json({status:'400',message:err.code,result:[]});
             }else if(!data.length){

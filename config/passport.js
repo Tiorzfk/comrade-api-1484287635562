@@ -9,14 +9,14 @@ module.exports = function(passport) {
 
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
-        console.log(user);
+        //console.log(user);
         done(null, user.google_id);
     });
 
     // used to deserialize the user
     passport.deserializeUser(function(id, done) {
         db.getConnection(function(err,koneksi){
-            koneksi.query('SELECT * FROM user where id_user= ?',[id],function(err,user){
+            koneksi.query('SELECT * FROM user where google_id= ?',[id],function(err,user){
                 done(err, user);
             });
             koneksi.release();
@@ -115,6 +115,15 @@ module.exports = function(passport) {
         // User.findOne won't fire until we have all our data back from Google
         process.nextTick(function() {
             console.log('email : '+profile.id)
+            var data = {
+                nama: profile.displayName,
+                email: profile.emails[0].value,
+                password: 'asd',
+                jenis_user: 'User',
+                status  : '1',
+                foto: profile.photos[0].value,
+                google_id: profile.id
+            }
             // try to find the user based on their google id
             db.getConnection(function(err,koneksi){
                 koneksi.query("SELECT * FROM user where email ='"+profile.emails[0].value+"'",function(err,user){
@@ -124,23 +133,14 @@ module.exports = function(passport) {
                     if (user.length) {
                         console.log('user sudah ada di db');
                         // if a user is found, log them in
-                        return done(null, user);
+                        return done(null, user[0]);
                     } 
                         console.log('user belum ada di db');
                         // if the user isnt in our database, create a new user
-                        var data = {
-                            nama: profile.displayName,
-                            email: profile.emails[0].value,
-                            jenis_user: 'User',
-                            status  : '1',
-                            foto: profile.photos[0].value,
-                            google_id: profile.id
-                        }
 
                         koneksi.query('INSERT INTO user SET ? ',data,function(err,result){
                             if (err) {
                                return done(null, false);
-                               console.log('AAAAAAAAAAAAAAAAAAAAAAAa :'+data);
                                /*return res.json({
                                 result: 'Failed',
                                 status: 403,
