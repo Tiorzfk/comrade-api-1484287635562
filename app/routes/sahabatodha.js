@@ -11,5 +11,5 @@ module.exports = function(app) {
 
     app.route('/user/sahabatodha/:iduser').all(cek.cektoken).put(sa.editsahabatodha);
 
-    app.route('/user/sahabatodha/rate/:iduser').all(cek.cektoken).post(sa.rate);
+    app.route('/user/sahabatodha/rate').all(cek.cektoken).post(sa.rate);
 };

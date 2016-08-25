@@ -86,6 +86,7 @@ exports.rate = function(req,res,next){
 		id_pengerate: req.body.pengerate,
     id_user: req.body.id_user,
 		rating : req.body.rating,
+    tanggal : req.body.tanggal,
 		testimoni: req.body.testimoni
 	}
   req.checkBody("rating", "Rating must be integer.").isInt();
