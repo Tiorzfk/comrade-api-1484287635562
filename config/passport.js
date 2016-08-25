@@ -118,7 +118,6 @@ module.exports = function(passport) {
             var data = {
                 nama: profile.displayName,
                 email: profile.emails[0].value,
-                password: 'asd',
                 jenis_user: 'User',
                 status  : '1',
                 foto: profile.photos[0].value,

@@ -7,7 +7,7 @@ exports.banner = function(req,res,next) {
 				res.json({status:'200',message:'success',result:data});
 			else 
 				res.json({status:'400',message:err.code,result:[]});
-			koneksi.release();
 		});
+		koneksi.release();
 	});
 };
