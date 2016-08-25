@@ -7,6 +7,8 @@ module.exports = function(app) {
 
     app.route('/user/sahabatodha/:iduser').all(cek.cektoken).get(sa.sahabatodha);
 
+    app.route('/user/sahabatodha/:iduser/testimoni').all(cek.cektoken).get(sa.testimoni);
+
     app.route('/user/sahabatodha/:iduser').all(cek.cektoken).put(sa.editsahabatodha);
 
     app.route('/user/sahabatodha/rate/:iduser').all(cek.cektoken).post(sa.rate);
