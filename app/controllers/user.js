@@ -24,7 +24,7 @@ exports.auth_user = function(req,res,next) {
 				}else if(data){
 					data.forEach(function(data){
             var validPassword = bcrypt.compareSync(req.body.password,data.password);
-						if(!validPassword){
+						if(req.body.password && !validPassword){
 							return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
 						}else{
 							var token = jwt.sign(data, 'comradeapp', {
