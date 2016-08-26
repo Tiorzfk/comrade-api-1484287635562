@@ -2,6 +2,7 @@ var db = require('../../config/db').DB;
 var multer  = require('multer');
 const path = require('path');
 const fs = require('fs');
+var moment = require('moment');
 
 exports.allsahabatodha = function(req,res,next) {
   db.getConnection(function(err,koneksi){
@@ -89,7 +90,7 @@ exports.rate = function(req,res,next){
 		id_pengerate: req.body.pengerate,
     id_user: req.body.id_user,
 		rating : req.body.rating,
-    tanggal : req.body.tanggal,
+    tanggal : moment().format('Y-MM-DD'),
 		testimoni: req.body.testimoni
 	}
   req.checkBody("rating", "Rating must be integer.").isInt();
