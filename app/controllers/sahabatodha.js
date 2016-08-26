@@ -87,7 +87,7 @@ exports.editsahabatodha = function(req,res,next) {
 
 exports.rate = function(req,res,next){
 	var data = {
-		id_pengerate: req.body.pengerate,
+		id_pengerate: req.body.id_pengerate,
     id_user: req.body.id_user,
 		rating : req.body.rating,
     tanggal : moment().format('Y-MM-DD'),
