@@ -23,16 +23,18 @@ exports.auth_user = function(req,res,next) {
 					return res.json({ result: 'Failed', message: 'Authentication failed. Email not found.' });
 				}else if(data){
 					data.forEach(function(data){
-            var validPassword = bcrypt.compareSync(req.body.password,data.password);
-						if(req.body.password && !validPassword){
-							return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
-						}else{
-							var token = jwt.sign(data, 'comradeapp', {
-    	      					//expiresIn: "24h" // expires in 24 hours
-    	    				});
-    	    				return res.json({
-    	    				  result: 'Success',
-    	    				  status_code: 200,
+            if(req.body.password){
+              var validPassword = bcrypt.compareSync(req.body.password,data.password);
+						  if(!validPassword){
+						  	return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
+						  }
+            }
+            var token = jwt.sign(data, 'comradeapp', {
+             //expiresIn: "24h" // expires in 24 hours
+            });
+            return res.json({
+                    result: 'Success',
+                    status_code: 200,
                     token: token,
                     id_user: data.id_user,
                     nama: data.nama,
@@ -42,9 +44,7 @@ exports.auth_user = function(req,res,next) {
                     telepon: data.telp,
                     jenis_user:data.jenis_user,
                     foto: data.foto
-    	    				});
-    	    				
-						}
+                  });
 					});
 				}
 			});
