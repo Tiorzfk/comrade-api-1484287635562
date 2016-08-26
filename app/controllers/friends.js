@@ -2,7 +2,7 @@ var db = require('../../config/db').DB;
 
 exports.getfriend = function(req,res,next) {
 	db.getConnection(function(err,koneksi){
-		koneksi.query('SELECT friends.id_sahabatodha,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,komunitas,id_rating,about_sahabatodha FROM friends INNER JOIN user ON user.id_user=friends.id_sahabatodha INNER JOIN sahabat_odha ON sahabat_odha.id_user=friends.id_sahabatodha where friends.id_user='+req.params.id_user, function(err,data){
+		koneksi.query('SELECT friends.id_sahabatodha,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,komunitas,about_sahabatodha FROM friends INNER JOIN user ON user.id_user=friends.id_sahabatodha INNER JOIN sahabat_odha ON sahabat_odha.id_user=friends.id_sahabatodha where friends.id_user='+req.params.id_user, function(err,data){
 			if(err)
 				return res.json({status:400,message:err.code,result:[],id_usr:req.params.id_user});
 
