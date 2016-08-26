@@ -6,7 +6,7 @@ var moment = require('moment');
 
 exports.allsahabatodha = function(req,res,next) {
   db.getConnection(function(err,koneksi){
-    koneksi.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,user.telp,user.tgl_lahir,user.foto,komunitas,about_sahabatodha,AVG(rating.rating) as rating FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user LEFT JOIN rating ON rating.id_user=sahabat_odha.id_user where user.status="1" GROUP BY sahabat_odha.id_user',function(err,data){
+    koneksi.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,user.telp,user.tgl_lahir,user.foto,komunitas,about_sahabatodha,IFNULL(AVG(rating.rating),0) as rating FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user LEFT JOIN rating ON rating.id_user=sahabat_odha.id_user where user.status="1" GROUP BY sahabat_odha.id_user',function(err,data){
       if(err)
 				return res.json({status_code:400,message:err.code,result:[]});
 			
@@ -14,11 +14,11 @@ exports.allsahabatodha = function(req,res,next) {
         //console.log(data);
       });
         for (var i = 0; i >= data.length; i++) {
-          if(data[i].rating === null){
-            data[i].rating = 0; 
-            console.log(data[0].rating);
+          if(data.result[i].rating = null){
+            data.result[i].rating = 0;      
           }
         }*/
+
         return res.json({status_code:200,message:'success',result:data});
     });
     koneksi.release();
