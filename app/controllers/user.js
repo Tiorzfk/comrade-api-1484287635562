@@ -9,7 +9,6 @@ const fs = require('fs');
 
 exports.auth_user = function(req,res,next) {
 	req.checkBody("email", "Enter a valid email address.").isEmail();
-	req.checkBody("password", "Password cannot be blank.").notEmpty();
 	var errors = req.validationErrors();
   	if (errors) {
   	  return res.send({
