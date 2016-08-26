@@ -57,7 +57,10 @@ exports.testimoni = function(req,res,next) {
       if(!data.length)
         return res.json({status_code:400,message: 'Data not found',result:'Failed'})
 
-      return res.json({status_code:200,message:'success',result:data});
+      koneksi.query('SELECT avg(rating) as rating FROM rating WHERE rating.id_user='+req.params.iduser,function(err,data2){
+        return res.json({status_code:200,message:'success','rating':data2[0].rating,result:data});
+      });
+     
     });
     koneksi.release();
   });
