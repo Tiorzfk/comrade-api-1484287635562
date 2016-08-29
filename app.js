@@ -8,8 +8,11 @@ var validator = require('express-validator');
 var passport = require('passport');
 var flash    = require('connect-flash');
 var session  = require('express-session');
+var cors = require('cors');
 
 var app = express();
+
+app.use(cors());
 
 require('./config/passport')(passport); // pass passport for configuration
 
@@ -31,12 +34,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(validator());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(function(req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
 
 require('./app/routes/posting.js')(app);
 require('./app/routes/event.js')(app);
