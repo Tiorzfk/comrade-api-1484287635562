@@ -24,10 +24,13 @@ exports.auth_user = function(req,res,next) {
 				}else if(data){
 					data.forEach(function(data){
             if(req.body.password){
-              var validPassword = bcrypt.compareSync(req.body.password,data.password);
-						  if(!validPassword){
-						  	return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
-						  }
+              if(data.password){
+                var validPassword = bcrypt.compareSync(req.body.password,data.password);
+						    if(!validPassword){
+						    	return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
+						    }
+              }
+              return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
             }
             var token = jwt.sign(data, 'comradeapp', {
              //expiresIn: "24h" // expires in 24 hours
@@ -93,10 +96,14 @@ exports.register = function(req,res,next) {
 								          data:data
     	    		           });
     	    		       }else{
+                      var token = jwt.sign(data, 'emailconfirmationcomrade', {
+                        expiresIn: "2h" // expires in 24 hours
+                      });
                       var templates = new EmailTemplates({root: 'app/views/emails'});
                       var locals = {
                           email: req.body.email,
-                          url: 'http://acme.com/confirm/xxx-yyy-zzz'
+                          token: token,
+                          url: 'http://localhost:3000/confirm'
                       };
 
                       templates.render('confirm-email.html', locals, function(err, html) {
@@ -138,6 +145,26 @@ exports.register = function(req,res,next) {
           koneksi.release();
 		});
 	}
+}
+
+exports.confirmation = function(req,res,next) {
+  db.getConnection(function(err,koneksi){
+    koneksi.query("select * from user where email = '"+req.params.email+"'",function(err,rows){
+      if(err)
+        return res.json(err);
+
+      if(!rows.length)
+        return res.json({status_code:400,result:'Failed',message:'email tidak ditemukan.'});
+
+      if(rows[0].status = '1')
+        return res.json({status_code:400,result:'Failed',message:'email sudah diverifikasi.'});
+
+      koneksi.query("UPDATE user SET ? WHERE email= '"+req.params.email+"'",{status:'1'}, function(err,data){
+        return res.json({status_code:200,result:'Success',message:'Email Berhasil diverifikasi.'})
+      });
+    });
+    koneksi.release();
+  });
 }
 
 exports.registerbak = function(req,res,next) {

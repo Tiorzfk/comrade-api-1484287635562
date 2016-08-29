@@ -1,5 +1,6 @@
 var user = require('../controllers/user');
 var jwt = require('jsonwebtoken');
+var cektokenemail = require('../../config/cektokenemail');
 
 function token_cek(req, res, next) {
 	var token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -106,6 +107,8 @@ module.exports = function(app,passport) {
     app.route('/user/auth').post(user.auth_user);
 
     app.route('/user/register').post(user.register);
+
+    app.route('/confirm/:email').all(cektokenemail.cektoken).get(user.confirmation);
 
     app.route('/user/profile/:id').all(isLoggedIn,token_cek).get(user.profile);
 
