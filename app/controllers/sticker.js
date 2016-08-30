@@ -5,7 +5,7 @@ const fs = require('fs');
 
 exports.sticker = function(req,res,next) {
 	db.getConnection(function(err,koneksi){
-		koneksi.query('SELECT id_sticker,user.nama as pengirim,pic_sticker,komunitas,message FROM sticker INNER JOIN user on user.id_user=sticker.id_pengirim INNER JOIN pic_sticker on pic_sticker.id_pic=sticker.id_picsticker INNER JOIN sahabat_odha on sahabat_odha.id_user=sticker.id_pengirim order by id_sticker DESC',function(err,data){
+		koneksi.query('SELECT id_sticker,user.nama as pengirim,user.foto as foto,pic_sticker,komunitas,message FROM sticker INNER JOIN user on user.id_user=sticker.id_pengirim INNER JOIN pic_sticker on pic_sticker.id_pic=sticker.id_picsticker INNER JOIN sahabat_odha on sahabat_odha.id_user=sticker.id_pengirim order by id_sticker DESC',function(err,data){
 			if(err){
                 return res.json({status:400,message:err.code,result:[]});
                 koneksi.release();
