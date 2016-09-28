@@ -9,12 +9,12 @@ function token_cek(req, res, next) {
   	if (token) {
 
     	// verifies secret and checks exp
-    	jwt.verify(token, 'comradeapp', function(err, decoded) {      
+    	jwt.verify(token, 'comradeapp', function(err, decoded) {
     	  if (err) {
-    	    return res.json({ success: false, message: 'Failed to authenticate token.' });    
+    	    return res.json({ success: false, message: 'Failed to authenticate token.' });
     	  } else {
     	    // if everything is good, save to request for use in other routes
-    	    req.decoded = decoded;    
+    	    req.decoded = decoded;
     	    next();
     	  }
     	});
@@ -23,17 +23,17 @@ function token_cek(req, res, next) {
 
     	// if there is no token
     	// return an error
-    	return res.status(403).send({ 
-    	    success: false, 
-    	    message: 'No token provided.' 
+    	return res.status(403).send({
+    	    success: false,
+    	    message: 'No token provided.'
     	});
-    
+
   	}
 }
 
 function isLoggedIn(req, res, next) {
 
-    // if user is authenticated in the session, carry on 
+    // if user is authenticated in the session, carry on
     if (req.isAuthenticated())
         return next();
 

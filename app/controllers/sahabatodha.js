@@ -9,13 +9,13 @@ exports.allsahabatodha = function(req,res,next) {
     koneksi.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,user.telp,user.tgl_lahir,user.foto,komunitas,about_sahabatodha,IFNULL(AVG(rating.rating),0) as rating FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user LEFT JOIN rating ON rating.id_user=sahabat_odha.id_user where user.status="1" GROUP BY sahabat_odha.id_user',function(err,data){
       if(err)
 				return res.json({status_code:400,message:err.code,result:[]});
-			
+
       /*koneksi.query('SELECT SUM(rating.rating) as rating FROM sahabat_odha INNER JOIN rating on rating.id_user=sahabat_odha.id_user GROUP BY sahabat_odha.id_user',function(err,data){
         //console.log(data);
       });
         for (var i = 0; i >= data.length; i++) {
           if(data.result[i].rating = null){
-            data.result[i].rating = 0;      
+            data.result[i].rating = 0;
           }
         }*/
 
@@ -35,7 +35,8 @@ exports.sahabatodha = function(req,res,next) {
                 return res.json({status_code:400,message: 'Data not found',result:'Failed'})
             }
             return res.json({status_code:200,message:'success',result:data});
-		  });       koneksi.release();
+		  });
+      koneksi.release();
     }else{
       koneksi.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,user.telp,user.tgl_lahir,user.foto,komunitas,about_sahabatodha,IFNULL(AVG(rating.rating),0) as rating FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user LEFT JOIN rating ON rating.id_user=sahabat_odha.id_user where user.status="1" AND user.id_user='+req.params.iduser+' GROUP BY sahabat_odha.id_user',function(err,data){
        if(err){
@@ -61,7 +62,7 @@ exports.testimoni = function(req,res,next) {
       koneksi.query('SELECT avg(rating) as rating FROM rating WHERE rating.id_user='+req.params.iduser,function(err,data2){
         return res.json({status_code:200,message:'success','rating':data2[0].rating,result:data});
       });
-     
+
     });
     koneksi.release();
   });
@@ -75,10 +76,10 @@ exports.editsahabatodha = function(req,res,next) {
 
 		db.getConnection(function(err,koneksi){
       koneksi.query('UPDATE sahabat_odha SET ? WHERE id_user='+req.params.iduser,dataSahabatOdha,function(err,data){
-        return res.status(200).send({ 
+        return res.status(200).send({
           result: 'Success',
           status_code: 200,
-          message: 'Profile Sahabat Odha has been Updated.' 
+          message: 'Profile Sahabat Odha has been Updated.'
         });
       });
       koneksi.release();
@@ -112,10 +113,10 @@ exports.rate = function(req,res,next){
     	  	errors: err
     	  });
     	}
-    		return res.status(201).send({ 
+    		return res.status(201).send({
     	    result: 'Created',
     	    status_code: 201,
-    			message: 'Rating has been saved.' 
+    			message: 'Rating has been saved.'
     		});
 		});
     koneksi.release();

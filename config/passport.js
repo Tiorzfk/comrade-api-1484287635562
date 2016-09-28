@@ -30,7 +30,7 @@ module.exports = function(passport) {
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, email, nama, password, jenis_kelamin, tgl_lahir, telp, jenis_user, done) {
-        var password = 
+        var password =
         var data = {
             nama: nama,
             email: email,
@@ -54,17 +54,17 @@ module.exports = function(passport) {
                     // if there is no user with that email
                     // create the user
                     var newUserMysql = new Object();
-                
+
                     newUserMysql.email    = email;
                     newUserMysql.password = password;
-                        koneksi.query('INSERT INTO user SET ? ',data,function(err,rows){   
-                            if(err)      
+                        koneksi.query('INSERT INTO user SET ? ',data,function(err,rows){
+                            if(err)
                                 return done(null, false, req.flash('signupMessage', err));
 
                             return done(null, newUserMysql);
                             koneksi.release();
-                        }); 
-                }   
+                        });
+                }
             });
         });
     }));*/
@@ -99,7 +99,7 @@ module.exports = function(passport) {
                         return done(null, false, req.flash('loginMessage', 'Authentication failed. Wrong password.')); // create the loginMessage and save it to session as flashdata
 
                     // all is well, return successful user
-                    return done(null, user[0]);  
+                    return done(null, user[0]);
                 });
                 koneksi.release();
             });
@@ -133,7 +133,7 @@ module.exports = function(passport) {
                         console.log('user sudah ada di db');
                         // if a user is found, log them in
                         return done(null, user[0]);
-                    } 
+                    }
                         console.log('user belum ada di db');
                         // if the user isnt in our database, create a new user
 
@@ -149,7 +149,7 @@ module.exports = function(passport) {
                             }
                             return done(null, data);
                         });
-                    
+
                 });
                 koneksi.release();
             });

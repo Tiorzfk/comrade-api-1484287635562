@@ -17,7 +17,7 @@ exports.getfriend = function(req,res,next) {
 
 exports.getfriendsahabatodha = function(req,res,next) {
 	db.getConnection(function(err,koneksi){
-		koneksi.query('SELECT friends.id_user,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto FROM friends INNER JOIN user ON user.id_user=friends.id_user where friends.id_sahabatodha='+req.params.id_user, function(err,data){
+		koneksi.query('SELECT friends.id_user,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,user.jenis_user as jenis_user FROM friends INNER JOIN user ON user.id_user=friends.id_user where friends.id_sahabatodha='+req.params.id_user, function(err,data){
 			if(err)
 				return res.json({status:400,message:err.code,result:[],id_usr:req.params.id_user});
 
