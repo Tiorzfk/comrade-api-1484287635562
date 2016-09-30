@@ -16,6 +16,7 @@ module.exports = function(passport) {
     // used to deserialize the user
     passport.deserializeUser(function(id, done) {
         db.getConnection(function(err,koneksi){
+          if (err) throw err;
             koneksi.query('SELECT * FROM user where google_id= ?',[id],function(err,user){
                 done(err, user);
             });
@@ -79,6 +80,7 @@ module.exports = function(passport) {
             // find a user whose email is the same as the forms email
             // we are checking to see if the user trying to login already exists
             db.getConnection(function(err,koneksi){
+              if (err) throw err;
                 koneksi.query('SELECT * FROM user where email = ? ',[email],function(err,user){
                     // if there are any errors, return the error before anything else
                     if (err)
@@ -125,6 +127,7 @@ module.exports = function(passport) {
             }
             // try to find the user based on their google id
             db.getConnection(function(err,koneksi){
+              if (err) throw err;
                 koneksi.query("SELECT * FROM user where email ='"+profile.emails[0].value+"'",function(err,user){
                     if (err)
                         return done(err);

@@ -18,6 +18,7 @@ exports.auth_user = function(req,res,next) {
   	  });
   	} else {
   		db.getConnection(function(err,koneksi){
+				if (err) throw err;
 			koneksi.query('SELECT * FROM user WHERE email="'+req.body.email+'"', function(err,data){
       	if(!data.length){
 					return res.json({ result: 'Failed', message: 'Authentication failed. Email not found.' });
@@ -94,11 +95,12 @@ exports.register = function(req,res,next) {
           foto : 'default.png'
     	}
 		db.getConnection(function(err,koneksi){
+			if (err) throw err;
     	    koneksi.query("select * from user where email = '"+req.body.email+"'",function(err,rows){
                 if (err)
                     return res.json(err);
 
-                 if (rows.length) 
+                 if (rows.length)
                     return res.json({status:'400',result:'Failed',message:'That email is already taken.'});
 
     	    		    koneksi.query('INSERT INTO user SET ? ',data,function(err,result){
@@ -144,10 +146,10 @@ exports.register = function(req,res,next) {
                                           });
                                       } else {
                                           console.log(responseStatus);
-                                          return res.status(201).send({ 
+                                          return res.status(201).send({
                                             result: 'Created',
                                             status_code: 201,
-                                            message: 'Registration is successful, check your email to activate your account.' 
+                                            message: 'Registration is successful, check your email to activate your account.'
                                           });
                                       }
                                   }
@@ -156,7 +158,7 @@ exports.register = function(req,res,next) {
                       });
     					      }
     	    		    });
-    	    	    
+
     	    });
           koneksi.release();
 		});
@@ -242,18 +244,18 @@ exports.registerbak = function(req,res,next) {
                             errors: err
                           });
                       }
-                      return res.status(201).send({ 
+                      return res.status(201).send({
                         result: 'Created',
                         status_code: 201,
-                        message: 'Registration is successful, check your email to activate your account.' 
+                        message: 'Registration is successful, check your email to activate your account.'
                       });
                     });
                     koneksi.release();
                   }else{
-                      return res.status(201).send({ 
+                      return res.status(201).send({
                         result: 'Created',
                         status_code: 201,
-                        message: 'Registration is successful, check your email to activate your account.' 
+                        message: 'Registration is successful, check your email to activate your account.'
                       });
                   }
               });
@@ -303,12 +305,12 @@ exports.setting_profile = function(req,res,next){
         upload(req,res,function(err) {
           if(err)
             return res.json({result:'Failed', message: err});
-            
+
             req.checkBody("email", "Enter a valid email address.").isEmail();
             req.checkBody("telepon", "Telepon must be integer.").isInt();
             var errors = req.validationErrors();
               if (errors) {
-                if(req.file){            
+                if(req.file){
                   fs.unlink('public/pic_sahabatodha/'+req.file.filename);
                 }
                 return res.send({
@@ -331,9 +333,10 @@ exports.setting_profile = function(req,res,next){
               data[0].foto = req.file.filename;
             }
 		        db.getConnection(function(err,koneksi){
+							if (err) throw err;
 		        	koneksi.query('UPDATE user SET ? WHERE id_user='+req.params.id,data, function(err,data){
 		        		if (err) {
-                  if(req.file){            
+                  if(req.file){
                     fs.unlink('public/pic_sahabatodha/'+req.file.filename);
                   }
             	    return res.json({
@@ -343,7 +346,7 @@ exports.setting_profile = function(req,res,next){
             	    	errors: err
             	    });
             	  }else if(!data.affectedRows){
-                  if(req.file){            
+                  if(req.file){
                     fs.unlink('public/pic_sahabatodha/'+req.file.filename);
                   }
             	    return res.json({
@@ -351,10 +354,10 @@ exports.setting_profile = function(req,res,next){
 		        				message: 'Data not found'
 		        			});
             	 }
-            	 return res.status(201).send({ 
+            	 return res.status(201).send({
             	  	result: 'Success',
             	  	status_code: 200,
-            	    message: 'Data has been changed.' 
+            	    message: 'Data has been changed.'
             	 });
 		        });
             koneksi.release();
@@ -364,6 +367,7 @@ exports.setting_profile = function(req,res,next){
 
 exports.change_password = function(req,res,next){
 	db.getConnection(function(err,koneksi){
+		if (err) throw err;
 		koneksi.query('SELECT * FROM user WHERE id_user='+req.params.id, function(err,data){
 			if(err){
 				return res.json(err)

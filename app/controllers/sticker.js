@@ -5,6 +5,7 @@ const fs = require('fs');
 
 exports.sticker = function(req,res,next) {
 	db.getConnection(function(err,koneksi){
+		if (err) throw err;
 		koneksi.query('SELECT id_sticker,user.nama as pengirim,user.foto as foto,pic_sticker,komunitas,message FROM sticker INNER JOIN user on user.id_user=sticker.id_pengirim INNER JOIN pic_sticker on pic_sticker.id_pic=sticker.id_picsticker INNER JOIN sahabat_odha on sahabat_odha.id_user=sticker.id_pengirim order by id_sticker DESC',function(err,data){
 			if(err){
                 return res.json({status:400,message:err.code,result:[]});
@@ -45,16 +46,17 @@ exports.sendpicsticker = function(req,res,next) {
             pic_sticker: req.file.filename
         }
         db.getConnection(function(err,koneksi){
+					if (err) throw err;
             koneksi.query('INSERT INTO pic_sticker SET ? ',data,function(err){
                 if(err){
                     fs.unlink('public/pic_sticker/'+req.file.filename);
                     return res.json(err)
                 }
-            
-                return res.status(201).send({ 
+
+                return res.status(201).send({
                     result: 'Created',
                     status_code: 201,
-                    message: 'Sticker has been saved.' 
+                    message: 'Sticker has been saved.'
                 });
             });
             koneksi.release();
@@ -80,16 +82,17 @@ exports.sendsticker = function(req,res,next) {
   		    id_picsticker: req.body.id_picsticker
         }
         db.getConnection(function(err,koneksi){
+					if (err) throw err;
             koneksi.query('INSERT INTO sticker SET ? ',data,function(err){
                 if(err){
 				    return res.json(err)
                 }
-				
-                return res.status(201).send({ 
+
+                return res.status(201).send({
             	   result: 'Created',
             	   status_code: 201,
-    	    	  message: 'Sticker has been saved.' 
-                });            
+    	    	  message: 'Sticker has been saved.'
+                });
             });
             koneksi.release();
         });
@@ -98,6 +101,7 @@ exports.sendsticker = function(req,res,next) {
 
 exports.pic_sticker = function(req,res,next){
     db.getConnection(function(err,koneksi){
+			if (err) throw err;
         koneksi.query("select * from pic_sticker",function(err,rows){
             if(err){
                 return res.json({status:400,message:'Error',result:[]});

@@ -6,6 +6,7 @@ var moment = require('moment');
 
 exports.allsahabatodha = function(req,res,next) {
   db.getConnection(function(err,koneksi){
+    if (err) throw err;
     koneksi.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,user.telp,user.tgl_lahir,user.foto,komunitas,about_sahabatodha,IFNULL(AVG(rating.rating),0) as rating FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user LEFT JOIN rating ON rating.id_user=sahabat_odha.id_user where user.status="1" GROUP BY sahabat_odha.id_user',function(err,data){
       if(err)
 				return res.json({status_code:400,message:err.code,result:[]});
@@ -27,6 +28,7 @@ exports.allsahabatodha = function(req,res,next) {
 
 exports.sahabatodha = function(req,res,next) {
 	db.getConnection(function(err,koneksi){
+    if (err) throw err;
     if(!isNaN(req.params.iduser)) {
 		  koneksi.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,user.telp,user.tgl_lahir,user.foto,komunitas,about_sahabatodha,IFNULL(AVG(rating.rating),0) as rating FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user LEFT JOIN rating ON rating.id_user=sahabat_odha.id_user where user.status="1" AND user.id_user='+req.params.iduser+' GROUP BY sahabat_odha.id_user',function(err,data){
 		  	if(err){
@@ -53,6 +55,7 @@ exports.sahabatodha = function(req,res,next) {
 
 exports.testimoni = function(req,res,next) {
   db.getConnection(function(err,koneksi){
+    if (err) throw err;
     koneksi.query('SELECT user.nama as pengirim,testimoni,tanggal FROM rating INNER JOIN user on user.id_user=rating.id_pengerate WHERE rating.id_user='+req.params.iduser,function(err,data){
       if(err)
         return res.json({status_code:400,message:err.code,result:[]});
@@ -75,6 +78,7 @@ exports.editsahabatodha = function(req,res,next) {
     };
 
 		db.getConnection(function(err,koneksi){
+      if (err) throw err;
       koneksi.query('UPDATE sahabat_odha SET ? WHERE id_user='+req.params.iduser,dataSahabatOdha,function(err,data){
         return res.status(200).send({
           result: 'Success',
@@ -104,6 +108,7 @@ exports.rate = function(req,res,next){
       });
     }
 	db.getConnection(function(err,koneksi){
+    if (err) throw err;
 		koneksi.query('INSERT INTO rating SET ? ',data,function(err,data){
 			if (err) {
     	  return res.json({
