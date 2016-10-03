@@ -1,23 +1,24 @@
-var db = require('../../config/db').DB;
+var db = require('../../config/db');
 var multer  = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-exports.sticker = function(req,res,next) {
-	db.getConnection(function(err,koneksi){
+function Todo() {
+
+this.sticker = function(req,res,next) {
+	db.acquire(function(err,con){
 		if (err) throw err;
-		koneksi.query('SELECT id_sticker,user.nama as pengirim,user.foto as foto,pic_sticker,komunitas,message FROM sticker INNER JOIN user on user.id_user=sticker.id_pengirim INNER JOIN pic_sticker on pic_sticker.id_pic=sticker.id_picsticker INNER JOIN sahabat_odha on sahabat_odha.id_user=sticker.id_pengirim order by id_sticker DESC',function(err,data){
+		con.query('SELECT id_sticker,user.nama as pengirim,user.foto as foto,pic_sticker,komunitas,message FROM sticker INNER JOIN user on user.id_user=sticker.id_pengirim INNER JOIN pic_sticker on pic_sticker.id_pic=sticker.id_picsticker INNER JOIN sahabat_odha on sahabat_odha.id_user=sticker.id_pengirim order by id_sticker DESC',function(err,data){
+			con.release();
 			if(err){
                 return res.json({status:400,message:err.code,result:[]});
-                koneksi.release();
             }
             return res.json({status:200,message:'success',result:data});
 		});
-        koneksi.release();
 	});
 }
 
-exports.sendpicsticker = function(req,res,next) {
+this.sendpicsticker = function(req,res,next) {
     var storage = multer.diskStorage({
         destination: function (req, file, callback) {
             callback(null, 'public/pic_sticker');
@@ -45,9 +46,10 @@ exports.sendpicsticker = function(req,res,next) {
         var data = {
             pic_sticker: req.file.filename
         }
-        db.getConnection(function(err,koneksi){
+        db.acquire(function(err,con){
 					if (err) throw err;
-            koneksi.query('INSERT INTO pic_sticker SET ? ',data,function(err){
+            con.query('INSERT INTO pic_sticker SET ? ',data,function(err){
+							con.release();
                 if(err){
                     fs.unlink('public/pic_sticker/'+req.file.filename);
                     return res.json(err)
@@ -59,12 +61,11 @@ exports.sendpicsticker = function(req,res,next) {
                     message: 'Sticker has been saved.'
                 });
             });
-            koneksi.release();
         });
     });
 }
 
-exports.sendsticker = function(req,res,next) {
+this.sendsticker = function(req,res,next) {
     req.checkBody("id_user", "ID User cannot be blank.").notEmpty();
     req.checkBody("message", "Message cannot be blank.").notEmpty();
     req.checkBody("id_picsticker", "ID PicSticker cannot be blank.").notEmpty();
@@ -81,9 +82,10 @@ exports.sendsticker = function(req,res,next) {
   		    message: req.body.message,
   		    id_picsticker: req.body.id_picsticker
         }
-        db.getConnection(function(err,koneksi){
+        db.acquire(function(err,con){
 					if (err) throw err;
-            koneksi.query('INSERT INTO sticker SET ? ',data,function(err){
+            con.query('INSERT INTO sticker SET ? ',data,function(err){
+							con.release();
                 if(err){
 				    return res.json(err)
                 }
@@ -94,21 +96,24 @@ exports.sendsticker = function(req,res,next) {
     	    	  message: 'Sticker has been saved.'
                 });
             });
-            koneksi.release();
         });
     }
 }
 
-exports.pic_sticker = function(req,res,next){
-    db.getConnection(function(err,koneksi){
+this.pic_sticker = function(req,res,next){
+    db.acquire(function(err,con){
 			if (err) throw err;
-        koneksi.query("select * from pic_sticker",function(err,rows){
+        con.query("select * from pic_sticker",function(err,rows){
+					con.release();
             if(err){
                 return res.json({status:400,message:'Error',result:[]});
             }else{
                 return res.json({status:200,message:'success',result:rows});
             }
         });
-        koneksi.release();
     })
 }
+
+}
+
+module.exports = new Todo();

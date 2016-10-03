@@ -1,6 +1,7 @@
 var kategori = require('../controllers/kategori');
 
-module.exports = function(app) {
+module.exports = {
+  configure: function(app) {
     app.route('/kategori').get(kategori.kategori);
-
+  }
 };

@@ -45,8 +45,8 @@ function isLoggedIn(req, res, next) {
     });
 }
 
-module.exports = function(app,passport) {
-
+module.exports = {
+	configure: function(app,passport) {
     //app.route('/user/authenticate').post(user.auth_user);
     app.post('/user/authenticate', passport.authenticate('local-login',{
         successRedirect : '/successlogin', // redirect to the secure profile section
@@ -116,5 +116,6 @@ module.exports = function(app,passport) {
 
     app.route('/user/change_password/:id').all(isLoggedIn,token_cek).post(user.change_password);
 
-    app.route('/user/sahabat_odha').all(token_cek).get(user.sahabat_odha);
+    //app.route('/user/sahabat_odha').all(token_cek).get(user.sahabat_odha);
+	}
 };

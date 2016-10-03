@@ -1,9 +1,12 @@
-var db = require('../../config/db').DB;
+var db = require('../../config/db');
 
-exports.lokasi_obat = function(req,res,next){
-	db.getConnection(function(err,koneksi){
+function Todo() {
+
+this.lokasi_obat = function(req,res,next){
+	db.acquire(function(err,con){
 		if (err) throw err;
-		koneksi.query('SELECT nama,alamat,longitude,latitude,foto,deskripsi,open_timeinfo,jenis_lokasi FROM lokasi_obat', function(err,data){
+		con.query('SELECT nama,alamat,longitude,latitude,foto,deskripsi,open_timeinfo,jenis_lokasi FROM lokasi_obat', function(err,data){
+			con.release();
 			if(err){
                 res.json({status:'400',message:err.code,result:[]});
             }else if(!data.length){
@@ -11,13 +14,13 @@ exports.lokasi_obat = function(req,res,next){
             }
             res.json({status:'200',message:'success',result:data});
 		});
-        koneksi.release();
 	});
 }
-exports.idlokasi_obat = function(req,res,next){
-	db.getConnection(function(err,koneksi){
+this.idlokasi_obat = function(req,res,next){
+	db.acquire(function(err,con){
 		if (err) throw err;
-		koneksi.query('SELECT nama,alamat,longitude,latitude,foto,open_timeinfo,jenis_lokasi FROM lokasi_obat WHERE id_lokasi='+req.params.id, function(err,data){
+		con.query('SELECT nama,alamat,longitude,latitude,foto,open_timeinfo,jenis_lokasi FROM lokasi_obat WHERE id_lokasi='+req.params.id, function(err,data){
+			con.release();
 			if(err){
                 res.json({status:'400',message:err.code,result:[]});
             }else if(!data.length){
@@ -25,6 +28,9 @@ exports.idlokasi_obat = function(req,res,next){
             }
             res.json({status:'200',message:'success',result:data});
 		});
-        koneksi.release();
 	});
 }
+
+}
+
+module.exports = new Todo();

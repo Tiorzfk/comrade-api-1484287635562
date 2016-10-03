@@ -9,12 +9,26 @@ var passport = require('passport');
 var flash    = require('connect-flash');
 var session  = require('express-session');
 var cors = require('cors');
+//db
+var connection = require('./config/db');
+//routing
+var posting = require('./app/routes/posting');
+var banner = require('./app/routes/banner');
+var event = require('./app/routes/event');
+var friend = require('./app/routes/friend');
+var kategori = require('./app/routes/kategori');
+var lokasi_obat = require('./app/routes/lokasi_obat');
+var lokasi_pemeriksaan = require('./app/routes/lokasi_pemeriksaan');
+var sahabatodha = require('./app/routes/sahabatodha');
+var sticker = require('./app/routes/sticker');
+var twitter = require('./app/routes/twitter');
+var user = require('./app/routes/user');
 
 var app = express();
 
 app.use(cors());
 
-require('./config/passport')(passport); // pass passport for configuration
+//require('./config/passport')(passport); // pass passport for configuration
 
 // view engine setup
 app.set('views', path.join(__dirname, 'app/views'));
@@ -34,18 +48,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(validator());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-require('./app/routes/posting.js')(app);
-require('./app/routes/event.js')(app);
-require('./app/routes/banner.js')(app);
-require('./app/routes/kategori.js')(app);
-require('./app/routes/user.js')(app,passport);
-require('./app/routes/lokasi_obat.js')(app);
-require('./app/routes/lokasi_pemeriksaan.js')(app);
-require('./app/routes/sticker.js')(app);
-require('./app/routes/sahabatodha.js')(app);
-require('./app/routes/friend.js')(app);
-require('./app/routes/twitter.js')(app);
+//koneksi
+connection.init();
+//routing
+posting.configure(app);
+banner.configure(app);
+event.configure(app);
+friend.configure(app);
+kategori.configure(app);
+lokasi_obat.configure(app);
+lokasi_pemeriksaan.configure(app);
+sahabatodha.configure(app);
+sticker.configure(app);
+twitter.configure(app);
+user.configure(app,passport);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

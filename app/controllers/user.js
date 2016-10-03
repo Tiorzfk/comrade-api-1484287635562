@@ -1,4 +1,4 @@
-var db 	= require('../../config/db').DB;
+var db 	= require('../../config/db');
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt-nodejs');
 var multer  = require('multer');
@@ -7,7 +7,9 @@ var EmailTemplates = require('swig-email-templates');
 const path = require('path');
 const fs = require('fs');
 
-exports.auth_user = function(req,res,next) {
+function Todo() {
+
+this.auth_user = function(req,res,next) {
 	req.checkBody("email", "Enter a valid email address.").isEmail();
 	var errors = req.validationErrors();
   	if (errors) {
@@ -17,9 +19,10 @@ exports.auth_user = function(req,res,next) {
   	  	errors: errors
   	  });
   	} else {
-  		db.getConnection(function(err,koneksi){
+  		db.acquire(function(err,con){
 				if (err) throw err;
-			koneksi.query('SELECT * FROM user WHERE email="'+req.body.email+'"', function(err,data){
+			con.query('SELECT * FROM user WHERE email="'+req.body.email+'"', function(err,data){
+				con.release();
       	if(!data.length){
 					return res.json({ result: 'Failed', message: 'Authentication failed. Email not found.' });
 				}else if(data){
@@ -68,13 +71,12 @@ exports.auth_user = function(req,res,next) {
 					});
 				}
 			});
-      koneksi.release();
 		});
   	}
 
 };
 
-exports.register = function(req,res,next) {
+this.register = function(req,res,next) {
 	req.checkBody("email", "Enter a valid email address.").isEmail();
 	req.checkBody("nama", "Nama cannot be blank.").notEmpty();
 	req.checkBody("password", "Password cannot be blank.").notEmpty();
@@ -94,16 +96,17 @@ exports.register = function(req,res,next) {
           status  : '0',
           foto : 'default.png'
     	}
-		db.getConnection(function(err,koneksi){
+		db.acquire(function(err,con){
 			if (err) throw err;
-    	    koneksi.query("select * from user where email = '"+req.body.email+"'",function(err,rows){
+    	    con.query("select * from user where email = '"+req.body.email+"'",function(err,rows){
+						con.release();
                 if (err)
                     return res.json(err);
 
                  if (rows.length)
                     return res.json({status:'400',result:'Failed',message:'That email is already taken.'});
 
-    	    		    koneksi.query('INSERT INTO user SET ? ',data,function(err,result){
+    	    		    con.query('INSERT INTO user SET ? ',data,function(err,result){
     	    		       //error simpan ke database
     	    		       if (err) {
     	    		           return res.json({
@@ -145,7 +148,7 @@ exports.register = function(req,res,next) {
                                             errors: err,
                                           });
                                       } else {
-                                          console.log(responseStatus);
+                                          //console.log(responseStatus);
                                           return res.status(201).send({
                                             result: 'Created',
                                             status_code: 201,
@@ -160,14 +163,14 @@ exports.register = function(req,res,next) {
     	    		    });
 
     	    });
-          koneksi.release();
 		});
 	}
 }
 
-exports.confirmation = function(req,res,next) {
-  db.getConnection(function(err,koneksi){
-    koneksi.query("select * from user where email = '"+req.params.email+"'",function(err,rows){
+this.confirmation = function(req,res,next) {
+  db.acquire(function(err,con){
+    con.query("select * from user where email = '"+req.params.email+"'",function(err,rows){
+			con.release();
       if(err)
         return res.json(err);
 
@@ -177,15 +180,14 @@ exports.confirmation = function(req,res,next) {
       if(rows[0].status = '1')
         return res.json({status_code:400,result:'Failed',message:'email sudah diverifikasi.'});
 
-      koneksi.query("UPDATE user SET ? WHERE email= '"+req.params.email+"'",{status:'1'}, function(err,data){
+      con.query("UPDATE user SET ? WHERE email= '"+req.params.email+"'",{status:'1'}, function(err,data){
         return res.json({status_code:200,result:'Success',message:'Email Berhasil diverifikasi.'})
       });
     });
-    koneksi.release();
   });
 }
 
-exports.registerbak = function(req,res,next) {
+this.registerbak = function(req,res,next) {
   req.checkBody("email", "Enter a valid email address.").isEmail();
   req.checkBody("nama", "Nama cannot be blank.").notEmpty();
   req.checkBody("password", "Password cannot be blank.").notEmpty();
@@ -211,14 +213,15 @@ exports.registerbak = function(req,res,next) {
           status: "0",
           jenis_user: req.body.jenis_user
       }
-    db.getConnection(function(err,koneksi){
-          koneksi.query("select * from user where email = '"+req.body.email+"'",function(err,rows){
+    db.acquire(function(err,con){
+          con.query("select * from user where email = '"+req.body.email+"'",function(err,rows){
+						con.release();
                 if (err)
                     return res.json(err);
                  if (rows.length) {
                     return res.json({result:'Failed',message:'That email is already taken.'});
                 } else {
-              koneksi.query('INSERT INTO user SET ? ',data,function(err,result){
+              con.query('INSERT INTO user SET ? ',data,function(err,result){
                   //error simpan ke database
                   if (err) {
                       return res.json({
@@ -235,7 +238,7 @@ exports.registerbak = function(req,res,next) {
                       nama : req.body.nama,
                       telp : req.body.telp
                     }
-                    koneksi.query('INSERT INTO sahabat_odha SET ?',sa,function(err){
+                    con.query('INSERT INTO sahabat_odha SET ?',sa,function(err){
                       if (err) {
                           return res.json({
                             result: 'Failed',
@@ -250,7 +253,6 @@ exports.registerbak = function(req,res,next) {
                         message: 'Registration is successful, check your email to activate your account.'
                       });
                     });
-                    koneksi.release();
                   }else{
                       return res.status(201).send({
                         result: 'Created',
@@ -265,9 +267,10 @@ exports.registerbak = function(req,res,next) {
   }
 }
 
-exports.profile = function(req,res,next){
-	db.getConnection(function(err,koneksi){
-		koneksi.query('SELECT id_user,nama,email,password,jk as jenis_kelamin, tgl_lahir,telp as telepon, jenis_user,biodata FROM user WHERE status="1"', function(err,data){
+this.profile = function(req,res,next){
+	db.acquire(function(err,con){
+		con.query('SELECT id_user,nama,email,password,jk as jenis_kelamin, tgl_lahir,telp as telepon, jenis_user,biodata FROM user WHERE status="1"', function(err,data){
+			con.release();
 			if(err){
 				return res.json(err)
 			}else if(!data.length){
@@ -278,11 +281,10 @@ exports.profile = function(req,res,next){
 			}
 			return res.json(data);
 		});
-    koneksi.release();
 	});
 }
 
-exports.setting_profile = function(req,res,next){
+this.setting_profile = function(req,res,next){
       var storage = multer.diskStorage({
           destination: function (req, file, callback) {
               callback(null, 'public/pic_user');
@@ -332,9 +334,10 @@ exports.setting_profile = function(req,res,next){
             if(req.file){
               data[0].foto = req.file.filename;
             }
-		        db.getConnection(function(err,koneksi){
+		        db.acquire(function(err,con){
 							if (err) throw err;
-		        	koneksi.query('UPDATE user SET ? WHERE id_user='+req.params.id,data, function(err,data){
+		        	con.query('UPDATE user SET ? WHERE id_user='+req.params.id,data, function(err,data){
+								con.release();
 		        		if (err) {
                   if(req.file){
                     fs.unlink('public/pic_sahabatodha/'+req.file.filename);
@@ -360,15 +363,15 @@ exports.setting_profile = function(req,res,next){
             	    message: 'Data has been changed.'
             	 });
 		        });
-            koneksi.release();
           });
         });
 }
 
-exports.change_password = function(req,res,next){
-	db.getConnection(function(err,koneksi){
+this.change_password = function(req,res,next){
+	db.acquire(function(err,con){
 		if (err) throw err;
-		koneksi.query('SELECT * FROM user WHERE id_user='+req.params.id, function(err,data){
+		con.query('SELECT * FROM user WHERE id_user='+req.params.id, function(err,data){
+			con.release();
 			if(err){
 				return res.json(err)
 			}else if(!data.length){
@@ -387,7 +390,7 @@ exports.change_password = function(req,res,next){
 					var data = {
 						password : req.body.new_password
 					}
-					koneksi.query('UPDATE user SET ? WHERE id_user='+req.params.id,data,function(err,data){
+					con.query('UPDATE user SET ? WHERE id_user='+req.params.id,data,function(err,data){
 						return res.json({
 							result: 'OK',
 							status_code: 200,
@@ -397,14 +400,9 @@ exports.change_password = function(req,res,next){
 				}
 			});
 		});
-    koneksi.release();
 	});
 }
 
-exports.sahabat_odha = function(req,res,next){
-	db.getConnection(function(err,koneksi){
-		koneksi.query('SELECT ', function(err,data){
-
-		});
-	});
 }
+
+module.exports = new Todo();

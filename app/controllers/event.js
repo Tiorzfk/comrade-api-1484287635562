@@ -1,15 +1,19 @@
-var db = require('../../config/db').DB;
+var db = require('../../config/db');
 var request = require('request');
-exports.event = function(req, res, next) {
-	db.getConnection(function(err,koneksi){
+
+function Todo() {
+
+this.event = function(req, res, next) {
+	db.acquire(function(err,con){
 		if (err) throw err;
 		var sql ="SELECT id_event,admin.nama as pengirim,event.nama,deskripsi,foto,event.status,tgl_event,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status='1' AND event.tipe='public' ORDER BY tgl_posting";
 		if(req.params.tipe=='private'){
 			sql ="SELECT id_event,admin.nama as pengirim,event.nama,deskripsi,foto,event.status,tgl_event,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status='1' ORDER BY tgl_posting";
 		}
 		var arr = {};
-    	koneksi.query(sql, function(err,data){
-    	    if(err)
+    	con.query(sql, function(err,data){
+				con.release();
+					if(err)
                	return res.json({status:'400',message:err.code,result:[]});
             else if(!data.length)
                 return res.json({status:'400',message: 'Data not found',result:'Failed'})
@@ -30,21 +34,24 @@ exports.event = function(req, res, next) {
 				return res.json({status:200,message:'success',result:data});
 			}
     	});
-    	koneksi.release();
 	});
 };
 
-exports.eventID = function(req, res, next) {
-	db.getConnection(function(err,koneksi){
+this.eventID = function(req, res, next) {
+	db.acquire(function(err,con){
 		if (err) throw err;
-    	koneksi.query('SELECT id_event,admin.nama as pengirim,event.nama,deskripsi,foto,event.status,tgl_event,tgl_posting,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" AND id_event='+req.params.id+' ORDER BY tgl_posting', function(err,data){
-    	    if(err){
+    	con.query('SELECT id_event,admin.nama as pengirim,event.nama,deskripsi,foto,event.status,tgl_event,tgl_posting,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" AND id_event='+req.params.id+' ORDER BY tgl_posting', function(err,data){
+					con.release();
+					if(err){
                 return res.json({status:'400',message:err.code,result:[]});
             }else if(!data.length){
                 return res.json({status:'400',message: 'Data not found',result:'Failed'})
             }
             return res.json({status:'200',message:'success',result:data});
     	});
-    	koneksi.release();
     });
 };
+
+}
+
+module.exports = new Todo();

@@ -1,9 +1,12 @@
-var db = require('../../config/db').DB;
+var db = require('../../config/db');
 
-exports.getfriend = function(req,res,next) {
-	db.getConnection(function(err,koneksi){
+function Todo() {
+
+this.getfriend = function(req,res,next) {
+	db.acquire(function(err,con){
 		if (err) throw err;
-		koneksi.query('SELECT friends.id_sahabatodha,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,komunitas,about_sahabatodha FROM friends INNER JOIN user ON user.id_user=friends.id_sahabatodha INNER JOIN sahabat_odha ON sahabat_odha.id_user=friends.id_sahabatodha where friends.id_user='+req.params.id_user, function(err,data){
+		con.query('SELECT friends.id_sahabatodha,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,komunitas,about_sahabatodha FROM friends INNER JOIN user ON user.id_user=friends.id_sahabatodha INNER JOIN sahabat_odha ON sahabat_odha.id_user=friends.id_sahabatodha where friends.id_user='+req.params.id_user, function(err,data){
+			con.release();
 			if(err)
 				return res.json({status:400,message:err.code,result:[],id_usr:req.params.id_user});
 
@@ -12,14 +15,14 @@ exports.getfriend = function(req,res,next) {
 
 			return res.json({status:200,message:'success',result:data});
 		});
-		koneksi.release();
 	});
 };
 
-exports.getfriendsahabatodha = function(req,res,next) {
-	db.getConnection(function(err,koneksi){
+this.getfriendsahabatodha = function(req,res,next) {
+	db.acquire(function(err,con){
 		if (err) throw err;
-		koneksi.query('SELECT friends.id_user,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,user.jenis_user as jenis_user FROM friends INNER JOIN user ON user.id_user=friends.id_user where friends.id_sahabatodha='+req.params.id_user, function(err,data){
+		con.query('SELECT friends.id_user,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,user.jenis_user as jenis_user FROM friends INNER JOIN user ON user.id_user=friends.id_user where friends.id_sahabatodha='+req.params.id_user, function(err,data){
+			con.release();
 			if(err)
 				return res.json({status:400,message:err.code,result:[],id_usr:req.params.id_user});
 
@@ -28,12 +31,11 @@ exports.getfriendsahabatodha = function(req,res,next) {
 
 			return res.json({status:200,message:'success',result:data});
 		});
-		koneksi.release();
 	});
 };
 
-exports.addfriends = function(req,res,next){
-	db.getConnection(function(e,koneksi){
+this.addfriends = function(req,res,next){
+	db.acquire(function(e,con){
 		if (err) throw err;
 		req.checkBody("id_user", "Id User cannot be blank.").notEmpty();
   		req.checkBody("id_sahabatodha", "Id Sahabat Odha cannot be blank.").notEmpty();
@@ -50,29 +52,30 @@ exports.addfriends = function(req,res,next){
     		id_sahabatodha: req.body.id_sahabatodha,
     		status: '0'
     	}
-		koneksi.query("insert into friends set ?",[data],function(err,rows){
+		con.query("insert into friends set ?",[data],function(err,rows){
+			con.release();
 			if(err)
 				return res.json({result:'Failed',status:400,message:err,result:[]});
 
 			return res.json({result: 'success',status:200,message:'Berhasil menambahkan teman'});
 		});
-		koneksi.release();
 	});
 };
 
-exports.konfirmasi = function(req,res,next){
-	db.getConnection(function(err,koneksi){
-		koneksi.query("select * from friends where id_friends=?",req.body.id_friends,function(err,rows){
+this.konfirmasi = function(req,res,next){
+	db.acquire(function(err,con){
+		con.query("select * from friends where id_friends=?",req.body.id_friends,function(err,rows){
+			con.release();
 			if (err) throw err;
 			if(rows.lenght>0){
 				if(status==0){
-					koneksi.query("delete from friends where id_friends=?",req.body.id_friends,function(err,rows2) {
+					con.query("delete from friends where id_friends=?",req.body.id_friends,function(err,rows2) {
 						if(!err){
 							res.json({status:200,message:'Pertemanan dihapus',result:[]});
 						}
 					});
 				}else{
-					koneksi.query("update friends set status='1' where id_friends=?",req.body.id_friends,function(err,rows) {
+					con.query("update friends set status='1' where id_friends=?",req.body.id_friends,function(err,rows) {
 						if(!err){
 							res.json({status:200,message:'Pertemanan berhasil di konfirmasi',result:[]});
 						}
@@ -80,6 +83,8 @@ exports.konfirmasi = function(req,res,next){
 				}
 			}
 		});
-		koneksi.release();
 	});
 };
+
+}
+module.exports = new Todo();

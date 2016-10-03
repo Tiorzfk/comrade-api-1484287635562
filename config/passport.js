@@ -1,6 +1,6 @@
 var LocalStrategy   = require('passport-local').Strategy,
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
-    db = require('./db').DB,
+    db = require('./db'),
     bcrypt = require('bcrypt-nodejs');
 
 var configAuth = require('./auth');
