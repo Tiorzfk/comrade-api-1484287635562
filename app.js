@@ -9,6 +9,7 @@ var passport = require('passport');
 var flash    = require('connect-flash');
 var session  = require('express-session');
 var cors = require('cors');
+var RateLimit = require('express-rate-limit');
 //db
 var connection = require('./config/db');
 //routing
@@ -26,9 +27,35 @@ var user = require('./app/routes/user');
 
 var app = express();
 
-app.use(cors());
+// Add headers
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', 'http://comrade-api.azurewebsites.net');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
+});
 
 //require('./config/passport')(passport); // pass passport for configuration
+
+var limiter = new RateLimit({
+  windowMs: 15*60*1000, // 15 minutes
+  max: 5, // limit each IP to 100 requests per windowMs
+  delayMs: 0 // disable delaying - full speed until the max limit is reached
+});
+
+app.use(limiter);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'app/views'));
