@@ -11,7 +11,7 @@ this.posting = function(req, res, next) {
             }else if(!data.length){
                 return res.json({status:'400',message: 'Data not found',result:'Failed'})
             }
-            return res.json({status:'200',message:'success',result:data});
+            return res.json({status:'200',message:'success',tes:'hay',result:data});
         });
     });
 
