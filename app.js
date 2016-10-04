@@ -49,13 +49,13 @@ app.use(function (req, res, next) {
 
 //require('./config/passport')(passport); // pass passport for configuration
 
-var limiter = new RateLimit({
+/*var limiter = new RateLimit({
   windowMs: 15*60*1000, // 15 minutes
   max: 5, // limit each IP to 100 requests per windowMs
   delayMs: 0 // disable delaying - full speed until the max limit is reached
 });
 
-app.use(limiter);
+app.use(limiter);*/
 
 // view engine setup
 app.set('views', path.join(__dirname, 'app/views'));
@@ -67,7 +67,6 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
-// uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
