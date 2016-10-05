@@ -124,7 +124,7 @@ this.register = function(req,res,next) {
                       var locals = {
                           email: req.body.email,
                           token: token,
-                          url: 'http://localhost:3000/confirm'
+                          url: 'http://comrade-api.azurewebsites.net/confirm'
                       };
 
                       templates.render('confirm-email.html', locals, function(err, html) {
