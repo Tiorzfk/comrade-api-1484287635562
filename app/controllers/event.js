@@ -6,9 +6,9 @@ function Todo() {
 this.event = function(req, res, next) {
 	db.acquire(function(err,con){
 		if (err) throw err;
-		var sql ="SELECT id_event,admin.nama as pengirim,event.nama,deskripsi,foto,event.status,tgl_event,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status='1' AND event.tipe='public' ORDER BY tgl_posting";
+		var sql ="SELECT id_event,admin.nama as pengirim,event.nama,deskripsi,foto,event.status,tgl_mulai,tgl_berakhir,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status='1' AND event.tipe='public' ORDER BY tgl_posting";
 		if(req.params.tipe=='private'){
-			sql ="SELECT id_event,admin.nama as pengirim,event.nama,deskripsi,foto,event.status,tgl_event,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status='1' ORDER BY tgl_posting";
+			sql ="SELECT id_event,admin.nama as pengirim,event.nama,deskripsi,foto,event.status,tgl_mulai,tgl_berakhir,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status='1' ORDER BY tgl_posting";
 		}
 		var arr = {};
     	con.query(sql, function(err,data){

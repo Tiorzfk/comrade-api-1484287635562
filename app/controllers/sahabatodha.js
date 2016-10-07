@@ -12,7 +12,7 @@ this.allsahabatodha = function(req,res,next) {
     con.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,user.telp,user.tgl_lahir,user.foto,komunitas,about_sahabatodha,IFNULL(AVG(rating.rating),0) as rating FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user LEFT JOIN rating ON rating.id_user=sahabat_odha.id_user where user.status="1" GROUP BY sahabat_odha.id_user',function(err,data){
       con.release();
       if(err)
-				return res.json({status_code:400,message:err.code,result:[]});
+				return res.json({status:400,message:err.code,result:[]});
 
       /*con.query('SELECT SUM(rating.rating) as rating FROM sahabat_odha INNER JOIN rating on rating.id_user=sahabat_odha.id_user GROUP BY sahabat_odha.id_user',function(err,data){
         //console.log(data);
@@ -23,7 +23,7 @@ this.allsahabatodha = function(req,res,next) {
           }
         }*/
 
-        return res.json({status_code:200,message:'success',result:data});
+        return res.json({status:200,message:'success',result:data});
     });
   });
 }
@@ -35,21 +35,21 @@ this.sahabatodha = function(req,res,next) {
 		  con.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,user.telp,user.tgl_lahir,user.foto,komunitas,about_sahabatodha,IFNULL(AVG(rating.rating),0) as rating FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user LEFT JOIN rating ON rating.id_user=sahabat_odha.id_user where user.status="1" AND user.id_user='+req.params.iduser+' GROUP BY sahabat_odha.id_user',function(err,data){
         con.release();
         if(err){
-                return res.json({status_code:400,message:err.code,result:[]});
+                return res.json({status:400,message:err.code,result:[]});
             }else if(!data.length){
-                return res.json({status_code:400,message: 'Data not found',result:'Failed'})
+                return res.json({status:400,message: 'Data not found',result:'Failed'})
             }
-            return res.json({status_code:200,message:'success',result:data});
+            return res.json({status:200,message:'success',result:data});
 		  });
     }else{
       con.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,user.telp,user.tgl_lahir,user.foto,komunitas,about_sahabatodha,IFNULL(AVG(rating.rating),0) as rating FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user LEFT JOIN rating ON rating.id_user=sahabat_odha.id_user where user.status="1" AND user.id_user='+req.params.iduser+' GROUP BY sahabat_odha.id_user',function(err,data){
         con.release();
        if(err){
-                return res.json({status_code:400,message:err.code,result:[]});
+                return res.json({status:400,message:err.code,result:[]});
             }else if(!data.length){
-                return res.json({status_code:400,message: 'Data not found',result:'Failed'})
+                return res.json({status:400,message: 'Data not found',result:'Failed'})
             }
-            return res.json({status_code:200,message:'success',result:data});
+            return res.json({status:200,message:'success',result:data});
       });
     }
 	});
@@ -61,9 +61,9 @@ this.testimoni = function(req,res,next) {
     con.query('SELECT user.nama as pengirim,testimoni,tanggal FROM rating INNER JOIN user on user.id_user=rating.id_pengerate WHERE rating.id_user='+req.params.iduser,function(err,data){
       con.release();
       if(err)
-        return res.json({status_code:400,message:err.code,result:[]});
+        return res.json({status:400,message:err.code,result:[]});
       if(!data.length)
-        return res.json({status_code:400,message: 'Data not found',result:'Failed'})
+        return res.json({status:400,message: 'Data not found',result:'Failed'})
 
       con.query('SELECT avg(rating) as rating FROM rating WHERE rating.id_user='+req.params.iduser,function(err,data2){
         return res.json({status_code:200,message:'success','rating':data2[0].rating,result:data});
@@ -85,7 +85,7 @@ this.editsahabatodha = function(req,res,next) {
         con.release();
         return res.status(200).send({
           result: 'Success',
-          status_code: 200,
+          status: 200,
           message: 'Profile Sahabat Odha has been Updated.'
         });
       });
@@ -105,7 +105,7 @@ this.rate = function(req,res,next){
     if (errors) {
       return res.send({
         result: 'Failed',
-        status_code: 400,
+        status: 400,
         errors: errors
       });
     }
@@ -116,14 +116,14 @@ this.rate = function(req,res,next){
 			if (err) {
     	  return res.json({
     	  	result: 'Failed',
-    	  	status_code: 403,
+    	  	status: 403,
     	  	message: 'Invalid Data',
     	  	errors: err
     	  });
     	}
     		return res.status(201).send({
     	    result: 'Created',
-    	    status_code: 201,
+    	    status: 201,
     			message: 'Rating has been saved.'
     		});
 		});
