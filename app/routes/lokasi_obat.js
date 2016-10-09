@@ -4,8 +4,8 @@ var cek = require('../../config/cektoken');
 
 module.exports = {
   configure: function(app) {
-    app.route('/lokasi_obat').all(cek.cektoken).get(lokasi.lokasi_obat);
+    app.route('/lokasi_obat').get(lokasi.lokasi_obat);
 
-    app.route('/lokasi_obat/:id').all(cek.cektoken).get(lokasi.idlokasi_obat);
+    app.route('/lokasi_obat/:id').get(lokasi.idlokasi_obat);
   }
 };
