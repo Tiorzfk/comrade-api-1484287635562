@@ -40,7 +40,7 @@ this.event = function(req, res, next) {
 this.eventID = function(req, res, next) {
 	db.acquire(function(err,con){
 		if (err) throw err;
-    	con.query('SELECT id_event,admin.nama as pengirim,event.nama,deskripsi,foto,event.status,tgl_event,tgl_posting,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" AND id_event='+req.params.id+' ORDER BY tgl_posting', function(err,data){
+    	con.query('SELECT id_event,admin.nama as pengirim,event.nama,deskripsi,foto,event.status,tgl_mulai,tgl_berakhir,tgl_posting,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" AND id_event='+req.params.id+' ORDER BY tgl_posting', function(err,data){
 					con.release();
 					if(err){
                 return res.json({status:'400',message:err.code,result:[]});
