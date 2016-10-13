@@ -6,6 +6,8 @@ module.exports = {
   configure: function(app) {
     app.route('/user/sahabatodha').all(cek.cektoken).get(sa.allsahabatodha);
 
+    app.route('/user/sahabatodha/user/:iduser').all(cek.cektoken).get(sa.allsahabatodhauser);
+
     app.route('/user/sahabatodha/:iduser').all(cek.cektoken).get(sa.sahabatodha);
 
     app.route('/user/sahabatodha/:iduser/testimoni').all(cek.cektoken).get(sa.testimoni);

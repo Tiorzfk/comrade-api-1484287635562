@@ -10,6 +10,7 @@ this.allsahabatodha = function(req,res,next) {
   db.acquire(function(err,con){
     if (err) throw err;
     con.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,user.telp,user.tgl_lahir,user.foto,komunitas,about_sahabatodha,IFNULL(AVG(rating.rating),0) as rating FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user LEFT JOIN rating ON rating.id_user=sahabat_odha.id_user where user.status="1" GROUP BY sahabat_odha.id_user',function(err,data){
+    //con.query('SELECT user.id_user,email,user.nama,jk as jenis_kelamin,user.telp,user.tgl_lahir,user.foto,komunitas,about_sahabatodha,IFNULL(AVG(rating.rating),0) as rating FROM user INNER JOIN sahabat_odha on sahabat_odha.id_user = user.id_user LEFT JOIN rating ON rating.id_user=sahabat_odha.id_user where user.status="1" GROUP BY sahabat_odha.id_user',function(err,data){
       con.release();
       if(err)
 				return res.json({status:400,message:err.code,result:[]});
@@ -22,6 +23,20 @@ this.allsahabatodha = function(req,res,next) {
             data.result[i].rating = 0;
           }
         }*/
+
+        return res.json({status:200,message:'success',result:data});
+    });
+  });
+}
+
+this.allsahabatodhauser = function(req,res,next) {
+  db.acquire(function(err,con){
+    if (err) throw err;
+    con.query('SELECT u.id_user,u.email,u.nama,u.jk as jenis_kelamin,u.telp,u.tgl_lahir,u.foto,komunitas,about_sahabatodha,IFNULL(r.rating,0) as rating FROM sahabat_odha as so INNER join user as u on u.id_user=so.id_user LEFT JOIN rating as r ON r.id_user=so.id_user where u.status="1" AND so.id_user NOT IN (SELECT id_sahabatodha FROM friends WHERE id_user='+req.params.iduser+')',function(err,data){
+      con.release();
+      if(err)
+				return res.json({status:400,message:err.code,result:[]});
+
 
         return res.json({status:200,message:'success',result:data});
     });
