@@ -35,7 +35,7 @@ this.getfriendsahabatodha = function(req,res,next) {
 };
 
 this.addfriends = function(req,res,next){
-	db.acquire(function(e,con){
+	db.acquire(function(err,con){
 		if (err) throw err;
 		req.checkBody("id_user", "Id User cannot be blank.").notEmpty();
   		req.checkBody("id_sahabatodha", "Id Sahabat Odha cannot be blank.").notEmpty();
