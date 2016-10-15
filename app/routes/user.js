@@ -2,35 +2,6 @@ var user = require('../controllers/user');
 var jwt = require('jsonwebtoken');
 var cektokenemail = require('../../config/cektokenemail');
 
-function token_cek(req, res, next) {
-	var token = req.body.token || req.query.token || req.headers['x-access-token'];
-
-  	// decode token
-  	if (token) {
-
-    	// verifies secret and checks exp
-    	jwt.verify(token, 'comradeapp', function(err, decoded) {
-    	  if (err) {
-    	    return res.json({ success: false, message: 'Failed to authenticate token.' });
-    	  } else {
-    	    // if everything is good, save to request for use in other routes
-    	    req.decoded = decoded;
-    	    next();
-    	  }
-    	});
-
-  	} else {
-
-    	// if there is no token
-    	// return an error
-    	return res.status(403).send({
-    	    success: false,
-    	    message: 'No token provided.'
-    	});
-
-  	}
-}
-
 function isLoggedIn(req, res, next) {
 
     // if user is authenticated in the session, carry on
@@ -110,11 +81,11 @@ module.exports = {
 
     app.route('/confirm/:email').all(cektokenemail.cektoken).get(user.confirmation);
 
-    app.route('/user/profile/:id').all(isLoggedIn,token_cek).get(user.profile);
+    app.route('/user/profile').all(cektokenemail.cektoken).get(user.profile);
 
-    app.route('/user/setting_profile/:id').all(isLoggedIn,token_cek).post(user.setting_profile);
+		app.route('/user/profile/:id').all(cektokenemail.cektoken).get(user.profileID).post(user.setting_profile);
 
-    app.route('/user/change_password/:id').all(isLoggedIn,token_cek).post(user.change_password);
+    app.route('/user/change_password/:id').all(cektokenemail.cektoken).post(user.change_password);
 
     //app.route('/user/sahabat_odha').all(token_cek).get(user.sahabat_odha);
 	}

@@ -15,7 +15,7 @@ this.auth_user = function(req,res,next) {
   	if (errors) {
   	  return res.send({
   	  	result: 'Failed',
-  	  	status_code: 400,
+  	  	status: 400,
   	  	errors: errors
   	  });
   	} else {
@@ -38,7 +38,7 @@ this.auth_user = function(req,res,next) {
                 });
                 return res.json({
                     result: 'Success',
-                    status_code: 200,
+                    status: 200,
                     token: token,
                     id_user: data.id_user,
                     nama: data.nama,
@@ -57,7 +57,7 @@ this.auth_user = function(req,res,next) {
             });
             return res.json({
                     result: 'Success',
-                    status_code: 200,
+                    status: 200,
                     token: token,
                     id_user: data.id_user,
                     nama: data.nama,
@@ -84,7 +84,7 @@ this.register = function(req,res,next) {
   	if (errors) {
   		return res.send({
   	  		result: 'Failed',
-  	  		status_code: 400,
+  	  		status: 400,
   	  		errors: errors
   	  	});
   	} else {
@@ -111,7 +111,7 @@ this.register = function(req,res,next) {
     	    		       if (err) {
     	    		           return res.json({
     	    		           	result: 'Failed',
-    	    		           	status_code: 403,
+    	    		           	status: 403,
     	    		           	message: 'Invalid Data',
     	    		           	errors: err,
 								          data:data
@@ -131,7 +131,7 @@ this.register = function(req,res,next) {
                           if (err) {
                             return res.json({
                               result: 'Failed',
-                              status_code: 403,
+                              status: 403,
                               errors: err,
                             });
                           } else {
@@ -144,14 +144,14 @@ this.register = function(req,res,next) {
                                       if (err) {
                                           return res.json({
                                             result: 'Failed',
-                                            status_code: 403,
+                                            status: 403,
                                             errors: err,
                                           });
                                       } else {
                                           //console.log(responseStatus);
                                           return res.status(201).send({
                                             result: 'Created',
-                                            status_code: 201,
+                                            status: 201,
                                             message: 'Registration is successful, check your email to activate your account.'
                                           });
                                       }
@@ -175,13 +175,13 @@ this.confirmation = function(req,res,next) {
         return res.json(err);
 
       if(!rows.length)
-        return res.json({status_code:400,result:'Failed',message:'email tidak ditemukan.'});
+        return res.json({status:400,result:'Failed',message:'email tidak ditemukan.'});
 
       if(rows[0].status = '1')
-        return res.json({status_code:400,result:'Failed',message:'email sudah diverifikasi.'});
+        return res.json({status:400,result:'Failed',message:'email sudah diverifikasi.'});
 
       con.query("UPDATE user SET ? WHERE email= '"+req.params.email+"'",{status:'1'}, function(err,data){
-        return res.json({status_code:200,result:'Success',message:'Email Berhasil diverifikasi.'})
+        return res.json({status:200,result:'Success',message:'Email Berhasil diverifikasi.'})
       });
     });
   });
@@ -199,7 +199,7 @@ this.registerbak = function(req,res,next) {
     if (errors) {
       return res.send({
           result: 'Failed',
-          status_code: 400,
+          status: 400,
           errors: errors
         });
     } else {
@@ -226,7 +226,7 @@ this.registerbak = function(req,res,next) {
                   if (err) {
                       return res.json({
                         result: 'Failed',
-                        status_code: 403,
+                        status: 403,
                         message: 'Invalid Data',
                         errors: err,
                         data:data
@@ -242,21 +242,21 @@ this.registerbak = function(req,res,next) {
                       if (err) {
                           return res.json({
                             result: 'Failed',
-                            status_code: 403,
+                            status: 403,
                             message: 'Invalid Data',
                             errors: err
                           });
                       }
                       return res.status(201).send({
                         result: 'Created',
-                        status_code: 201,
+                        status: 201,
                         message: 'Registration is successful, check your email to activate your account.'
                       });
                     });
                   }else{
                       return res.status(201).send({
                         result: 'Created',
-                        status_code: 201,
+                        status: 201,
                         message: 'Registration is successful, check your email to activate your account.'
                       });
                   }
@@ -269,17 +269,34 @@ this.registerbak = function(req,res,next) {
 
 this.profile = function(req,res,next){
 	db.acquire(function(err,con){
-		con.query('SELECT id_user,nama,email,password,jk as jenis_kelamin, tgl_lahir,telp as telepon, jenis_user,biodata FROM user WHERE status="1"', function(err,data){
+		con.query('SELECT id_user,nama,email,jk as jenis_kelamin, tgl_lahir,telp as telepon, jenis_user FROM user WHERE status="1"', function(err,data){
 			con.release();
 			if(err){
 				return res.json(err)
 			}else if(!data.length){
 				return res.json({
-					result: 'Failed',
+					result: 'failed',
 					message: 'Data not found'
 				});
 			}
-			return res.json(data);
+			return res.json({status:'200',message:'success',result:data});
+		});
+	});
+}
+
+this.profileID = function(req,res,next){
+	db.acquire(function(err,con){
+		con.query('SELECT id_user,nama,email,jk as jenis_kelamin, tgl_lahir,telp as telepon, jenis_user FROM user WHERE status="1" AND id_user='+req.params.id, function(err,data){
+			con.release();
+			if(err){
+				return res.json(err)
+			}else if(!data.length){
+				return res.json({
+					result: 'failed',
+					message: 'Data not found'
+				});
+			}
+			return res.json({status:'200',message:'success',result:data});
 		});
 	});
 }
@@ -306,29 +323,27 @@ this.setting_profile = function(req,res,next){
           },storage : storage}).single('foto');
         upload(req,res,function(err) {
           if(err)
-            return res.json({result:'Failed', message: err});
+            return res.json({status:400, message: err});
 
-            req.checkBody("email", "Enter a valid email address.").isEmail();
+            /*req.checkBody("email", "Enter a valid email address.").isEmail();
             req.checkBody("telepon", "Telepon must be integer.").isInt();
             var errors = req.validationErrors();
               if (errors) {
                 if(req.file){
-                  fs.unlink('public/pic_sahabatodha/'+req.file.filename);
+                  fs.unlink('public/pic_user/'+req.file.filename);
                 }
                 return res.send({
-                  result: 'Failed',
-                  status_code: 400,
-                  errors: errors
+                  status: 400,
+                  message: errors
                 });
-              }
+              }*/
 
   		      var data = [{
   		      	email : req.body.email,
   		      	nama : req.body.nama,
               jk : req.body.jenis_kelamin,
               telp : req.body.telepon,
-              tgl_lahir : req.body.tgl_lahir,
-              jenis_user : req.body.jenis_user
+              tgl_lahir : req.body.tgl_lahir
   		      }];
 
             if(req.file){
@@ -343,8 +358,7 @@ this.setting_profile = function(req,res,next){
                     fs.unlink('public/pic_sahabatodha/'+req.file.filename);
                   }
             	    return res.json({
-            	    	result: 'Failed',
-            	    	status_code: 403,
+            	    	status: 403,
             	    	message: 'Invalid Data',
             	    	errors: err
             	    });
@@ -353,13 +367,12 @@ this.setting_profile = function(req,res,next){
                     fs.unlink('public/pic_sahabatodha/'+req.file.filename);
                   }
             	    return res.json({
-		        				result: 'Failed',
+										status : 404,
 		        				message: 'Data not found'
 		        			});
             	 }
-            	 return res.status(201).send({
-            	  	result: 'Success',
-            	  	status_code: 200,
+            	 return res.json({
+            	  	status: 200,
             	    message: 'Data has been changed.'
             	 });
 		        });
@@ -376,14 +389,14 @@ this.change_password = function(req,res,next){
 				return res.json(err)
 			}else if(!data.length){
 				return res.json({
-					result: 'Failed',
+					status: 404,
 					message: 'Data not found'
 				});
 			}
 			data.forEach(function(data){
 				if(req.body.cur_password != data.password){
 					return res.json({
-						result: 'Failed',
+						status: 400,
 						message: 'Wrong current password'
 					});
 				}else{
@@ -392,8 +405,7 @@ this.change_password = function(req,res,next){
 					}
 					con.query('UPDATE user SET ? WHERE id_user='+req.params.id,data,function(err,data){
 						return res.json({
-							result: 'OK',
-							status_code: 200,
+							status: 200,
 							message: 'Password has been changed'
 						});
 					});
