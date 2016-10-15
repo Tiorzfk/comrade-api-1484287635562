@@ -89,6 +89,14 @@ this.testimoni = function(req,res,next) {
 }
 
 this.editsahabatodha = function(req,res,next) {
+    var dataUser = {
+      email : req.body.email,
+      nama : req.body.nama,
+      jk : req.body.jenis_kelamin,
+      telp : req.body.telepon,
+      tgl_lahir : req.body.tgl_lahir
+    }
+
     var dataSahabatOdha = {
       komunitas: req.body.komunitas,
       about_sahabatodha: req.body.about_sahabatodha
@@ -96,12 +104,20 @@ this.editsahabatodha = function(req,res,next) {
 
 		db.acquire(function(err,con){
       if (err) throw err;
-      con.query('UPDATE sahabat_odha SET ? WHERE id_user='+req.params.iduser,dataSahabatOdha,function(err,data){
-        con.release();
-        return res.status(200).send({
-          result: 'Success',
-          status: 200,
-          message: 'Profile Sahabat Odha has been Updated.'
+      con.query('UPDATE user SET ? WHERE id_user='+req.params.iduser,dataUser,function(err,data){
+        if(!data.affectedRows){
+          return res.json({
+            status : 404,
+            message: 'User not found'
+          });
+        }
+        con.query('UPDATE sahabat_odha SET ? WHERE id_user='+req.params.iduser,dataSahabatOdha,function(err,data){
+          con.release();
+          return res.status(200).send({
+            result: 'Success',
+            status: 200,
+            message: 'Profile Sahabat Odha has been Updated.'
+          });
         });
       });
 		});
