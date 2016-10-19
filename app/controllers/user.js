@@ -385,32 +385,34 @@ this.change_password = function(req,res,next){
 		if (err) throw err;
 		con.query('SELECT * FROM user WHERE id_user='+req.params.id, function(err,data){
 			con.release();
-			if(err){
+			if(err)
 				return res.json(err)
-			}else if(!data.length){
+
+			if(!data.length){
 				return res.json({
 					status: 404,
-					message: 'Data not found'
+					message: 'User not found'
 				});
 			}
-			data.forEach(function(data){
-				if(req.body.cur_password != data.password){
-					return res.json({
-						status: 400,
-						message: 'Wrong current password'
-					});
-				}else{
-					var data = {
-						password : req.body.new_password
-					}
-					con.query('UPDATE user SET ? WHERE id_user='+req.params.id,data,function(err,data){
-						return res.json({
-							status: 200,
-							message: 'Password has been changed'
-						});
-					});
+
+			var cek = bcrypt.compareSync(req.body.cur_password,data[0].password);
+			if(!cek){
+				return res.json({
+					status: 400,
+					message: 'Wrong current password'
+				});
+			}else{
+				var data = {
+					password : bcrypt.hashSync(req.body.new_password, bcrypt.genSaltSync(8), null),
 				}
-			});
+				con.query('UPDATE user SET ? WHERE id_user='+req.params.id,data,function(err,data){
+					return res.json({
+						status: 200,
+						message: 'Password has been changed'
+					});
+				});
+			}
+
 		});
 	});
 }
