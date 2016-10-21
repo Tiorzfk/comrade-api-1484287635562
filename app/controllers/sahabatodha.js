@@ -88,6 +88,30 @@ this.testimoni = function(req,res,next) {
   });
 }
 
+this.recommend = function(req,res,next) {
+    var data = {
+      jenis_user : 'Odha',
+    }
+		db.acquire(function(err,con){
+      if (err) throw err;
+      con.query('UPDATE user SET ? WHERE id_user='+req.params.id,data,function(err,data){
+        if(!data.affectedRows){
+          return res.json({
+            status : 404,
+            message: 'User not found'
+          });
+        }
+
+        return res.status(200).send({
+          result: 'Success',
+          status: 200,
+          message: 'User berhasil di rekomendasikan menjadi Odha.'
+        });
+
+      });
+		});
+}
+
 this.editsahabatodha = function(req,res,next) {
     var dataUser = {
       email : req.body.email,
