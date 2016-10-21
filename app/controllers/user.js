@@ -286,7 +286,7 @@ this.profile = function(req,res,next){
 
 this.profileID = function(req,res,next){
 	db.acquire(function(err,con){
-		con.query('SELECT id_user,nama,email,jk as jenis_kelamin, tgl_lahir,telp as telepon, jenis_user FROM user WHERE status="1" AND id_user='+req.params.id, function(err,data){
+		con.query('SELECT id_user,nama,email,jk as jenis_kelamin, tgl_lahir,telp as telepon, jenis_user FROM user WHERE status="1" AND jenis_user<>"Sahabat Odha" AND id_user='+req.params.id, function(err,data){
 			con.release();
 			if(err){
 				return res.json(err)

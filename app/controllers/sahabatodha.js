@@ -90,17 +90,15 @@ this.testimoni = function(req,res,next) {
 
 this.recommend = function(req,res,next) {
     var data = {
-      jenis_user : 'Odha',
+      id_sahabatodha : req.body.id_sahabatodha,
+      id_user : req.body.id_user,
+      pesan : req.body.pesan
     }
 		db.acquire(function(err,con){
       if (err) throw err;
-      con.query('UPDATE user SET ? WHERE id_user='+req.body.id_user,data,function(err,data){
-        if(!data.affectedRows){
-          return res.json({
-            status : 404,
-            message: 'User not found'
-          });
-        }
+      con.query('INSERT INTO recommend SET ?',data,function(err,data){
+        if(err)
+          return res.json(err)
 
         return res.status(200).send({
           result: 'Success',
