@@ -1,6 +1,7 @@
 var user = require('../controllers/user');
 var jwt = require('jsonwebtoken');
 var cektokenemail = require('../../config/cektokenemail');
+var cektoken = require('../../config/cektoken');
 
 function isLoggedIn(req, res, next) {
 
@@ -81,11 +82,11 @@ module.exports = {
 
     app.route('/confirm/:email').all(cektokenemail.cektoken).get(user.confirmation);
 
-    app.route('/user/profile').all(cektokenemail.cektoken).get(user.profile);
+    app.route('/user/profile').all(cektoken.cektoken).get(user.profile);
 
-		app.route('/user/profile/:id').all(cektokenemail.cektoken).get(user.profileID).post(user.setting_profile);
+		app.route('/user/profile/:id').all(cektoken.cektoken).get(user.profileID).post(user.setting_profile);
 
-    app.route('/user/change_password/:id').all(cektokenemail.cektoken).post(user.change_password);
+    app.route('/user/change_password/:id').all(cektoken.cektoken).post(user.change_password);
 
     //app.route('/user/sahabat_odha').all(token_cek).get(user.sahabat_odha);
 	}

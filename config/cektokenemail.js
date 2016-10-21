@@ -6,7 +6,7 @@ module.exports.cektoken=function(req, res, next) {
   	if (token) {
 
     	// verifies secret and checks exp
-    	jwt.verify(token, 'comradeapp', function(err, decoded) {
+    	jwt.verify(token, 'emailconfirmationcomrade', function(err, decoded) {
     	  if (err) {
     	    return res.json({ status: 503, message: 'Failed to authenticate token.',result:[] });
     	  } else {
