@@ -94,7 +94,7 @@ this.recommend = function(req,res,next) {
     }
 		db.acquire(function(err,con){
       if (err) throw err;
-      con.query('UPDATE user SET ? WHERE id_user='+req.params.id,data,function(err,data){
+      con.query('UPDATE user SET ? WHERE id_user='+req.body.id_user,data,function(err,data){
         if(!data.affectedRows){
           return res.json({
             status : 404,
