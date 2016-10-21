@@ -51,7 +51,7 @@ var prediksi = function() {
 	});
 }
 setInterval(ambiltweet,10000);
-setInterval(prediksi,12000);
+//setInterval(prediksi,12000);
 function Todo() {
 
 this.sentimen = function(req,res,next){
