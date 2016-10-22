@@ -32,7 +32,7 @@ this.allsahabatodha = function(req,res,next) {
 this.allsahabatodhauser = function(req,res,next) {
   db.acquire(function(err,con){
     if (err) throw err;
-    con.query('SELECT u.id_user,u.email,u.nama,u.jk as jenis_kelamin,u.telp,u.tgl_lahir,u.foto,komunitas,about_sahabatodha,IFNULL(r.rating,0) as rating FROM sahabat_odha as so INNER join user as u on u.id_user=so.id_user LEFT JOIN rating as r ON r.id_user=so.id_user where u.status="1" AND so.id_user NOT IN (SELECT id_sahabatodha FROM friends WHERE id_user='+req.params.iduser+')',function(err,data){
+    con.query('SELECT u.id_user,u.email,u.nama,u.jk as jenis_kelamin,u.telp,u.tgl_lahir,u.foto,komunitas,about_sahabatodha,IFNULL(r.rating,0) as rating FROM sahabat_odha as so INNER join user as u on u.id_user=so.id_user LEFT JOIN rating as r ON r.id_user=so.id_user where u.status="1" NOT IN (SELECT id_sahabatodha FROM friends WHERE id_user='+req.params.iduser+')',function(err,data){
       con.release();
       if(err)
 				return res.json({status:400,message:err.code,result:[]});
