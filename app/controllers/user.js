@@ -355,7 +355,7 @@ this.setting_profile = function(req,res,next){
 								con.release();
 		        		if (err) {
                   if(req.file){
-                    fs.unlink('public/pic_sahabatodha/'+req.file.filename);
+                    fs.unlink('public/pic_user/'+req.file.filename);
                   }
             	    return res.json({
             	    	status: 403,
@@ -364,7 +364,7 @@ this.setting_profile = function(req,res,next){
             	    });
             	  }else if(!data.affectedRows){
                   if(req.file){
-                    fs.unlink('public/pic_sahabatodha/'+req.file.filename);
+                    fs.unlink('public/pic_user/'+req.file.filename);
                   }
             	    return res.json({
 										status : 404,
