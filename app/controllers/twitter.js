@@ -10,7 +10,7 @@ var client = new Twitter({
 });
 
 var ambiltweet = function(){
-	client.get('search/tweets',{q:'HIV/AIDS',lang:'id'},function(error,tweets,response){
+	client.get('search/tweets',{q:'hiv aids',lang:'id'},function(error,tweets,response){
 		//var data = JSON.parse(tweets);
 		//console.log(data.);
     var status = tweets.statuses;
@@ -50,8 +50,8 @@ var prediksi = function() {
 	  }
 	});
 }
-//setInterval(ambiltweet,10000);
-//setInterval(prediksi,12000);
+setInterval(ambiltweet,15000);
+setInterval(prediksi,17000);
 function Todo() {
 
 this.sentimen = function(req,res,next){
