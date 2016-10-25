@@ -32,7 +32,7 @@ this.allsahabatodha = function(req,res,next) {
 this.allsahabatodhauser = function(req,res,next) {
   db.acquire(function(err,con){
     if (err) throw err;
-    con.query('SELECT u.id_user,u.email,u.nama,u.jk as jenis_kelamin,u.telp,u.tgl_lahir,u.foto,komunitas,about_sahabatodha,IFNULL(r.rating,0) as rating FROM sahabat_odha as so INNER join user as u on u.id_user=so.id_user LEFT JOIN rating as r ON r.id_user=so.id_user where u.status="1" NOT IN (SELECT id_sahabatodha FROM friends WHERE id_user='+req.params.iduser+')',function(err,data){
+    con.query('SELECT u.id_user,u.email,u.nama,u.jk as jenis_kelamin,u.telp,u.tgl_lahir,u.foto,komunitas,about_sahabatodha,IFNULL(AVG(r.rating),0) as rating FROM sahabat_odha as so INNER join user as u on u.id_user=so.id_user LEFT JOIN rating as r ON r.id_user=so.id_user where u.status="1" AND so.id_user NOT IN (SELECT id_sahabatodha FROM friends WHERE id_user='+req.params.iduser+') GROUP BY so.id_user',function(err,data){
       con.release();
       if(err)
 				return res.json({status:400,message:err.code,result:[]});
@@ -111,38 +111,69 @@ this.recommend = function(req,res,next) {
 }
 
 this.editsahabatodha = function(req,res,next) {
-    var dataUser = {
-      email : req.body.email,
-      nama : req.body.nama,
-      jk : req.body.jenis_kelamin,
-      telp : req.body.telepon,
-      tgl_lahir : req.body.tgl_lahir
-    }
+  var storage = multer.diskStorage({
+      destination: function (req, file, callback) {
+          callback(null, 'public/pic_sahabatodha');
+      },
+      filename: function (req, file, callback) {
+          callback(null, Date.now() + '-' + file.originalname);
+      }
+  });
+  var upload = multer({
+      fileFilter: function (req,file,callback) {
+        var filetypes = /jpeg|jpg|png/;
+        var mimetype = filetypes.test(file.mimetype);
+        var extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
-    var dataSahabatOdha = {
-      komunitas: req.body.komunitas,
-      about_sahabatodha: req.body.about_sahabatodha
-    };
-
-		db.acquire(function(err,con){
-      if (err) throw err;
-      con.query('UPDATE user SET ? WHERE id_user='+req.params.iduser,dataUser,function(err,data){
-        if(!data.affectedRows){
-          return res.json({
-            status : 404,
-            message: 'User not found'
-          });
+        if (mimetype && extname) {
+          return callback(null, true);
         }
-        con.query('UPDATE sahabat_odha SET ? WHERE id_user='+req.params.iduser,dataSahabatOdha,function(err,data){
+        callback("Error: File upload only supports the following filetypes - " + filetypes);
+      },storage : storage}).single('foto');
+    upload(req,res,function(err) {
+      if(err)
+        return res.json({status:400, message: err});
+
+      var dataUser = [{
+        email : req.body.email,
+        nama : req.body.nama,
+        jk : req.body.jenis_kelamin,
+        telp : req.body.telepon,
+        tgl_lahir : req.body.tgl_lahir
+      }];
+
+      if(req.file){
+        dataUser[0].foto = req.file.filename;
+      }
+
+      var dataSahabatOdha = {
+        komunitas: req.body.komunitas,
+        about_sahabatodha: req.body.about_sahabatodha
+      };
+
+  		db.acquire(function(err,con){
+        if (err) throw err;
+        con.query('UPDATE user SET ? WHERE id_user='+req.params.iduser,dataUser,function(err,data){
           con.release();
-          return res.status(200).send({
-            result: 'Success',
-            status: 200,
-            message: 'Profile Sahabat Odha has been Updated.'
+          /*if(!data.affectedRows){
+            if(req.file){
+              fs.unlink('public/pic_sahabatodha/'+req.file.filename);
+            }
+            return res.json({
+              status : 404,
+              message: 'User not found'
+            });
+          }*/
+          con.query('UPDATE sahabat_odha SET ? WHERE id_user='+req.params.iduser,dataSahabatOdha,function(err,data){
+            return res.status(200).send({
+              result: 'Success',
+              status: 200,
+              message: 'Profile Sahabat Odha has been Updated.'
+            });
           });
         });
-      });
-		});
+  		});
+    });
 }
 
 this.rate = function(req,res,next){
