@@ -24,9 +24,10 @@ var ambiltweet = function(){
                  id : item.id_str,
                  screen_name:item.user.screen_name,
                  text :item.text,
-                 profile_image_url : item.user.profile_image_url,
-				 status:'baru',
-				 status_token:'0'
+                 profile_image_url  : item.user.profile_image_url,
+                 profile_link_color : item.user.profile_link_color,
+        				 status:'baru',
+        				 status_token:'0'
                 }
                 console.log(data);
                 con.query("insert into tweet_support set ?",data,function(err){
@@ -48,8 +49,8 @@ var prediksi = function() {
 	  }
 	});
 }
-//setInterval(ambiltweet,60000);
-//setInterval(prediksi,62000);
+setInterval(ambiltweet,60000);
+setInterval(prediksi,62000);
 function Todo() {
 
 this.sentimen = function(req,res,next){
