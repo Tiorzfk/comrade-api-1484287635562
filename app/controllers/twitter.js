@@ -11,8 +11,6 @@ var client = new Twitter({
 
 var ambiltweet = function(){
 	client.get('search/tweets',{q:'hiv aids',lang:'id'},function(error,tweets,response){
-		var data = JSON.parse(tweets);
-		console.log(data.);
     var status = tweets.statuses;
 	db.acquire(function(err,con){
     status.forEach(function(item){
