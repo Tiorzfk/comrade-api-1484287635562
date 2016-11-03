@@ -11,24 +11,23 @@ var client = new Twitter({
 
 var ambiltweet = function(){
 	client.get('search/tweets',{q:'hiv aids',lang:'id'},function(error,tweets,response){
-		//var data = JSON.parse(tweets);
-		//console.log(data.);
     var status = tweets.statuses;
 	db.acquire(function(err,con){
     status.forEach(function(item){
         if(err) throw err;
-        con.query("select * from tweet_support where id=?",item.id,function(err,rows){
+        con.query("select * from tweet_support where id=?",item.id_str,function(err,rows){
           if(err)
             throw err;
             if(rows.length == 0)
             {
                 var data = {
-                 id : item.id,
+                 id : item.id_str,
                  screen_name:item.user.screen_name,
                  text :item.text,
-                 profile_image_url : item.user.profile_image_url,
-				 status:'baru',
-				 status_token:'0'
+                 profile_image_url  : item.user.profile_image_url,
+                 profile_link_color : item.user.profile_link_color,
+        				 status:'baru',
+        				 status_token:'0'
                 }
                 console.log(data);
                 con.query("insert into tweet_support set ?",data,function(err){
@@ -50,8 +49,8 @@ var prediksi = function() {
 	  }
 	});
 }
-//setInterval(ambiltweet,15000);
-//setInterval(prediksi,17000);
+setInterval(ambiltweet,60000);
+setInterval(prediksi,62000);
 function Todo() {
 
 this.sentimen = function(req,res,next){
@@ -66,5 +65,14 @@ this.sentimen = function(req,res,next){
     });
   });
 };
+
+this.ambiltweet = function(req,res) {
+  client.get('search/tweets',{q:'hiv aids',lang:'id'},function(error,tweets,response){
+
+    res.send(tweets.statuses[0]);
+
+});
+};
+
 }
 module.exports = new Todo();
