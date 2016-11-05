@@ -6,17 +6,21 @@ function Todo() {
 this.event = function(req, res, next) {
 	db.acquire(function(err,con){
 		if (err) throw err;
-		var sql ="SELECT id_event,admin.nama as pengirim,event.nama,event.tempat,deskripsi,foto,event.status,tgl_posting,tgl_mulai,tgl_berakhir,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status='1' AND event.tipe='public' ORDER BY tgl_posting";
+		var limit = 8;
+		var page = req.params.page;
+		var offset = (page - 1)  * limit;
+
+		var sql ='SELECT id_event,admin.nama as pengirim,event.nama,event.tempat,deskripsi,foto,event.status,tgl_posting,tgl_mulai,tgl_berakhir,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" AND event.tipe="public" ORDER BY tgl_posting LIMIT '+limit+' OFFSET '+offset;
 		if(req.params.tipe=='private'){
-			sql ="SELECT id_event,admin.nama as pengirim,event.nama,event.tempat,deskripsi,foto,event.status,tgl_posting,tgl_mulai,tgl_berakhir,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status='1' ORDER BY tgl_posting";
+			sql ='SELECT id_event,admin.nama as pengirim,event.nama,event.tempat,deskripsi,foto,event.status,tgl_posting,tgl_mulai,tgl_berakhir,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" ORDER BY tgl_posting LIMIT '+limit+' OFFSET '+offset;
 		}
 		var arr = {};
     	con.query(sql, function(err,data){
 				con.release();
 					if(err)
-               	return res.json({status:'400',message:err.code,result:[]});
+               	return res.json({status:400,message:err.code,result:[]});
             else if(!data.length)
-                return res.json({status:'400',message: 'Data not found',result:'Failed'})
+                return res.json({status:400,message: 'Data not found',result:[]})
 			else{
 				/*
 				arr = data;
@@ -43,11 +47,11 @@ this.eventID = function(req, res, next) {
     	con.query('SELECT id_event,admin.nama as pengirim,event.nama,event.tempat,deskripsi,foto,event.status,tgl_mulai,tgl_berakhir,tgl_posting,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" AND id_event='+req.params.id+' ORDER BY tgl_posting', function(err,data){
 					con.release();
 					if(err){
-                return res.json({status:'400',message:err.code,result:[]});
+                return res.json({status:400,message:err.code,result:[]});
             }else if(!data.length){
-                return res.json({status:'400',message: 'Data not found',result:'Failed'})
+                return res.json({status:400,message: 'Data not found',result:[]})
             }
-            return res.json({status:'200',message:'success',result:data});
+            return res.json({status:200,message:'success',result:data});
     	});
     });
 };
