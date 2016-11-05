@@ -119,7 +119,7 @@ this.register = function(req,res,next) {
                     return res.json(err);
 
                  if (rows.length)
-                    return res.json({status:'400',result:'Failed',message:'That email is already taken.'});
+                    return res.json({status:400,result:'Failed',message:'That email is already taken.'});
 
     	    		    con.query('INSERT INTO user SET ? ',data,function(err,result){
     	    		       //error simpan ke database
