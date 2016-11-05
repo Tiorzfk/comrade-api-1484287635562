@@ -37,6 +37,7 @@ this.auth_user = function(req,res,next) {
       	if(!data.length){
 					return res.json({ result: 'Failed', message: 'Authentication failed. Email not found.' });
 				}else if(data){
+          console.log(data);
 					data.forEach(function(data){
             if(req.body.password){
               if(data.password){
@@ -64,22 +65,22 @@ this.auth_user = function(req,res,next) {
               }
               return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
             }
-            var token = jwt.sign(data, 'comradeapp', {
-              //expiresIn: "24h" // expires in 24 hours
-            });
-            return res.json({
-                    result: 'Success',
-                    status: 200,
-                    token: token,
-                    id_user: data.id_user,
-                    nama: data.nama,
-                    email: data.email,
-                    password: data.password,
-                    jenis_kelamin: data.jk,
-                    telepon: data.telp,
-                    jenis_user:data.jenis_user,
-                    foto: data.foto
-                  });
+            // var token = jwt.sign(data, 'comradeapp', {
+            //   //expiresIn: "24h" // expires in 24 hours
+            // });
+            // return res.json({
+            //         result: 'Success',
+            //         status: 200,
+            //         token: token,
+            //         id_user: data.id_user,
+            //         nama: data.nama,
+            //         email: data.email,
+            //         password: data.password,
+            //         jenis_kelamin: data.jk,
+            //         telepon: data.telp,
+            //         jenis_user:data.jenis_user,
+            //         foto: data.foto
+            //       });
 					});
 				}
 			});
@@ -325,16 +326,17 @@ this.setting_profile = function(req,res,next){
           }
       });
       var upload = multer({
-          fileFilter: function (req,file,callback) {
-            var filetypes = /jpeg|jpg|png/;
-            var mimetype = filetypes.test(file.mimetype);
-            var extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-
-            if (mimetype && extname) {
-              return callback(null, true);
-            }
-            callback("Error: File upload only supports the following filetypes - " + filetypes);
-          },storage : storage}).single('foto');
+          // fileFilter: function (req,file,callback) {
+          //   //var filetypes = /jpeg|jpg|png/;
+          //   var mimetype = filetypes.test(file.mimetype);
+          //   var extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+          //
+          //   if (mimetype && extname) {
+          //     return callback(null, true);
+          //   }
+          //   //callback("Error: File upload only supports the following filetypes - " + filetypes);
+          // },
+          storage : storage}).single('foto');
         upload(req,res,function(err) {
           if(err)
             return res.json({status:400, message: err});
