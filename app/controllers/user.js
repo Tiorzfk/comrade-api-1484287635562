@@ -65,22 +65,22 @@ this.auth_user = function(req,res,next) {
               }
               return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
             }
-            // var token = jwt.sign(data, 'comradeapp', {
-            //   //expiresIn: "24h" // expires in 24 hours
-            // });
-            // return res.json({
-            //         result: 'Success',
-            //         status: 200,
-            //         token: token,
-            //         id_user: data.id_user,
-            //         nama: data.nama,
-            //         email: data.email,
-            //         password: data.password,
-            //         jenis_kelamin: data.jk,
-            //         telepon: data.telp,
-            //         jenis_user:data.jenis_user,
-            //         foto: data.foto
-            //       });
+            var token = jwt.sign(data, 'comradeapp', {
+              //expiresIn: "24h" // expires in 24 hours
+            });
+            return res.json({
+                    result: 'Success',
+                    status: 200,
+                    token: token,
+                    id_user: data.id_user,
+                    nama: data.nama,
+                    email: data.email,
+                    password: data.password,
+                    jenis_kelamin: data.jk,
+                    telepon: data.telp,
+                    jenis_user:data.jenis_user,
+                    foto: data.foto
+                  });
 					});
 				}
 			});
