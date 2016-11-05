@@ -26,6 +26,15 @@ function Connection() {
     database : 'acsm_960a6532c696724'
   };
 
+  // var konek = {
+  //   connectionLimit: 10,
+  //   host     : 'localhost',
+  //   user     : 'root',
+  //   password : '',
+  //   port 	: 3306,
+  //   database : 'comrade'
+  // };
+
   this.init = function() {
     this.pool = mysql.createPool(konek);
   }

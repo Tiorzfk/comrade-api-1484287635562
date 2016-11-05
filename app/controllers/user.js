@@ -4,8 +4,18 @@ var bcrypt = require('bcrypt-nodejs');
 var multer  = require('multer');
 var transport = require('../../config/mail').transport;
 var EmailTemplates = require('swig-email-templates');
+var AES = require('./AES');
 const path = require('path');
 const fs = require('fs');
+
+function randomkey()
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for( var i=0; i < 10; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
+}
 
 function Todo() {
 
@@ -21,11 +31,13 @@ this.auth_user = function(req,res,next) {
   	} else {
   		db.acquire(function(err,con){
 				if (err) throw err;
-			con.query('SELECT * FROM user WHERE email="'+req.body.email+'"', function(err,data){
+				var email = req.body.email;
+			con.query('SELECT * FROM user WHERE email="'+AES.encrypt(email,'comrade@codelabs')+'"', function(err,data){
 				con.release();
       	if(!data.length){
 					return res.json({ result: 'Failed', message: 'Authentication failed. Email not found.' });
 				}else if(data){
+          console.log(data);
 					data.forEach(function(data){
             if(req.body.password){
               if(data.password){
@@ -47,7 +59,8 @@ this.auth_user = function(req,res,next) {
                     jenis_kelamin: data.jk,
                     telepon: data.telp,
                     jenis_user:data.jenis_user,
-                    foto: data.foto
+                    foto: data.foto,
+										private_key:data.private_key
                   });
               }
               return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
@@ -73,13 +86,13 @@ this.auth_user = function(req,res,next) {
 			});
 		});
   	}
-
 };
 
 this.register = function(req,res,next) {
 	req.checkBody("email", "Enter a valid email address.").isEmail();
 	req.checkBody("nama", "Nama cannot be blank.").notEmpty();
 	req.checkBody("password", "Password cannot be blank.").notEmpty();
+
 	var errors = req.validationErrors();
   	if (errors) {
   		return res.send({
@@ -88,17 +101,19 @@ this.register = function(req,res,next) {
   	  		errors: errors
   	  	});
   	} else {
+			var private_key = randomkey();
   		var data = {
-    	    nama: req.body.nama,
-    	    email: req.body.email,
+    	    nama: AES.encrypt(req.body.nama.toString(),private_key),
+    	    email: AES.encrypt(req.body.email.toString(),'comrade@codelabs'),
     	    password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8), null),
     	    jenis_user: 'User',
           status  : '0',
-          foto : 'default.png'
+          foto : 'default.png',
+					private_key:private_key
     	}
 		db.acquire(function(err,con){
 			if (err) throw err;
-    	    con.query("select * from user where email = '"+req.body.email+"'",function(err,rows){
+    	    con.query("select * from user where email = '"+AES.encrypt(req.body.email,"comrade@codelabs")+"'",function(err,rows){
 						con.release();
                 if (err)
                     return res.json(err);
@@ -169,7 +184,7 @@ this.register = function(req,res,next) {
 
 this.confirmation = function(req,res,next) {
   db.acquire(function(err,con){
-    con.query("select * from user where email = '"+req.params.email+"'",function(err,rows){
+    con.query("select * from user where email = '"+AES.encrypt(req.params.email,'comrade@codelabs')+"'",function(err,rows){
 			con.release();
       if(err)
         return res.json(err);
@@ -180,7 +195,7 @@ this.confirmation = function(req,res,next) {
       if(rows[0].status = '1')
         return res.json({status:400,result:'Failed',message:'email sudah diverifikasi.'});
 
-      con.query("UPDATE user SET ? WHERE email= '"+req.params.email+"'",{status:'1'}, function(err,data){
+      con.query("UPDATE user SET ? WHERE email= '"+AES.encrypt(req.params.email,'comrade@codelabs')+"'",{status:'1'}, function(err,data){
         return res.json({status:200,result:'Success',message:'Email Berhasil diverifikasi.'})
       });
     });
@@ -311,16 +326,17 @@ this.setting_profile = function(req,res,next){
           }
       });
       var upload = multer({
-          fileFilter: function (req,file,callback) {
-            var filetypes = /jpeg|jpg|png/;
-            var mimetype = filetypes.test(file.mimetype);
-            var extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-
-            if (mimetype && extname) {
-              return callback(null, true);
-            }
-            callback("Error: File upload only supports the following filetypes - " + filetypes);
-          },storage : storage}).single('foto');
+          // fileFilter: function (req,file,callback) {
+          //   //var filetypes = /jpeg|jpg|png/;
+          //   var mimetype = filetypes.test(file.mimetype);
+          //   var extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+          //
+          //   if (mimetype && extname) {
+          //     return callback(null, true);
+          //   }
+          //   //callback("Error: File upload only supports the following filetypes - " + filetypes);
+          // },
+          storage : storage}).single('foto');
         upload(req,res,function(err) {
           if(err)
             return res.json({status:400, message: err});
@@ -337,13 +353,13 @@ this.setting_profile = function(req,res,next){
                   message: errors
                 });
               }*/
-
+						var key = req.body.private_key;
   		      var data = [{
-  		      	email : req.body.email,
-  		      	nama : req.body.nama,
+  		      	email : AES.encrypt(req.body.email,'comrade@codelabs'),
+  		      	nama : AES.encrypt(req.body.nama,key),
               jk : req.body.jenis_kelamin,
-              telp : req.body.telepon,
-              tgl_lahir : req.body.tgl_lahir
+              telp : AES.encrypt(req.body.telepon,key),
+              tgl_lahir : AES.encrypt(req.body.tgl_lahir,key)
   		      }];
 
             if(req.file){
