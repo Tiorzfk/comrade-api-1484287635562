@@ -49,8 +49,8 @@ var prediksi = function() {
 	  }
 	});
 }
-setInterval(ambiltweet,60000);
-setInterval(prediksi,62000);
+//setInterval(ambiltweet,60000);
+//setInterval(prediksi,62000);
 function Todo() {
 
 this.sentimen = function(req,res,next){
