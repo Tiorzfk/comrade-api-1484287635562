@@ -7,12 +7,12 @@ this.posting = function(req, res, next) {
     var jml = 0;
     db.acquire(function(err,con){
       function jml_posting(callback) {
-          con.query('SELECT * FROM posting WHERE status="1"',function(err,data){
+          con.query('SELECT COUNT(*) as jml FROM posting WHERE status="1"',function(err,data){
             con.release();
             if(err)
               return res.json({status:400,message:err.code,result:[]})
 
-              jml = data.length;
+              jml = data[0].jml;
               callback(null,jml);
           });
       }
@@ -24,7 +24,6 @@ this.posting = function(req, res, next) {
         var offset = (page - 1)  * limit;
         Sync(function(){
           jml_posting.sync();
-
           con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" ORDER BY tgl_posting LIMIT '+limit+' OFFSET '+offset, function(err,data){
 
               var total_page = Math.ceil(jml / limit);
@@ -61,26 +60,43 @@ this.kategori = function(req, res, next) {
         var limit = 8;
         var page = req.params.page;
         var offset = (page - 1)  * limit;
+        var jml = 0;
+        function jml_posting(callback) {
+            con.query('SELECT COUNT(*) as jml FROM posting WHERE status="1" AND id_kategori="'+req.params.kategori+'"',function(err,data){
+              con.release();
+              if(err)
+                return res.json({status:400,message:err.code,result:[]})
+
+                jml = data[0].jml;
+                callback(null,jml);
+            });
+        }
         if(isNaN(req.params.kategori)) {
-            con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND kategori.nama="'+req.params.kategori+'" ORDER BY tgl_posting DESC LIMIT '+limit+' OFFSET '+offset, function(err,data){
-                con.release();
-                if(err){
-                  return res.json({status:400,message:err.code,result:[]});
-                }else if(!data.length){
-                    return res.json({status:404,message: 'Data not found',result:[]})
-                }
-                return res.json({status:200,message:'success',result:data});
+            Sync(function(){
+              con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND kategori.nama="'+req.params.kategori+'" ORDER BY tgl_posting DESC LIMIT '+limit+' OFFSET '+offset, function(err,data){
+                  if(err){
+                    return res.json({status:400,message:err.code,result:[]});
+                  }else if(!data.length){
+                      return res.json({status:404,message: 'Data not found',result:[]})
+                  }
+                  return res.json({status:200,message:'success',result:data});
+              });
             });
         } else {
+          Sync(function(){
+            jml_posting.sync();
+
             con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND kategori.id_kategori='+req.params.kategori+' ORDER BY tgl_posting DESC LIMIT '+limit+' OFFSET '+offset, function(err,data){
-              con.release();
+               var total_page = Math.ceil(jml / limit);
+
                if(err){
                 return res.json({status:400,message:err.code,result:[]});
                 }else if(!data.length){
                     return res.json({status:404,message: 'Data not found',result:[]})
                 }
-                return res.json({status:200,message:'success',result:data});
+                return res.json({status:200,total_page:total_page,message:'success',result:data});
             });
+          });
         }
     });
 };
