@@ -37,8 +37,10 @@ this.auth_user = function(req,res,next) {
       	if(!data.length){
 					return res.json({ result: 'Failed', message: 'Authentication failed. Email not found.' });
 				}else if(data){
-          console.log(data);
 					data.forEach(function(data){
+            if(data.status == '0'){
+              return res.json({message:'Maaf email yang anda masukan belum dikonfirmasi.',status:400,result:[]})
+            }
             if(req.body.password){
               if(data.password){
                 var validPassword = bcrypt.compareSync(req.body.password,data.password);
@@ -48,19 +50,22 @@ this.auth_user = function(req,res,next) {
                 var token = jwt.sign(data, 'comradeapp', {
                   //expiresIn: "24h" // expires in 24 hours
                 });
+                var data = {
+                  id_user: data.id_user,
+                  nama: data.nama,
+                  email: data.email,
+                  password: data.password,
+                  jenis_kelamin: data.jk,
+                  telepon: data.telp,
+                  jenis_user:data.jenis_user,
+                  foto: data.foto,
+                  private_key:data.private_key
+                }
                 return res.json({
-                    result: 'Success',
+                    message: 'Success',
                     status: 200,
                     token: token,
-                    id_user: data.id_user,
-                    nama: data.nama,
-                    email: data.email,
-                    password: data.password,
-                    jenis_kelamin: data.jk,
-                    telepon: data.telp,
-                    jenis_user:data.jenis_user,
-                    foto: data.foto,
-										private_key:data.private_key
+                    result: [data]
                   });
               }
               return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
@@ -68,18 +73,22 @@ this.auth_user = function(req,res,next) {
             var token = jwt.sign(data, 'comradeapp', {
               //expiresIn: "24h" // expires in 24 hours
             });
+            var data = {
+              id_user: data.id_user,
+              nama: data.nama,
+              email: data.email,
+              password: data.password,
+              jenis_kelamin: data.jk,
+              telepon: data.telp,
+              jenis_user:data.jenis_user,
+              foto: data.foto,
+              private_key:data.private_key
+            }
             return res.json({
-                    result: 'Success',
+                    message: 'Success',
                     status: 200,
                     token: token,
-                    id_user: data.id_user,
-                    nama: data.nama,
-                    email: data.email,
-                    password: data.password,
-                    jenis_kelamin: data.jk,
-                    telepon: data.telp,
-                    jenis_user:data.jenis_user,
-                    foto: data.foto
+                    result: [data]
                   });
 					});
 				}
