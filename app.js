@@ -59,7 +59,7 @@ app.use(limiter);*/
 
 // view engine setup
 app.set('views', path.join(__dirname, 'app/views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
 
 // required for passport
 app.use(session({ secret: 'ilovescotchscotchyscotchscotch' ,resave: true, saveUninitialized: true})); // session secret

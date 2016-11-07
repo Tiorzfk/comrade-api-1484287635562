@@ -191,12 +191,17 @@ this.confirmation = function(req,res,next) {
 
       if(!rows.length)
         return res.json({status:400,result:'Failed',message:'email tidak ditemukan.'});
-
-      if(rows[0].status = '1')
-        return res.json({status:400,result:'Failed',message:'email sudah diverifikasi.'});
-
+      if(rows[0].status == '1'){
+        return res.render('emails/success_confirm',{
+          title: 'Failed !',
+          msg: 'Maaf email anda sudah dikonfirmasi.'
+        });
+      }
       con.query("UPDATE user SET ? WHERE email= '"+AES.encrypt(req.params.email,'comrade@codelabs')+"'",{status:'1'}, function(err,data){
-        return res.json({status:200,result:'Success',message:'Email Berhasil diverifikasi.'})
+        return res.render('emails/success_confirm',{
+          title: 'Success !',
+          msg: 'Selamat, email anda berhasil dikonfirmasi, silahkan login.'
+        });
       });
     });
   });

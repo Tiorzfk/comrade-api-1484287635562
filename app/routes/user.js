@@ -80,7 +80,7 @@ module.exports = {
 
     app.route('/user/register').post(user.register);
 
-    app.route('/confirm/:email').all(cektokenemail.cektoken).get(user.confirmation);
+    app.route('/confirm/:email').get(user.confirmation);
 
     app.route('/user/profile').all(cektoken.cektoken).get(user.profile);
 
