@@ -64,6 +64,10 @@ this.auth_user = function(req,res,next) {
                 return res.json({
                     message: 'Success',
                     status: 200,
+                    id_user: data.id_user,
+                    nama: data.nama,
+                    email: data.email,
+                    jenis_user:data.jenis_user,
                     token: token,
                     result: [data]
                   });
@@ -87,6 +91,10 @@ this.auth_user = function(req,res,next) {
             return res.json({
                     message: 'Success',
                     status: 200,
+                    id_user: data.id_user,
+                    nama: data.nama,
+                    email: data.email,
+                    jenis_user:data.jenis_user,
                     token: token,
                     result: [data]
                   });
