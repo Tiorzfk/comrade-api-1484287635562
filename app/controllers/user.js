@@ -58,7 +58,6 @@ this.auth_user = function(req,res,next) {
                   jenis_kelamin: data.jk,
                   telepon: data.telp,
                   jenis_user:data.jenis_user,
-                  foto: data.foto,
                   private_key:data.private_key
                 }
                 return res.json({
@@ -68,6 +67,7 @@ this.auth_user = function(req,res,next) {
                     nama: data.nama,
                     email: data.email,
                     jenis_user:data.jenis_user,
+                    foto: data.foto,
                     private_key:data.private_key,
                     token: token,
                     result: [data]
@@ -86,7 +86,6 @@ this.auth_user = function(req,res,next) {
               jenis_kelamin: data.jk,
               telepon: data.telp,
               jenis_user:data.jenis_user,
-              foto: data.foto,
               private_key:data.private_key
             }
             return res.json({
@@ -96,6 +95,7 @@ this.auth_user = function(req,res,next) {
                     nama: data.nama,
                     email: data.email,
                     jenis_user:data.jenis_user,
+                    foto: data.foto,
                     private_key:data.private_key,
                     token: token,
                     result: [data]
@@ -308,7 +308,7 @@ this.registerbak = function(req,res,next) {
 
 this.profile = function(req,res,next){
 	db.acquire(function(err,con){
-		con.query('SELECT id_user,nama,email,jk as jenis_kelamin, tgl_lahir,telp as telepon, jenis_user FROM user WHERE status="1" AND jenis_user<>"Sahabat Odha"', function(err,data){
+		con.query('SELECT id_user,nama,email,jk as jenis_kelamin, tgl_lahir,telp as telepon,foto,private_key, jenis_user FROM user WHERE status="1" AND jenis_user<>"Sahabat Odha"', function(err,data){
 			con.release();
 			if(err){
 				return res.json(err)
@@ -325,7 +325,7 @@ this.profile = function(req,res,next){
 
 this.profileID = function(req,res,next){
 	db.acquire(function(err,con){
-		con.query('SELECT id_user,nama,email,jk as jenis_kelamin, tgl_lahir,telp as telepon, jenis_user FROM user WHERE status="1" AND jenis_user<>"Sahabat Odha" AND id_user='+req.params.id, function(err,data){
+		con.query('SELECT id_user,nama,email,jk as jenis_kelamin, tgl_lahir,telp as telepon,foto,private_key, jenis_user FROM user WHERE status="1" AND jenis_user<>"Sahabat Odha" AND id_user='+req.params.id, function(err,data){
 			con.release();
 			if(err){
 				return res.json(err)
