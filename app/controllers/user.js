@@ -68,6 +68,7 @@ this.auth_user = function(req,res,next) {
                     nama: data.nama,
                     email: data.email,
                     jenis_user:data.jenis_user,
+                    private_key:data.private_key,
                     token: token,
                     result: [data]
                   });
@@ -95,6 +96,7 @@ this.auth_user = function(req,res,next) {
                     nama: data.nama,
                     email: data.email,
                     jenis_user:data.jenis_user,
+                    private_key:data.private_key,
                     token: token,
                     result: [data]
                   });
