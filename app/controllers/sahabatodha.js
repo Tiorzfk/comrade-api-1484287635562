@@ -3,7 +3,7 @@ var multer  = require('multer');
 const path = require('path');
 const fs = require('fs');
 var moment = require('moment');
-
+var AES = require('./AES');
 function Todo() {
 
 this.allsahabatodha = function(req,res,next) {
@@ -111,6 +111,7 @@ this.recommend = function(req,res,next) {
 }
 
 this.editsahabatodha = function(req,res,next) {
+  
   var storage = multer.diskStorage({
       destination: function (req, file, callback) {
           callback(null, 'public/pic_sahabatodha');
@@ -131,31 +132,30 @@ this.editsahabatodha = function(req,res,next) {
       //   callback("Error: File upload only supports the following filetypes - " + filetypes);
       // },
       storage : storage}).single('foto');
-    upload(req,res,function(err) {
+      upload(req,res,function(err) {
       if(err)
         return res.json({status:400, message: err});
+      
+        var dataUser = [{
+          email : AES.encrypt(req.body.email,'comrade@codelabs'),
+          nama : req.body.nama,
+          jk : req.body.jenis_kelamin,
+          telp : req.body.telepon,
+          tgl_lahir : req.body.tgl_lahir
+        }];
 
-      var dataUser = [{
-        email : AES.encrypt(req.body.email,'comrade@codelabs'),
-        nama : req.body.nama,
-        jk : req.body.jenis_kelamin,
-        telp : req.body.telepon,
-        tgl_lahir : req.body.tgl_lahir
-      }];
+        if(req.file){
+          dataUser[0].foto = req.file.filename;
+        }
+        
+        var dataSahabatOdha = {
+          komunitas: req.body.komunitas,
+          about_sahabatodha: req.body.about_sahabatodha
+        };
 
-      if(req.file){
-        dataUser[0].foto = req.file.filename;
-      }
-
-      var dataSahabatOdha = {
-        komunitas: req.body.komunitas,
-        about_sahabatodha: req.body.about_sahabatodha
-      };
-
-  		db.acquire(function(err,con){
-        if (err) throw err;
+        db.acquire(function(err,con){
+       // if (err) throw err;
         con.query('UPDATE user SET ? WHERE id_user='+req.params.iduser,dataUser,function(err,data){
-          con.release();
           /*if(!data.affectedRows){
             if(req.file){
               fs.unlink('public/pic_sahabatodha/'+req.file.filename);
@@ -165,16 +165,29 @@ this.editsahabatodha = function(req,res,next) {
               message: 'User not found'
             });
           }*/
-          con.query('UPDATE sahabat_odha SET ? WHERE id_user='+req.params.iduser,dataSahabatOdha,function(err,data){
+          if(err)
+            return res.status(200).json({
+              status:400,
+              message:err.code, 
+              result:''
+            });
+          else {
+            con.query('UPDATE sahabat_odha SET ? WHERE id_user='+req.params.iduser,dataSahabatOdha,function(err,data){
             return res.status(200).send({
               result: 'Success',
               status: 200,
               message: 'Profile Sahabat Odha has been Updated.'
             });
           });
+          }
         });
-  		});
-    });
+        con.release();
+      });
+      });
+
+
+
+
 }
 
 this.rate = function(req,res,next){
