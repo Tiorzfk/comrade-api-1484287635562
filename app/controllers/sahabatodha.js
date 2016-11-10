@@ -120,16 +120,17 @@ this.editsahabatodha = function(req,res,next) {
       }
   });
   var upload = multer({
-      fileFilter: function (req,file,callback) {
-        var filetypes = /jpeg|jpg|png/;
-        var mimetype = filetypes.test(file.mimetype);
-        var extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+      // fileFilter: function (req,file,callback) {
+      //   var filetypes = /jpeg|jpg|png/;
+      //   var mimetype = filetypes.test(file.mimetype);
+      //   var extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
-        if (mimetype && extname) {
-          return callback(null, true);
-        }
-        callback("Error: File upload only supports the following filetypes - " + filetypes);
-      },storage : storage}).single('foto');
+      //   if (mimetype && extname) {
+      //     return callback(null, true);
+      //   }
+      //   callback("Error: File upload only supports the following filetypes - " + filetypes);
+      // },
+      storage : storage}).single('foto');
     upload(req,res,function(err) {
       if(err)
         return res.json({status:400, message: err});
