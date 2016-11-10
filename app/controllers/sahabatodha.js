@@ -136,7 +136,7 @@ this.editsahabatodha = function(req,res,next) {
         return res.json({status:400, message: err});
 
       var dataUser = [{
-        email : req.body.email,
+        email : AES.encrypt(req.body.email,'comrade@codelabs'),
         nama : req.body.nama,
         jk : req.body.jenis_kelamin,
         telp : req.body.telepon,
