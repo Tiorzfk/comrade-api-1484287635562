@@ -168,7 +168,8 @@ this.editsahabatodha = function(req,res,next) {
           if(err)
             return res.status(200).json({
               status:400,
-              message:err.code, 
+              errcode:err.code,
+              message:err, 
               result:''
             });
           else {
