@@ -166,7 +166,7 @@ this.editsahabatodha = function(req,res,next) {
             });
           }*/
           if(err)
-            return res.status(200).json({
+            return res.json({
               status:400,
               message:err.code, 
               result:''
