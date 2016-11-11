@@ -7,7 +7,5 @@ module.exports = {
     app.route('/posting/kategori/:kategori/page/:page').get(posting.kategori);
 
     app.route('/posting/:id').get(posting.postingID);
-
-    app.route('/tesxml').get(posting.tes);
   }
 };

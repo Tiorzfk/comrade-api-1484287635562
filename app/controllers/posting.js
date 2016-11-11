@@ -7,7 +7,7 @@ var http = require('http');
 
 function Todo() {
 
-this.tes = function(req,res,next) {
+function cekLiputan(req,res2,next) {
   parser.on('error', function(err) { console.log('Parser error', err); });
 
  var data = '';
@@ -16,12 +16,34 @@ this.tes = function(req,res,next) {
        res.on('data', function(data_) { data += data_.toString(); });
        res.on('end', function() {
          parser.parseString(data, function(err, result) {
-           console.log(result.rss.channel[0].item[1].title[0]);
+           db.acquire(function(err,con){
+             if (err) throw err;
+             var data = {
+               id : result.rss.channel[0].item[0].guid[0]._,
+               judul : result.rss.channel[0].item[0].title[0],
+               isi : result.rss.channel[0].item[0].description[0],
+               foto : result.rss.channel[0].item[0]['media:thumbnail'][0].$.url,
+               status : '0',
+               id_kategori : 1,
+               id_admin : 1,
+               tgl_posting : result.rss.channel[0].item[1].pubDate[0]
+             }
+             con.query('SELECT * FROM posting WHERE id_posting='+data.id,function(err,data){
+               if(!data.length){
+                 con.query('',function(err,data){
+
+                 })
+               }
+             });
+           });
+           //return res2.json([data]);
          });
        });
      }
    });
 }
+
+//setInterval(cekLiputan, 60000);
 
 this.posting = function(req, res, next) {
     var jml = 0;
@@ -80,7 +102,8 @@ this.kategori = function(req, res, next) {
       if (err) throw err;
         var limit = 8;
         var page = req.params.page;
-        var offset = (page - 1)  * limit;
+        //var offset = (page - 1)  * limit;
+        var offset = page;
         var jml = 0;
         function jml_posting(callback) {
             con.query('SELECT COUNT(*) as jml FROM posting WHERE status="1" AND id_kategori="'+req.params.kategori+'"',function(err,data){
