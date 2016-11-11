@@ -2,6 +2,17 @@ var db 	= require('../../config/db');
 var Twitter = require('twitter');
 var request = require('request');
 var Sync = require('Sync');
+
+var jwt = require('jsonwebtoken');
+var bcrypt = require('bcrypt-nodejs');
+var multer  = require('multer');
+var transport = require('../../config/mail').transport;
+var EmailTemplates = require('swig-email-templates');
+var AES = require('./AES');
+const path = require('path');
+const fs = require('fs');
+
+//setting twitter client
 var client = new Twitter({
 	consumer_key : '2Hmx6UXuxlRn7TicxrbTy1H2Q',
 	consumer_secret:'qgBVhwADPDKpljlTeS6HMF14PV64DNDNfvJykHvhDLMV5vutdf',
@@ -91,18 +102,25 @@ this.sentimen = function(req, res, next) {
 
 		Sync(function(){
 			jml_posting.sync();
+
     	con.query(sql, function(err,data){
 					var total_page = Math.ceil(jml / limit);
 					if(err)
-               	return res.json({status:400,message:err.code,result:[]});
-            else if(!data.length)
-                return res.json({status:400,message: 'Data not found',result:[]})
+		               	return res.json({status:400,message:err.code,result:[]});
+		            else if(!data.length)
+		                return res.json({status:400,message: 'Data not found',result:[]})
 						else{
 							return res.json({status:200,total_page:total_page,message:'success',result:data});
 						}
     		});
 			});
+
 		});
 };
+
+this.coba = function(req,res) {
+		var password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8), null);
+		res.send(password);
+	}
 }
 module.exports = new Todo();
