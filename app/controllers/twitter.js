@@ -91,7 +91,6 @@ this.sentimen = function(req, res, next) {
 
 		Sync(function(){
 			jml_posting.sync();
-			console.log(jml);
     	con.query(sql, function(err,data){
 					var total_page = Math.ceil(jml / limit);
 					if(err)

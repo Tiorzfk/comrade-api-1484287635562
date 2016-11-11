@@ -1,8 +1,28 @@
 var db = require('../../config/db');
 var Pusher = require('pusher');
 var Sync = require('sync');
+var xml2js = require('xml2js');
+var parser = new xml2js.Parser();
+var http = require('http');
 
 function Todo() {
+
+this.tes = function(req,res,next) {
+  parser.on('error', function(err) { console.log('Parser error', err); });
+
+ var data = '';
+ http.get('http://feed.liputan6.com/rss2?tag=hiv', function(res) {
+     if (res.statusCode >= 200 && res.statusCode < 400) {
+       res.on('data', function(data_) { data += data_.toString(); });
+       res.on('end', function() {
+         parser.parseString(data, function(err, result) {
+           console.log(result.rss.channel[0].item[1].title[0]);
+         });
+       });
+     }
+   });
+}
+
 this.posting = function(req, res, next) {
     var jml = 0;
     db.acquire(function(err,con){

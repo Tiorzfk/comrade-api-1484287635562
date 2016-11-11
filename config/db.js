@@ -18,7 +18,10 @@ function Connection() {
   this.pool = null;
 
   var konek = {
-    connectionLimit: 10,
+    connectionLimit: 1000,
+    connectTimeout : 60 * 60 * 1000,
+    aquireTimeout  : 60 * 60 * 1000,
+    timeout        : 60 * 60 * 1000,
     host     : 'ap-cdbr-azure-southeast-b.cloudapp.net',
     user     : 'b065bc94f582d8',
     password : '67928ce1',
