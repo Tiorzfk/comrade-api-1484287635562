@@ -35,6 +35,7 @@ this.posting = function(req, res, next) {
               return res.json({status:200,total_page:total_page,message:'success',result:data});
           });
         });
+        con.release();
     });
 
 };

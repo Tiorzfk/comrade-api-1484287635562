@@ -106,14 +106,15 @@ this.sentimen = function(req, res, next) {
     	con.query(sql, function(err,data){
 					var total_page = Math.ceil(jml / limit);
 					if(err)
-               	return res.json({status:400,message:err.code,result:[]});
-            else if(!data.length)
-                return res.json({status:400,message: 'Data not found',result:[]})
+		               	return res.json({status:400,message:err.code,result:[]});
+		            else if(!data.length)
+		                return res.json({status:400,message: 'Data not found',result:[]})
 						else{
 							return res.json({status:200,total_page:total_page,message:'success',result:data});
 						}
     		});
 			});
+		con.release();
 		});
 };
 
