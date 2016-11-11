@@ -363,7 +363,7 @@ this.setting_profile = function(req,res,next){
           storage : storage}).single('foto');
         upload(req,res,function(err) {
           if(err)
-            return res.json({status:400, message: 'Gagal upload photo',result:err});
+            return res.json({status:400, message: err});
 
             /*req.checkBody("email", "Enter a valid email address.").isEmail();
             req.checkBody("telepon", "Telepon must be integer.").isInt();
