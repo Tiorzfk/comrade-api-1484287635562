@@ -63,7 +63,8 @@ this.posting = function(req, res, next) {
         // 0 8 16 24 32
         var limit = 8;
         var page = req.params.page;
-        var offset = (page - 1)  * limit;
+        //var offset = (page - 1)  * limit;
+        var offset = page;
         Sync(function(){
           jml_posting.sync();
           con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" ORDER BY tgl_posting LIMIT '+limit+' OFFSET '+offset, function(err,data){

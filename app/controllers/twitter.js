@@ -83,7 +83,8 @@ this.sentimen = function(req, res, next) {
 		if (err) throw err;
 		var limit = 8;
 		var page = req.params.page;
-		var offset = (page - 1)  * limit;
+	    //var offset = (page - 1)  * limit;
+		var offset = page;
 		var jml = 0;
 
 		var sqljum = "SELECT COUNT(*) as jml FROM tweet_support where klasifikasi='positif' and status='selesai'";
