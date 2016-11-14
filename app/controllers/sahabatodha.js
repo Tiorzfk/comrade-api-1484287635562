@@ -73,7 +73,7 @@ this.sahabatodha = function(req,res,next) {
 this.testimoni = function(req,res,next) {
   db.acquire(function(err,con){
     if (err) throw err;
-    con.query('SELECT user.nama as pengirim,testimoni,tanggal FROM rating INNER JOIN user on user.id_user=rating.id_pengerate WHERE rating.id_user='+req.params.iduser,function(err,data){
+    con.query('SELECT user.nama as pengirim,user.private_key,testimoni,tanggal FROM rating INNER JOIN user on user.id_user=rating.id_pengerate WHERE rating.id_user='+req.params.iduser,function(err,data){
       con.release();
       if(err)
         return res.json({status:400,message:err.code,result:[]});
@@ -111,7 +111,7 @@ this.recommend = function(req,res,next) {
 }
 
 this.editsahabatodha = function(req,res,next) {
-  
+
   var storage = multer.diskStorage({
       destination: function (req, file, callback) {
           callback(null, 'public/pic_sahabatodha');
@@ -135,7 +135,7 @@ this.editsahabatodha = function(req,res,next) {
       upload(req,res,function(err) {
       if(err)
         return res.json({status:400, message: err});
-      
+
         var dataUser = [{
           email : AES.encrypt(req.body.email,'comrade@codelabs'),
           nama : req.body.nama,
@@ -147,7 +147,7 @@ this.editsahabatodha = function(req,res,next) {
         if(req.file){
           dataUser[0].foto = req.file.filename;
         }
-        
+
         var dataSahabatOdha = {
           komunitas: req.body.komunitas,
           about_sahabatodha: req.body.about_sahabatodha
@@ -168,7 +168,7 @@ this.editsahabatodha = function(req,res,next) {
           if(err)
             return res.json({
               status:400,
-              message:err.code, 
+              message:err.code,
               result:''
             });
           else {
