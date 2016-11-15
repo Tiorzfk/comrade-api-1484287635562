@@ -81,7 +81,7 @@ this.testimoni = function(req,res,next) {
         return res.json({status:400,message: 'Data not found',result:'Failed'})
 
       con.query('SELECT avg(rating) as rating FROM rating WHERE rating.id_user='+req.params.iduser,function(err,data2){
-        return res.json({status_code:200,message:'success','rating':data2[0].rating,result:data});
+        return res.json({status:200,message:'success','rating':data2[0].rating,result:data});
       });
 
     });
