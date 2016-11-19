@@ -15,9 +15,9 @@ this.event = function(req, res, next) {
 		var jml = 0;
 
 		var sqljum = 'SELECT COUNT(*) as jml FROM event WHERE status="1" AND tipe="public"';
-		var sql ='SELECT id_event,admin.nama as pengirim,event.nama,event.tempat,deskripsi,foto,event.status,tgl_posting,tgl_mulai,tgl_berakhir,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" AND event.tipe="public" ORDER BY tgl_posting LIMIT '+limit+' OFFSET '+offset;
+		var sql ='SELECT id_event,admin.nama as pengirim,event.nama,event.tempat,deskripsi,foto,event.status,tgl_posting,tgl_mulai,tgl_berakhir,longitude,latitude,kontak_person FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" AND event.tipe="public" ORDER BY tgl_posting LIMIT '+limit+' OFFSET '+offset;
 		if(req.params.tipe=='private'){
-			sql ='SELECT id_event,admin.nama as pengirim,event.nama,event.tempat,deskripsi,foto,event.status,tgl_posting,tgl_mulai,tgl_berakhir,longitude,latitude FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" ORDER BY tgl_posting LIMIT '+limit+' OFFSET '+offset;
+			sql ='SELECT id_event,admin.nama as pengirim,event.nama,event.tempat,deskripsi,foto,event.status,tgl_posting,tgl_mulai,tgl_berakhir,longitude,latitude,kontak_person FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" ORDER BY tgl_posting LIMIT '+limit+' OFFSET '+offset;
 			sqljum = 'SELECT COUNT(*) as jml FROM event WHERE status="1"';
 		}
 		function jml_posting(callback) {

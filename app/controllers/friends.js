@@ -5,13 +5,13 @@ function Todo() {
 this.getfriend = function(req,res,next) {
 	db.acquire(function(err,con){
 		if (err) throw err;
-		con.query('SELECT friends.id_sahabatodha,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,komunitas,about_sahabatodha FROM friends INNER JOIN user ON user.id_user=friends.id_sahabatodha INNER JOIN sahabat_odha ON sahabat_odha.id_user=friends.id_sahabatodha where friends.id_user='+req.params.id_user, function(err,data){
+		con.query('SELECT friends.id_sahabatodha,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,komunitas,about_sahabatodha FROM friends INNER JOIN user ON user.id_user=friends.id_sahabatodha INNER JOIN sahabat_odha ON sahabat_odha.id_user=friends.id_sahabatodha where friends.status="1" AND friends.id_user='+req.params.id_user, function(err,data){
 			con.release();
 			if(err)
 				return res.json({status:400,message:err.code,result:[],id_usr:req.params.id_user});
 
 			if(!data.length)
-				return res.json({status:400,message: 'Data not found',result:'Failed'})
+				return res.json({status:400,message: 'Data not found',result:[]})
 
 			return res.json({status:200,message:'success',result:data});
 		});
@@ -21,13 +21,13 @@ this.getfriend = function(req,res,next) {
 this.getfriendsahabatodha = function(req,res,next) {
 	db.acquire(function(err,con){
 		if (err) throw err;
-		con.query('SELECT friends.id_user,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,user.jenis_user as jenis_user FROM friends INNER JOIN user ON user.id_user=friends.id_user where friends.id_sahabatodha='+req.params.id_user, function(err,data){
+		con.query('SELECT friends.id_user,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,user.jenis_user as jenis_user FROM friends INNER JOIN user ON user.id_user=friends.id_user where friends.status="1" AND friends.id_sahabatodha='+req.params.id_user, function(err,data){
 			con.release();
 			if(err)
 				return res.json({status:400,message:err.code,result:[],id_usr:req.params.id_user});
 
 			if(!data.length)
-				return res.json({status:400,message: 'Data not found',result:'Failed'})
+				return res.json({status:400,message: 'Data not found',result:[]})
 
 			return res.json({status:200,message:'success',result:data});
 		});
@@ -64,24 +64,30 @@ this.addfriends = function(req,res,next){
 
 this.konfirmasi = function(req,res,next){
 	db.acquire(function(err,con){
-		con.query("select * from friends where id_friends=?",req.body.id_friends,function(err,rows){
+		if (err) throw err;
+		var data = [req.body.id_sahabatodha,req.body.id_user];
+		con.query('update friends set status="1" where id_sahabatodha=? AND id_user=?',data,function(err,data){
 			con.release();
-			if (err) throw err;
-			if(rows.lenght>0){
-				if(status==0){
-					con.query("delete from friends where id_friends=?",req.body.id_friends,function(err,rows2) {
-						if(!err){
-							res.json({status:200,message:'Pertemanan dihapus',result:[]});
-						}
-					});
-				}else{
-					con.query("update friends set status='1' where id_friends=?",req.body.id_friends,function(err,rows) {
-						if(!err){
-							res.json({status:200,message:'Pertemanan berhasil di konfirmasi',result:[]});
-						}
-					});
-				}
-			}
+			if (!data.affectedRows)
+				return res.json({status:400,message: 'Data not found',result:[]})
+
+			return res.json({result:'success',status:200,message:'Konfirmasi teman berhasil'});
+
+		});
+	});
+};
+
+this.hapuskontak = function(req,res,next){
+	db.acquire(function(err,con){
+		if (err) throw err;
+		var data = [req.body.id_sahabatodha,req.body.id_user,"1"];
+		con.query('delete from friends where id_sahabatodha=? AND id_user=? AND status=?',data,function(err,data){
+			con.release();
+			if (!data.affectedRows)
+				return res.json({status:400,message: 'Data not found',result:[]})
+
+			return res.json({result:'success',status:200,message:'Kontak berhasil dihapus'});
+
 		});
 	});
 };
