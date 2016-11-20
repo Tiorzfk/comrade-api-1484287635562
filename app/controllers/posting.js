@@ -127,7 +127,7 @@ function rssMedicalxpress(req, res2, next) {
                tgl_posting : moment().format('YYYY-MM-DD'),
                sumber : result.rss.channel[0].item[0].link[0]
              }
-             return console.log(dataposting);
+             //return console.log(dataposting);
 
             //  con.query('SELECT * FROM posting WHERE judul="'+dataposting.judul+'"',function(err,data){
             //    if(!data.length){
