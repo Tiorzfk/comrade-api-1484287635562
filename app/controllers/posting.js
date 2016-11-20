@@ -137,7 +137,7 @@ function rssMedicalxpress(req, res2, next) {
                    con.release();
                    if (err) throw err;
 
-                   //console.log('Berhasil menambah data');
+                   //console.log('Berhasil menambah data' );
                  });
                //}else {
                  //console.log('data sudah ada');
