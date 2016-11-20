@@ -50,7 +50,7 @@ this.addfriends = function(req,res,next){
     	var data = {
     		id_user: req.body.id_user,
     		id_sahabatodha: req.body.id_sahabatodha,
-    		status: '0'
+    		status: '1'
     	}
 		con.query("insert into friends set ?",[data],function(err,rows){
 			con.release();

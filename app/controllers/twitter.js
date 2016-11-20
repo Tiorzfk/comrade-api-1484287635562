@@ -53,6 +53,37 @@ var ambiltweet = function(){
 	});
 }
 
+var ambileng = function(){
+	client.get('search/tweets',{q:'hiv aids',lang:'en'},function(error,tweets,response){
+    var status = tweets.statuses;
+	db.acquire(function(err,con){
+    status.forEach(function(item){
+        if(err) throw err;
+        con.query("select * from train_eng where id=?",item.id_str,function(err,rows){
+          if(err)
+            throw err;
+            if(rows.length == 0)
+            {
+                var data = {
+                 id : item.id_str,
+                 screen_name:item.user.screen_name,
+                 text :item.text,
+                 profile_image_url  : item.user.profile_image_url,
+                 profile_link_color : item.user.profile_link_color
+                }
+                console.log(data);
+                con.query("insert into train_eng set ?",data,function(err){
+				  				  if(err)
+                    throw err;
+                });
+            }
+        });
+      });
+	  con.release();
+    });
+	});
+}
+
 var prediksi = function() {
 	request('http://naivebayes.azurewebsites.net/prediksi.php', function (error, response, body) {
 	  if (!error && response.statusCode == 200) {
@@ -62,6 +93,8 @@ var prediksi = function() {
 }
 //setInterval(ambiltweet,60000);
 //setInterval(prediksi,62000);
+//setInterval(ambileng,5000);
+
 function Todo() {
 
 this.sentimenbak = function(req,res,next){
