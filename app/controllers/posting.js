@@ -31,17 +31,19 @@ function rssLiputan(req,res2,next) {
                id_kategori : 1,
                id_admin : 1,
                lang : 'id',
-               tgl_posting : moment().format('YYYY-MM-DD')
+               tgl_posting : moment().format('YYYY-MM-DD'),
+               sumber : result.rss.channel[0].item[0].link[0]
              }
              con.query('SELECT * FROM posting WHERE judul="'+dataposting.judul+'"',function(err,data){
                if(!data.length){
                  con.query('INSERT INTO posting SET ?',dataposting,function(err,data){
                    con.release();
-                   if (err)
-                      console.log(err);
+                   if (err) throw err;
 
-                   console.log('Berhasil menambah data');
-                 })
+                   //console.log('Berhasil menambah data');
+                 });
+               //}else{
+                 //console.log('data sudah ada');
                }
              });
            });
@@ -129,19 +131,18 @@ function rssMedicalxpress(req, res2, next) {
              }
              //return console.log(dataposting);
 
-            //  con.query('SELECT * FROM posting WHERE judul="'+dataposting.judul+'"',function(err,data){
-            //    if(!data.length){
-            //      con.query('INSERT INTO posting SET ?',dataposting,function(err,data){
-            //        con.release();
-            //        if (err)
-            //           console.log(err);
-             //
-            //        console.log('Berhasil menambah data');
-            //      })
-            //    }else {
-            //      console.log('data sudah ada');
-            //    }
-            //  });
+             con.query('SELECT * FROM posting WHERE judul="'+dataposting.judul+'"',function(err,data){
+               if(!data.length){
+                 con.query('INSERT INTO posting SET ?',dataposting,function(err,data){
+                   con.release();
+                   if (err) throw err;
+
+                   //console.log('Berhasil menambah data');
+                 });
+               //}else {
+                 //console.log('data sudah ada');
+               }
+             });
            });
            //return res2.json([data]);
          });
@@ -150,9 +151,9 @@ function rssMedicalxpress(req, res2, next) {
    });
 }
 
-//setInterval(rssLiputan, /*60000 * 60*/10000);
-//setInterval(rssSciencedaily, 60000 * 60);
-//setInterval(rssMedicalxpress, /*60000 * 60*/10000);
+setInterval(rssLiputan, 60000 * 60);
+setInterval(rssSciencedaily, 60000 * 60);
+setInterval(rssMedicalxpress, 60000 * 60);
 
 this.posting = function(req, res, next) {
     var jml = 0;
