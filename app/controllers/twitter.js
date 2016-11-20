@@ -72,10 +72,10 @@ var ambileng = function(){
                  profile_link_color : item.user.profile_link_color
                 }
                 console.log(data);
-                con.query("insert into train_eng set ?",data,function(err){
-				  				  if(err)
-                    throw err;
-                });
+            //     con.query("insert into train_eng set ?",data,function(err){
+				  				  // if(err)
+            //         throw err;
+            //     });
             }
         });
       });
@@ -93,7 +93,7 @@ var prediksi = function() {
 }
 //setInterval(ambiltweet,60000);
 //setInterval(prediksi,62000);
-//setInterval(ambileng,5000);
+setInterval(ambileng,5000);
 
 function Todo() {
 
@@ -151,6 +151,47 @@ this.sentimen = function(req, res, next) {
 
 		});
 };
+
+this.sentiment_eng=function(req,res){
+  db.acquire(function(err,con){
+    if (err) throw err;
+    var limit = 8;
+    var page = req.params.page;
+      //var offset = (page - 1)  * limit;
+    var offset = page;
+    var jml = 0;
+
+    var sqljum = "SELECT COUNT(*) as jml FROM train_eng where klasifikasi='positif'";
+    var sql ="SELECT * from train_eng where klasifikasi='positif' ORDER BY id DESC LIMIT "+limit+" OFFSET "+offset;
+
+    function jml_posting(callback) {
+        con.query(sqljum,function(err,data){
+          con.release();
+          if(err)
+            return res.json({status:400,message:err.code,result:[]})
+            jml = data[0].jml;
+            callback(null,jml);
+        });
+    }
+    var arr = {};
+
+    Sync(function(){
+      jml_posting.sync();
+
+      con.query(sql, function(err,data){
+          var total_page = Math.ceil(jml / limit);
+          if(err)
+                    return res.json({status:400,message:err.code,result:[]});
+                else if(!data.length)
+                    return res.json({status:400,message: 'Data not found',result:[]})
+            else{
+              return res.json({status:200,total_page:total_page,message:'success',result:data});
+            }
+        });
+      });
+
+    });
+}
 
 this.coba = function(req,res) {
 		var password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8), null);
