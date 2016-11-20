@@ -60,8 +60,7 @@ var ambileng = function(){
     status.forEach(function(item){
         if(err) throw err;
         con.query("select * from train_eng where id=?",item.id_str,function(err,rows){
-          if(err)
-            throw err;
+          if(err) throw err;
             if(rows.length == 0)
             {
                 var data = {
@@ -72,10 +71,10 @@ var ambileng = function(){
                  profile_link_color : item.user.profile_link_color
                 }
                 console.log(data);
-            //     con.query("insert into train_eng set ?",data,function(err){
-				  				  // if(err)
-            //         throw err;
-            //     });
+                con.query("insert into train_eng set ?",data,function(err){
+				  				  if(err)
+                      console.log('Error');
+                });
             }
         });
       });
