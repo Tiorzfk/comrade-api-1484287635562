@@ -21,7 +21,7 @@ function rssLiputan(req,res2,next) {
              if (err) throw err;
              var arrayisi = striptags(result.rss.channel[0].item[0].description[0]).split(' ');
              var sliceisi = arrayisi.slice(0,17);
-             var data = {
+             var dataposting = {
                //id : result.rss.channel[0].item[0].guid[0]._,
                judul : result.rss.channel[0].item[0].title[0],
                deskripsi : sliceisi.join(' '),
@@ -30,19 +30,20 @@ function rssLiputan(req,res2,next) {
                status : '0',
                id_kategori : 1,
                id_admin : 1,
-               tgl_posting : result.rss.channel[0].item[0].pubDate[0]
+               lang : 'id',
+               tgl_posting : moment().format('YYYY-MM-DD')
              }
-             //con.query('SELECT * FROM posting WHERE id_posting='+data.id,function(err,data){
-               //if(!data.length){
-                 con.query('INSERT INTO posting SET ?',data,function(err,data){
+             con.query('SELECT * FROM posting WHERE judul="'+dataposting.judul+'"',function(err,data){
+               if(!data.length){
+                 con.query('INSERT INTO posting SET ?',dataposting,function(err,data){
                    con.release();
                    if (err)
                       console.log(err);
 
                    console.log('Berhasil menambah data');
                  })
-               //}
-             //});
+               }
+             });
            });
            //return res2.json([data]);
          });
@@ -64,7 +65,7 @@ function rssSciencedaily(req, res2, next) {
              if (err) throw err;
              var arrayisi = striptags(result.rss.channel[0].item[0].description[0]).split(' ');
              var sliceisi = arrayisi.slice(0,17);
-             var data = {
+             var dataposting = {
                //id : result.rss.channel[0].item[0].guid[0]._,
                judul : result.rss.channel[0].item[0].title[0],
                deskripsi : sliceisi.join(' '),
@@ -73,21 +74,24 @@ function rssSciencedaily(req, res2, next) {
                status : '0',
                id_kategori : 2,
                id_admin : 1,
+               lang : 'en',
                tgl_posting : moment().format('YYYY-MM-DD'),
                sumber : result.rss.channel[0].item[0].guid[0]._
              }
              //return res2.json(moment().format('YYYY-MM-DD'));
 
-             con.query('SELECT * FROM posting WHERE judul="'+data.judul+'"',function(err,data){
+             con.query('SELECT * FROM posting WHERE judul="'+dataposting.judul+'"',function(err,data){
                if(!data.length){
-                 con.query('INSERT INTO posting SET ?',data,function(err,data){
+                 con.query('INSERT INTO posting SET ?',dataposting,function(err,data){
                    con.release();
-                   if (err)
-                      console.log(err);
+                   if (err) throw err;
+                      //console.log(err);
 
-                   console.log('Berhasil menambah data');
-                 })
-               }
+                   //console.log('Berhasil menambah data');
+                 });
+              //  }else{
+              //    console.log('data sudah ada');
+              }
              });
            });
            //return res2.json([data]);
@@ -97,8 +101,58 @@ function rssSciencedaily(req, res2, next) {
    });
 }
 
+function rssMedicalxpress(req, res2, next) {
+  parser.on('error', function(err) { console.log('Parser error', err); });
+
+ var data = '';
+ http.get('http://medicalxpress.com/rss-feed/hiv-aids-news/', function(res) {
+     if (res.statusCode >= 200 && res.statusCode < 400) {
+       res.on('data', function(data_) { data += data_.toString(); });
+       res.on('end', function() {
+         parser.parseString(data, function(err, result) {
+           db.acquire(function(err,con){
+             if (err) throw err;
+             var arrayisi = striptags(result.rss.channel[0].item[0].description[0]).split(' ');
+             var sliceisi = arrayisi.slice(0,17);
+             var dataposting = {
+               //id : result.rss.channel[0].item[0].guid[0]._,
+               judul : result.rss.channel[0].item[0].title[0],
+               deskripsi : sliceisi.join(' '),
+               isi : result.rss.channel[0].item[0].description[0]+'<a href='+result.rss.channel[0].item[0].link[0]+'> more </a>',
+               foto : result.rss.channel[0].item[0]['media:thumbnail'][0].$.url,
+               status : '0',
+               id_kategori : 1,
+               id_admin : 1,
+               lang : 'en',
+               tgl_posting : moment().format('YYYY-MM-DD'),
+               sumber : result.rss.channel[0].item[0].link[0]
+             }
+             return console.log(dataposting);
+
+            //  con.query('SELECT * FROM posting WHERE judul="'+dataposting.judul+'"',function(err,data){
+            //    if(!data.length){
+            //      con.query('INSERT INTO posting SET ?',dataposting,function(err,data){
+            //        con.release();
+            //        if (err)
+            //           console.log(err);
+             //
+            //        console.log('Berhasil menambah data');
+            //      })
+            //    }else {
+            //      console.log('data sudah ada');
+            //    }
+            //  });
+           });
+           //return res2.json([data]);
+         });
+       });
+     }
+   });
+}
+
 //setInterval(rssLiputan, /*60000 * 60*/10000);
-setInterval(rssSciencedaily, /*60000 * 60*/10000);
+//setInterval(rssSciencedaily, 60000 * 60);
+//setInterval(rssMedicalxpress, /*60000 * 60*/10000);
 
 this.posting = function(req, res, next) {
     var jml = 0;
