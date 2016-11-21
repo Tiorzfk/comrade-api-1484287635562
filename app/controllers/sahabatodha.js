@@ -4,6 +4,17 @@ const path = require('path');
 const fs = require('fs');
 var moment = require('moment');
 var AES = require('./AES');
+var bcrypt = require('bcrypt-nodejs');
+
+function randomkey()
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for( var i=0; i < 10; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
+}
+
 function Todo() {
 
 this.allsahabatodha = function(req,res,next) {
@@ -185,9 +196,6 @@ this.editsahabatodha = function(req,res,next) {
       });
       });
 
-
-
-
 }
 
 this.rate = function(req,res,next){
@@ -227,6 +235,38 @@ this.rate = function(req,res,next){
 		});
 	});
 }
+
+this.daftarsa = function(req, res, next) {
+    var private_key = randomkey();
+    var data = {
+      nama: AES.encrypt(req.body.nama.toString(),private_key),
+      email: AES.encrypt(req.body.email.toString(),'comrade@codelabs'),
+      telp : req.body.telepon,
+      password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8), null),
+      jenis_user: 'Sahabat Odha',
+      status  : '0',
+      foto : 'default.png',
+      private_key:private_key
+    }
+    db.acquire(function(err,con){
+      con.query('INSERT INTO user SET ? ',data,function(err,result){
+        if (err)
+           return next(err);
+
+        var data2 = {
+          id_user : result.insertId
+        }
+        con.query('INSERT INTO sahabat_odha SET ? ',data2,function(err,result2){
+          return res.json({
+            result: 'Created',
+            status: 200,
+            message: 'Registration is successful.'
+          });
+        });
+      });
+    });
+};
+
 
 }
 
