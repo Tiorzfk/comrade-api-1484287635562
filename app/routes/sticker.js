@@ -5,7 +5,7 @@ var cek = require('../../config/cektoken');
 
 module.exports = {
   configure: function(app) {
-    app.route('/sticker').all(cek.cektoken).get(sticker.sticker);
+    app.route('/sticker/page/:page').all(cek.cektoken).get(sticker.sticker);
 
     app.route('/sendpicsticker').all(cek.cektoken).post(sticker.sendpicsticker);
 

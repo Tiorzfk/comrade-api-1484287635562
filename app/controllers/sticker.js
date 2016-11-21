@@ -11,7 +11,7 @@ this.sticker = function(req,res,next) {
 		var limit = 8;
 		var page = req.params.page;
 		var offset = page;
-		con.query('SELECT id_sticker,user.nama as pengirim,user.foto as foto,pic_sticker,komunitas,message FROM sticker INNER JOIN user on user.id_user=sticker.id_pengirim INNER JOIN pic_sticker on pic_sticker.id_pic=sticker.id_picsticker INNER JOIN sahabat_odha on sahabat_odha.id_user=sticker.id_pengirim order by id_sticker DESC',function(err,data){
+		con.query('SELECT id_sticker,user.nama as pengirim,user.foto as foto,pic_sticker,komunitas,message FROM sticker INNER JOIN user on user.id_user=sticker.id_pengirim INNER JOIN pic_sticker on pic_sticker.id_pic=sticker.id_picsticker INNER JOIN sahabat_odha on sahabat_odha.id_user=sticker.id_pengirim order by id_sticker DESC LIMIT '+limit+' OFFSET '+offset,function(err,data){
 			con.release();
 			if(err){
                 return res.json({status:400,message:err.code,result:[]});
