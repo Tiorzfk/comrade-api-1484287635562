@@ -31,7 +31,7 @@ function rssLiputan(req,res2,next) {
                id_kategori : 1,
                id_admin : 1,
                lang : 'id',
-               tgl_posting : moment().format('YYYY-MM-DD'),
+               tgl_posting : moment().format('YYYY-MM-DD h:mm:ss'),
                sumber : result.rss.channel[0].item[0].link[0]
              }
              con.query('SELECT * FROM posting WHERE judul="'+dataposting.judul+'"',function(err,data){
@@ -77,7 +77,7 @@ function rssSciencedaily(req, res2, next) {
                id_kategori : 2,
                id_admin : 1,
                lang : 'en',
-               tgl_posting : moment().format('YYYY-MM-DD'),
+               tgl_posting : moment().format('YYYY-MM-DD h:mm:ss'),
                sumber : result.rss.channel[0].item[0].guid[0]._
              }
              //return res2.json(moment().format('YYYY-MM-DD'));
@@ -126,7 +126,7 @@ function rssMedicalxpress(req, res2, next) {
                id_kategori : 1,
                id_admin : 1,
                lang : 'en',
-               tgl_posting : moment().format('YYYY-MM-DD'),
+               tgl_posting : moment().format('YYYY-MM-DD h:mm:ss'),
                sumber : result.rss.channel[0].item[0].link[0]
              }
              //return console.log(dataposting);
@@ -151,9 +151,9 @@ function rssMedicalxpress(req, res2, next) {
    });
 }
 
-setInterval(rssLiputan, 60000 * 60);
-setInterval(rssSciencedaily, 60000 * 60);
-setInterval(rssMedicalxpress, 60000 * 60);
+setInterval(rssLiputan, 1800000);
+setInterval(rssSciencedaily, 1800000);
+setInterval(rssMedicalxpress, 1800000);
 
 this.posting = function(req, res, next) {
     var jml = 0;
