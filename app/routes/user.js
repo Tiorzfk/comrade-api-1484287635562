@@ -88,6 +88,10 @@ module.exports = {
 
     app.route('/user/change_password/:id').all(cektoken.cektoken).post(user.change_password);
 
+    app.route('/user/premium').get(user.userPremium);
+
+    app.route('/user/premium').post(user.postUserPremium);
+
     //app.route('/user/sahabat_odha').all(token_cek).get(user.sahabat_odha);
 	}
 };

@@ -17,26 +17,26 @@ function Connection() {
 
   this.pool = null;
 
-  var konek = {
-    connectionLimit: 1000,
-    connectTimeout : 60 * 60 * 1000,
-    aquireTimeout  : 60 * 60 * 1000,
-    timeout        : 60 * 60 * 1000,
-    host     : 'ap-cdbr-azure-southeast-b.cloudapp.net',
-    user     : 'b065bc94f582d8',
-    password : '67928ce1',
-    port 	: 3306,
-    database : 'acsm_960a6532c696724'
-  };
-
   // var konek = {
-  //   connectionLimit: 10,
-  //   host     : 'localhost',
-  //   user     : 'root',
-  //   password : '',
+  //   connectionLimit: 1000,
+  //   connectTimeout : 60 * 60 * 1000,
+  //   aquireTimeout  : 60 * 60 * 1000,
+  //   timeout        : 60 * 60 * 1000,
+  //   host     : 'ap-cdbr-azure-southeast-b.cloudapp.net',
+  //   user     : 'b065bc94f582d8',
+  //   password : '67928ce1',
   //   port 	: 3306,
   //   database : 'acsm_960a6532c696724'
   // };
+
+  var konek = {
+    connectionLimit: 10,
+    host     : 'localhost',
+    user     : 'root',
+    password : '',
+    port 	: 3306,
+    database : 'comrade'
+  };
 
   this.init = function() {
     this.pool = mysql.createPool(konek);

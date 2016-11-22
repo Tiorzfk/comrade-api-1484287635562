@@ -92,7 +92,7 @@ var prediksi = function() {
 }
 //setInterval(ambiltweet,60000);
 //setInterval(prediksi,62000);
-setInterval(ambileng,5000);
+//setInterval(ambileng,5000);
 
 function Todo() {
 
