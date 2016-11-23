@@ -21,7 +21,7 @@ this.getfriend = function(req,res,next) {
 this.getfriendsahabatodha = function(req,res,next) {
 	db.acquire(function(err,con){
 		if (err) throw err;
-		con.query('SELECT friends.id_user,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,user.jenis_user as jenis_user FROM friends INNER JOIN user ON user.id_user=friends.id_user where friends.status="1" AND friends.id_sahabatodha='+req.params.id_user, function(err,data){
+		con.query('SELECT friends.id_user,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,user.jenis_user as jenis_user,user.private_key FROM friends INNER JOIN user ON user.id_user=friends.id_user where friends.status="1" AND friends.id_sahabatodha='+req.params.id_user, function(err,data){
 			con.release();
 			if(err)
 				return res.json({status:400,message:err.code,result:[],id_usr:req.params.id_user});
