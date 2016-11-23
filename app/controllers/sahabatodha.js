@@ -5,6 +5,9 @@ const fs = require('fs');
 var moment = require('moment');
 var AES = require('./AES');
 var bcrypt = require('bcrypt-nodejs');
+var jwt = require('jsonwebtoken');
+var EmailTemplates = require('swig-email-templates');
+var transport = require('../../config/mail').transport;
 
 function randomkey()
 {
@@ -237,16 +240,15 @@ this.rate = function(req,res,next){
 }
 
 this.daftarsa = function(req, res, next) {
-    var private_key = randomkey();
     var data = {
-      nama: AES.encrypt(req.body.nama.toString(),private_key),
-      email: AES.encrypt(req.body.email.toString(),'comrade@codelabs'),
+      nama: req.body.nama,
+      email: req.body.email,
       telp : req.body.telepon,
       password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8), null),
       jenis_user: 'Sahabat Odha',
       status  : '0',
       foto : 'default.png',
-      private_key:private_key
+      private_key:'comrade@codelabs'
     }
     db.acquire(function(err,con){
       con.query('INSERT INTO user SET ? ',data,function(err,result){
@@ -257,10 +259,46 @@ this.daftarsa = function(req, res, next) {
           id_user : result.insertId
         }
         con.query('INSERT INTO sahabat_odha SET ? ',data2,function(err,result2){
-          return res.json({
-            result: 'Created',
-            status: 200,
-            message: 'Registration is successful.'
+          var token = jwt.sign(data, 'emailconfirmationcomrade', {
+            expiresIn: "2h" // expires in 24 hours
+          });
+          var templates = new EmailTemplates({root: 'app/views/emails'});
+          var locals = {
+              email: req.body.email,
+              token: token,
+              url: 'http://comrade-api.azurewebsites.net/confirm',
+          };
+
+          templates.render('confirm-email.html', locals, function(err, html) {
+              if (err) {
+                return res.json({
+                  result: 'Failed',
+                  status: 403,
+                  errors: err,
+                });
+              } else {
+                  transport.sendMail({
+                      from: 'Comrade app <Admin@comrade.com>',
+                      to: locals.email,
+                      subject: 'Confirmation Email.',
+                      html: html
+                      }, function(err, responseStatus) {
+                          if (err) {
+                              return res.json({
+                                result: 'Failed',
+                                status: 403,
+                                errors: err,
+                              });
+                          } else {
+                              return res.status(201).send({
+                                result: 'Created',
+                                status: 201,
+                                message: 'Please check your email to complete your registration.'
+                              });
+                          }
+                      }
+                  );
+              }
           });
         });
       });

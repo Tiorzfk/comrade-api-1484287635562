@@ -35,30 +35,30 @@ this.auth_user = function(req,res,next) {
 			con.query('SELECT * FROM user WHERE email="'+AES.encrypt(email,'comrade@codelabs')+'"', function(err,data){
 				con.release();
       	if(!data.length){
-					return res.json({ result: 'Failed', message: 'Authentication failed. Email not found.' });
+					return res.json({ status:404, message: 'Authentication failed. Email not found.',result:[] });
 				}else if(data){
-					data.forEach(function(data){
-            if(data.status == '0'){
+					//data.forEach(function(data){
+            if(data[0].status == '0'){
               return res.json({message:'Maaf email yang anda masukan belum dikonfirmasi.',status:400,result:[]})
             }
             if(req.body.password){
-              if(data.password){
-                var validPassword = bcrypt.compareSync(req.body.password,data.password);
+              if(data[0].password){
+                var validPassword = bcrypt.compareSync(req.body.password,data[0].password);
 						    if(!validPassword){
 						    	return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
 						    }
-                var token = jwt.sign(data, 'comradeapp', {
-                  //expiresIn: "24h" // expires in 24 hours
+                var token = jwt.sign(data[0], 'comradeapp', {
+                  //expiresIn: "24h" // expires in 24 hour
                 });
                 var data = {
-                  id_user: data.id_user,
-                  nama: data.nama,
-                  email: data.email,
-                  password: data.password,
-                  jenis_kelamin: data.jk,
-                  telepon: data.telp,
-                  jenis_user:data.jenis_user,
-                  private_key:data.private_key
+                  id_user: data[0].id_user,
+                  nama: data[0].nama,
+                  email: data[0].email,
+                  password: data[0].password,
+                  jenis_kelamin: data[0].jk,
+                  telepon: data[0].telp,
+                  jenis_user:data[0].jenis_user,
+                  private_key:data[0].private_key
                 }
                 return res.json({
                     message: 'Success',
@@ -79,14 +79,14 @@ this.auth_user = function(req,res,next) {
               //expiresIn: "24h" // expires in 24 hours
             });
             var data = {
-              id_user: data.id_user,
-              nama: data.nama,
-              email: data.email,
-              password: data.password,
-              jenis_kelamin: data.jk,
-              telepon: data.telp,
-              jenis_user:data.jenis_user,
-              private_key:data.private_key
+              id_user: data[0].id_user,
+              nama: data[0].nama,
+              email: data[0].email,
+              password: data[0].password,
+              jenis_kelamin: data[0].jk,
+              telepon: data[0].telp,
+              jenis_user:data[0].jenis_user,
+              private_key:data[0].private_key
             }
             return res.json({
                     message: 'Success',
@@ -100,7 +100,7 @@ this.auth_user = function(req,res,next) {
                     token: token,
                     result: [data]
                   });
-					});
+					//});
 				}
 			});
 		});
