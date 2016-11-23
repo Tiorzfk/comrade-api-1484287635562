@@ -5,7 +5,7 @@ function Todo() {
 this.getfriend = function(req,res,next) {
 	db.acquire(function(err,con){
 		if (err) throw err;
-		con.query('SELECT friends.id_sahabatodha,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,komunitas,about_sahabatodha FROM friends INNER JOIN user ON user.id_user=friends.id_sahabatodha INNER JOIN sahabat_odha ON sahabat_odha.id_user=friends.id_sahabatodha where friends.status="1" AND friends.id_user='+req.params.id_user, function(err,data){
+		con.query('SELECT friends.id_sahabatodha,email,nama,jk as jenis_kelamin,telp as telepon,tgl_lahir,foto,komunitas,about_sahabatodha,user.private_key FROM friends INNER JOIN user ON user.id_user=friends.id_sahabatodha INNER JOIN sahabat_odha ON sahabat_odha.id_user=friends.id_sahabatodha where friends.status="1" AND friends.id_user='+req.params.id_user, function(err,data){
 			con.release();
 			if(err)
 				return res.json({status:400,message:err.code,result:[],id_usr:req.params.id_user});
