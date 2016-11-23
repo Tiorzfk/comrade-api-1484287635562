@@ -48,7 +48,7 @@ this.auth_user = function(req,res,next) {
 						    	return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
 						    }
                 var token = jwt.sign(data, 'comradeapp', {
-                  //expiresIn: "24h" // expires in 24 hours
+                  //expiresIn: "24h" // expires in 24 hour
                 });
                 var data = {
                   id_user: data[0].id_user,
