@@ -457,6 +457,41 @@ this.change_password = function(req,res,next){
 	});
 }
 
+this.postUserPremium = function(req,res,next){
+	db.acquire(function(err,con){
+		if (err) throw err;
+    	var data = {
+    		nama: req.body.nama,
+    		email: req.body.email,
+    		no_telp: req.body.telepon,
+        kota: req.body.kota
+    	}
+		con.query("insert into user_premium set ?",[data],function(err,rows){
+			con.release();
+			if(err)
+				return res.json({status:400,message:err,result:[]});
+
+			return res.json({message: 'success',status:200,message:'User berhasil dibuat'});
+		});
+	});
+};
+
+this.userPremium = function(req,res,next){
+  db.acquire(function(err,con){
+		if (err) throw err;
+		con.query("SELECT * FROM user_premium ORDER BY id_user DESC",function(err,data){
+			con.release();
+			if(err)
+				return res.json({status:400,message:err,result:[]});
+
+      if(!data.length)
+        return res.json({status:404,message:'User not found',result:[]})
+
+			return res.json({message: 'success',status:200,result:data});
+		});
+	});
+}
+
 }
 
 module.exports = new Todo();

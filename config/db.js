@@ -35,7 +35,7 @@ function Connection() {
   //   user     : 'root',
   //   password : '',
   //   port 	: 3306,
-  //   database : 'acsm_960a6532c696724'
+  //   database : 'comrade'
   // };
 
   this.init = function() {

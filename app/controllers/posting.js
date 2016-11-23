@@ -151,9 +151,9 @@ function rssMedicalxpress(req, res2, next) {
    });
 }
 
-setInterval(rssLiputan, 1800000);
-setInterval(rssSciencedaily, 1800000);
-setInterval(rssMedicalxpress, 1800000);
+setInterval(rssLiputan, 900000);
+setInterval(rssSciencedaily, 900000);
+setInterval(rssMedicalxpress, 900000);
 
 this.posting = function(req, res, next) {
     var jml = 0;
