@@ -460,18 +460,6 @@ this.change_password = function(req,res,next){
 this.postUserPremium = function(req,res,next){
 	db.acquire(function(err,con){
 		if (err) throw err;
-		  req.checkBody("nama", "nama cannot be blank.").notEmpty();
-  		req.checkBody("email", "email cannot be blank.").notEmpty();
-      req.checkBody("telepon", "no. telp cannot be blank.").notEmpty();
-      req.checkBody("kota", "kota cannot be blank.").notEmpty();
-  		var errors = req.validationErrors();
-  		if (errors) {
-  		    return res.send({
-  		        result: 'Failed',
-  		        status_code: 400,
-  		        errors: errors
-  		      });
-    	}
     	var data = {
     		nama: req.body.nama,
     		email: req.body.email,
