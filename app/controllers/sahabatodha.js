@@ -240,16 +240,15 @@ this.rate = function(req,res,next){
 }
 
 this.daftarsa = function(req, res, next) {
-    var private_key = randomkey();
     var data = {
-      nama: AES.encrypt(req.body.nama.toString(),private_key),
-      email: AES.encrypt(req.body.email.toString(),'comrade@codelabs'),
+      nama: req.body.nama,
+      email: req.body.email,
       telp : req.body.telepon,
       password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8), null),
       jenis_user: 'Sahabat Odha',
       status  : '0',
       foto : 'default.png',
-      private_key:private_key
+      private_key:'comrade@codelabs'
     }
     db.acquire(function(err,con){
       con.query('INSERT INTO user SET ? ',data,function(err,result){
