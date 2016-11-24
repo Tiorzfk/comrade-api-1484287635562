@@ -213,7 +213,7 @@ this.confirmation = function(req,res,next) {
       if(rows[0].status == '1'){
         return res.render('emails/success_confirm',{
           title: 'Failed !',
-          msg: 'Sorry, your email address has been confirmed.'
+          msg: 'Sorry, your email address already confirmed.'
         });
       }
       con.query("UPDATE user SET ? WHERE email= '"+AES.encrypt(req.params.email,'comrade@codelabs')+"'",{status:'1'}, function(err,data){

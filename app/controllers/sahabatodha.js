@@ -316,9 +316,12 @@ this.confirm = function(req,res,next) {
       if(!rows.length)
         return res.json({status:400,result:'Failed',message:'email not found.'});
       if(rows[0].status == '1'){
-        return res.render('emails/success_confirm',{
+        return res.render('emails/failed_confirm_sahabatodha',{
           title: 'Failed !',
-          msg: 'Maaf email anda sudah dikonfirmasi.'
+          msg: 'Sorry, your email address already confirmed..',
+          email: req.params.email,
+          token: token,
+          link: 'http://comrade-app.azurewebsites.net/user/sahabatberbagi/form'
         });
       }
       con.query("UPDATE user SET ? WHERE email= '"+req.params.email+"'",{status:'1'}, function(err,data){
