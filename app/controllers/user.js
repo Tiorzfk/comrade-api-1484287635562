@@ -183,9 +183,9 @@ this.register = function(req,res,next) {
                                           });
                                       } else {
                                           //console.log(responseStatus);
-                                          return res.status(201).send({
+                                          return res.json({
                                             result: 'Created',
-                                            status: 201,
+                                            status: 200,
                                             message: 'Registration is successful, check your email to activate your account.'
                                           });
                                       }
