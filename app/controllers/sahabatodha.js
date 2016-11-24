@@ -266,7 +266,7 @@ this.daftarsa = function(req, res, next) {
           var locals = {
               email: req.body.email,
               token: token,
-              url: 'http://comrade-api.azurewebsites.net/confirm'
+              url: 'http://comrade-api.azurewebsites.net/confirm',
           };
 
           templates.render('confirm-email.html', locals, function(err, html) {
@@ -293,7 +293,7 @@ this.daftarsa = function(req, res, next) {
                               return res.status(201).send({
                                 result: 'Created',
                                 status: 201,
-                                message: 'Registration is successful, check your email to activate your account.'
+                                message: 'Please check your email to complete your registration.'
                               });
                           }
                       }
