@@ -11,8 +11,11 @@ var EmailTemplates = require('swig-email-templates');
 var AES = require('./AES');
 const path = require('path');
 const fs = require('fs');
+var mongoose = require('mongoose');
+var tweetmining = require('../models/twitter');
 
 
+mongoose.connect('mongodb://admin:admin@ds145365.mlab.com:45365/sentiment_support');
 
 //setting twitter client
 var client = new Twitter({
@@ -192,6 +195,23 @@ this.sentiment_eng=function(req,res){
       });
 
     });
+}
+
+this.ambil_eng2 = function(req,res){
+  var limit = 8;
+  var page = req.params.page;
+  //var offset = (page - 1)  * limit;
+  var offset = parseInt(page);
+  tweetmining.find({$or:[{status:"train"},{status:"selesai"}],klasifikasi:"positif"})
+    .skip(offset)
+    .limit(limit).exec(function(err,doc){
+      if(err)
+        return res.json({status:400,message:err,result:[]});
+          else if(!doc.length)
+            return res.json({status:400,message: 'Data not found',result:[]})
+      else 
+        return res.json({status:200,total_page:0,message:'success',result:doc});
+  });
 }
 
 this.coba = function(req,res) {
