@@ -230,9 +230,9 @@ this.rate = function(req,res,next){
     	  	errors: err
     	  });
     	}
-    		return res.status(201).send({
+    		return res.json({
     	    result: 'Created',
-    	    status: 201,
+    	    status: 200,
     			message: 'Rating has been saved.'
     		});
 		});
@@ -290,9 +290,8 @@ this.daftarsa = function(req, res, next) {
                                 errors: err,
                               });
                           } else {
-                              return res.status(201).send({
-                                result: 'Created',
-                                status: 201,
+                              return res.json({
+                                status: 200,
                                 message: 'Please check your email to complete your registration.'
                               });
                           }
@@ -301,6 +300,23 @@ this.daftarsa = function(req, res, next) {
               }
           });
         });
+      });
+    });
+};
+
+this.daftarsadetail = function(req, res, next) {
+    var data = {
+      pekerjaan: req.body.pekerjaan,
+      institusi: req.body.institusi,
+      komunitas : req.body.komunitas,
+      usia: req.body.usia,
+      about: req.body.about_sahabatodha
+    }
+    db.acquire(function(err,con){
+      con.query('INSERT INTO user SET ? ',data,function(err,result){
+        if (err)
+           return next(err);
+
       });
     });
 };
@@ -327,7 +343,7 @@ this.confirm = function(req,res,next) {
       con.query("UPDATE user SET ? WHERE email= '"+req.params.email+"'",{status:'1'}, function(err,data){
         return res.render('emails/success_confirm_sahabatodha',{
           title: 'Success !',
-          msg: 'Congratulations , your email address has been confirmed , to activate your user (sahabat odha), please click link bellow !.',
+          msg: 'Congratulations , your email address has been confirmed , to continue your registration user (sahabat berbagi), please click link bellow !.',
           email: req.params.email,
           token: token,
           link: 'http://comrade-app.azurewebsites.net/user/sahabatberbagi/form'
