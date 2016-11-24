@@ -213,13 +213,13 @@ this.confirmation = function(req,res,next) {
       if(rows[0].status == '1'){
         return res.render('emails/success_confirm',{
           title: 'Failed !',
-          msg: 'Maaf email anda sudah dikonfirmasi.'
+          msg: 'Sorry, your email address has been confirmed.'
         });
       }
       con.query("UPDATE user SET ? WHERE email= '"+AES.encrypt(req.params.email,'comrade@codelabs')+"'",{status:'1'}, function(err,data){
         return res.render('emails/success_confirm',{
           title: 'Success !',
-          msg: 'Selamat, email anda berhasil dikonfirmasi, silahkan login.'
+          msg: 'Congratulations, your email address has been confirmed.'
         });
       });
     });

@@ -1,5 +1,6 @@
 var sa = require('../controllers/sahabatodha');
 var jwt = require('jsonwebtoken');
+var cektokenemail = require('../../config/cektokenemail');
 var cek = require('../../config/cektoken');
 
 module.exports = {
@@ -17,5 +18,7 @@ module.exports = {
     app.route('/user/sahabatodha/recommend').all(cek.cektoken).post(sa.recommend);
 
     app.route('/user/daftarsahabatodha').all(cek.cektoken).post(sa.daftarsa);
+
+    app.route('/confirm_sahabatodha/:email').all(cektokenemail.cektoken).get(sa.confirm);
   }
 };

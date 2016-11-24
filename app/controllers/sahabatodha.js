@@ -266,7 +266,7 @@ this.daftarsa = function(req, res, next) {
           var locals = {
               email: req.body.email,
               token: token,
-              url: 'http://comrade-api.azurewebsites.net/confirm',
+              url: 'http://comrade-api.azurewebsites.net/confirm_sahabatodha',
           };
 
           templates.render('confirm-email.html', locals, function(err, html) {
@@ -305,6 +305,34 @@ this.daftarsa = function(req, res, next) {
     });
 };
 
+this.confirm = function(req,res,next) {
+  var token = req.query.token;
+  db.acquire(function(err,con){
+    con.query("select * from user where email = '"+req.params.email+"'",function(err,rows){
+			con.release();
+      if(err)
+        return res.json(err);
+
+      if(!rows.length)
+        return res.json({status:400,result:'Failed',message:'email not found.'});
+      if(rows[0].status == '1'){
+        return res.render('emails/success_confirm',{
+          title: 'Failed !',
+          msg: 'Maaf email anda sudah dikonfirmasi.'
+        });
+      }
+      con.query("UPDATE user SET ? WHERE email= '"+req.params.email+"'",{status:'1'}, function(err,data){
+        return res.render('emails/success_confirm_sahabatodha',{
+          title: 'Success !',
+          msg: 'Congratulations , your email address has been confirmed , to activate your user (sahabat odha), please click link bellow !.',
+          email: req.params.email,
+          token: token,
+          link: 'http://comrade-app.azurewebsites.net/user/sahabatberbagi/form'
+        });
+      });
+    });
+  });
+}
 
 }
 
