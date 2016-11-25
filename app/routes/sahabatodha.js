@@ -19,7 +19,7 @@ module.exports = {
 
     app.route('/user/daftarsahabatodha').post(sa.daftarsa);
 
-    app.route('/user/daftarsahabatodhadetail').all(cek.cektoken).post(sa.daftarsadetail);
+    app.route('/user/daftarsahabatodhadetail').post(sa.daftarsadetail);
 
     app.route('/confirm_sahabatodha/:email').all(cektokenemail.cektoken).get(sa.confirm);
   }
