@@ -24,7 +24,7 @@ var sahabatodha = require('./app/routes/sahabatodha');
 var sticker = require('./app/routes/sticker');
 var twitter = require('./app/routes/twitter');
 var user = require('./app/routes/user');
-
+var sms = require('./app/routes/sms');
 var app = express();
 
 // Add headers
@@ -88,7 +88,7 @@ sahabatodha.configure(app);
 sticker.configure(app);
 twitter.configure(app);
 user.configure(app,passport);
-
+sms.configure(app);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
