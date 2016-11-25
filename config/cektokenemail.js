@@ -8,7 +8,7 @@ module.exports.cektoken=function(req, res, next) {
     	// verifies secret and checks exp
     	jwt.verify(token, 'emailconfirmationcomrade', function(err, decoded) {
     	  if (err) {
-    	    return res.json({ status: 503, message: 'Failed to authenticate token.',result:[] });
+    	    return res.send('Expired');
     	  } else {
     	    // if everything is good, save to request for use in other routes
     	    req.decoded = decoded;
@@ -20,10 +20,7 @@ module.exports.cektoken=function(req, res, next) {
 
     	// if there is no token
     	// return an error
-    	return res.status(403).send({
-    	    status : 403,
-    	    message: 'No token provided.'
-    	});
+    	return res.send('No token provided.');
 
   	}
 }

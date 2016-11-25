@@ -312,7 +312,8 @@ this.daftarsadetail = function(req, res, next) {
       institusi: req.body.institusi,
       komunitas : req.body.komunitas,
       usia: req.body.usia,
-      about_sahabatodha: req.body.about
+      about_sahabatodha: req.body.about,
+      status_aktivasi: '0'
     }
     db.acquire(function(err,con){
       var id_user;
