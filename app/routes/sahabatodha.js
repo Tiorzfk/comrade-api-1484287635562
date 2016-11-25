@@ -17,7 +17,7 @@ module.exports = {
 
     app.route('/user/sahabatodha/recommend').all(cek.cektoken).post(sa.recommend);
 
-    app.route('/user/daftarsahabatodha').all(cek.cektoken).post(sa.daftarsa);
+    app.route('/user/daftarsahabatodha').post(sa.daftarsa);
 
     app.route('/user/daftarsahabatodhadetail').all(cek.cektoken).post(sa.daftarsadetail);
 

@@ -307,12 +307,12 @@ this.daftarsa = function(req, res, next) {
 
 this.daftarsadetail = function(req, res, next) {
     var email = req.body.email;
-    var data = {
+    var datasa = {
       pekerjaan: req.body.pekerjaan,
       institusi: req.body.institusi,
       komunitas : req.body.komunitas,
       usia: req.body.usia,
-      about: req.body.about_sahabatodha
+      about_sahabatodha: req.body.about
     }
     db.acquire(function(err,con){
       var id_user;
@@ -330,7 +330,7 @@ this.daftarsadetail = function(req, res, next) {
         console.log('Sebelum sync : '+id_user);
         cek_id.sync();
         console.log('Sesudah sync : '+id_user);
-        con.query('UPDATE user SET ? ',data,function(err,result){
+        con.query('UPDATE sahabat_odha SET ? WHERE id_user='+id_user,datasa,function(err,result){
           if (err)
              return next(err);
 
