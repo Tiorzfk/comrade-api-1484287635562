@@ -8,6 +8,7 @@ var bcrypt = require('bcrypt-nodejs');
 var jwt = require('jsonwebtoken');
 var EmailTemplates = require('swig-email-templates');
 var transport = require('../../config/mail').transport;
+var Sync = require('sync');
 
 function randomkey()
 {
@@ -305,6 +306,7 @@ this.daftarsa = function(req, res, next) {
 };
 
 this.daftarsadetail = function(req, res, next) {
+    var email = req.body.email;
     var data = {
       pekerjaan: req.body.pekerjaan,
       institusi: req.body.institusi,
@@ -313,10 +315,28 @@ this.daftarsadetail = function(req, res, next) {
       about: req.body.about_sahabatodha
     }
     db.acquire(function(err,con){
-      con.query('INSERT INTO user SET ? ',data,function(err,result){
-        if (err)
-           return next(err);
+      var id_user;
+      function cek_id(callback) {
+        con.query('SELECT * FROM user WHERE email="'+email+'"',function(err,data){
+          con.release();
+          if(err)
+            return next(err);
 
+            id_user = data[0].id_user;
+            callback(null,id_user);
+        });
+      }
+      Sync(function(){
+        console.log('Sebelum sync : '+id_user);
+        cek_id.sync();
+        console.log('Sesudah sync : '+id_user);
+        con.query('UPDATE user SET ? ',data,function(err,result){
+          if (err)
+             return next(err);
+
+          return res.json({status:200,message:'Terimakasih telah mendaftar sebagai user sahabat berbagi, untuk sementara ini user anda belum kami aktifkan, kami akan menginformasikan melalui email jika user anda sudah aktif, Terimakasih .'});
+
+        });
       });
     });
 };
