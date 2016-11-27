@@ -48,8 +48,6 @@ function Todo() {
 	var nomor=new Array();
 	function mulaikirim(data,callback){
 		data.forEach(function(item){
-			var userkey = "jac1ko"; 
-			var passkey = "testing";
 			var nomor = item.no_telp;
 			var pesan = req.body.pesan;
 			var url = apiurl+"?userkey="+userkey+"&passkey="+passkey+"&nohp="+nomor+"&pesan="+pesan;
