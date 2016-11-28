@@ -37,7 +37,7 @@ var ambiltweet = function(){
             if(rows.length == 0)
             {
                 var data = {
-                 id : item.id_str,
+                 id_string : item.id_str,
                  screen_name:item.user.screen_name,
                  text :item.text,
                  profile_image_url  : item.user.profile_image_url,
@@ -125,7 +125,7 @@ this.sentimen = function(req, res, next) {
 		var jml = 0;
 
 		var sqljum = "SELECT COUNT(*) as jml FROM tweet_support where klasifikasi='positif' and status='selesai'";
-		var sql ="SELECT * from tweet_support where klasifikasi='positif' and status='selesai' ORDER BY id DESC LIMIT "+limit+" OFFSET "+offset;
+		var sql ="SELECT * from tweet_support where klasifikasi='positif' and status='selesai' LIMIT "+limit+" OFFSET "+offset;
 
 		function jml_posting(callback) {
 				con.query(sqljum,function(err,data){
