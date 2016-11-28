@@ -65,24 +65,26 @@ function rssSciencedaily(req, res2, next) {
          parser.parseString(data, function(err, result) {
            db.acquire(function(err,con){
              if (err) throw err;
-             var arrayisi = striptags(result.rss.channel[0].item[0].description[0]).split(' ');
+             var arrayisi = striptags(result.rss.channel[0].item[10].description[0]).split(' ');
              var sliceisi = arrayisi.slice(0,17);
-             var foto = result.rss.channel[0].item[0]['media:thumbnail'];
+             var foto = result.rss.channel[0].item[10]['media:thumbnail'];
              if(!foto){
                foto = 'http://cdn0-a.production.liputan6.static6.com/medias/1293020/big/005371100_1468993189-Ribbon1__avert_org_.jpg';
+             }else{
+               foto = result.rss.channel[0].item[10]['media:thumbnail'][0].$.url;
              }
              var dataposting = {
                //id : result.rss.channel[0].item[0].guid[0]._,
-               judul : result.rss.channel[0].item[0].title[0],
+               judul : result.rss.channel[0].item[10].title[0],
                deskripsi : sliceisi.join(' '),
-               isi : result.rss.channel[0].item[0].description[0],
+               isi : result.rss.channel[0].item[10].description[0],
                foto : foto,
                status : '0',
                id_kategori : 2,
                id_admin : 1,
                lang : 'en',
                tgl_posting : moment().format('YYYY-MM-DD h:mm:ss'),
-               sumber : result.rss.channel[0].item[0].guid[0]._
+               sumber : result.rss.channel[0].item[10].guid[0]._
              }
              //return res2.json(moment().format('YYYY-MM-DD'));
 
@@ -155,10 +157,65 @@ function rssMedicalxpress(req, res2, next) {
    });
 }
 
+function rssAidsMap(req, res2, next) {
+  parser.on('error', function(err) { console.log('Parser error', err); });
+
+ var data = '';
+ http.get('http://www.aidsmap.com/Aidsmap-news-English/page/1260794', function(res) {
+     if (res.statusCode >= 200 && res.statusCode < 400) {
+       res.on('data', function(data_) { data += data_.toString(); });
+       res.on('end', function() {
+         parser.parseString(data, function(err, result) {
+           db.acquire(function(err,con){
+             if (err) throw err;
+             var arrayisi = striptags(result.rss.channel[0].item[0].description[0]).split(' ');
+             var sliceisi = arrayisi.slice(0,17);
+             var foto = result.rss.channel[0].item[0]['media:thumbnail'];
+             if(!foto){
+               foto = 'http://cdn0-a.production.liputan6.static6.com/medias/1293020/big/005371100_1468993189-Ribbon1__avert_org_.jpg';
+             }else{
+               foto = result.rss.channel[0].item[0]['media:thumbnail'][0].$.url;
+             }
+             var dataposting = {
+               //id : result.rss.channel[0].item[0].guid[0]._,
+               judul : result.rss.channel[0].item[0].title[0],
+               deskripsi : sliceisi.join(' '),
+               isi : result.rss.channel[0].item[0].description[0],
+               foto : foto,
+               status : '0',
+               id_kategori : 1,
+               id_admin : 1,
+               lang : 'en',
+               tgl_posting : moment().format('YYYY-MM-DD h:mm:ss'),
+               sumber : result.rss.channel[0].item[0].link[0]
+             }
+             //return console.log(dataposting);
+
+             con.query('SELECT * FROM posting WHERE judul="'+dataposting.judul+'"',function(err,data){
+               if(!data.length){
+                 con.query('INSERT INTO posting SET ?',dataposting,function(err,data){
+                   con.release();
+                   if (err) throw err;
+
+                   //console.log('Berhasil menambah data');
+                 });
+               //}else {
+                 //console.log('data sudah ada');
+               }
+             });
+           });
+           //return res2.json([data]);
+         });
+       });
+     }
+   });
+}
+
 //900000
-setInterval(rssLiputan, 900000);
-setInterval(rssSciencedaily, 900000);
+// setInterval(rssLiputan, 900000);
+ setInterval(rssSciencedaily, 3000);
 //setInterval(rssMedicalxpress, 3000);
+//setInterval(rssAidsMap, 3000);
 
 this.posting = function(req, res, next) {
     var jml = 0;

@@ -209,7 +209,7 @@ this.ambil_eng2 = function(req,res){
         return res.json({status:400,message:err,result:[]});
           else if(!doc.length)
             return res.json({status:400,message: 'Data not found',result:[]})
-      else 
+      else
         return res.json({status:200,total_page:0,message:'success',result:doc});
   });
 }

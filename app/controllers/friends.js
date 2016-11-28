@@ -57,7 +57,7 @@ this.addfriends = function(req,res,next){
 			if(err)
 				return res.json({result:'Failed',status:400,message:err,result:[]});
 
-			return res.json({result: 'success',status:200,message:'Berhasil menambahkan teman'});
+			return res.json({result: 'success',status:200,message:'Successfully added friend'});
 		});
 	});
 };
@@ -71,7 +71,7 @@ this.konfirmasi = function(req,res,next){
 			if (!data.affectedRows)
 				return res.json({status:400,message: 'Data not found',result:[]})
 
-			return res.json({result:'success',status:200,message:'Konfirmasi teman berhasil'});
+			return res.json({result:'success',status:200,message:'Success confirm friend.'});
 
 		});
 	});
@@ -86,7 +86,7 @@ this.hapuskontak = function(req,res,next){
 			if (!data.affectedRows)
 				return res.json({status:400,message: 'Data not found',result:[]})
 
-			return res.json({result:'success',status:200,message:'Kontak berhasil dihapus'});
+			return res.json({result:'success',status:200,message:'Successfully deleted contact'});
 
 		});
 	});
