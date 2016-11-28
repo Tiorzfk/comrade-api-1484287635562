@@ -1,27 +1,27 @@
-var request = require('request'); 
+var request = require('request');
 var db = require('../../config/db');
 var Sync = require('Sync');
 var AES = require('./AES');
 
-//Settingan SMS untuk percobaan 
-// var userkey = "jac1ko"; 
+//Settingan SMS untuk percobaan
+// var userkey = "jac1ko";
 // var passkey = "testing";
-// var apiurl = "https://reguler.zenziva.net/apps/smsapi.php"; 
+// var apiurl = "https://reguler.zenziva.net/apps/smsapi.php";
 
 
-//Setting SMS Masking Comrade 
-var userkey = "3rj4xe"; 
+//Setting SMS Masking Comrade
+var userkey = "3rj4xe";
 var passkey = "code@labs";
-var apiurl = "https://alpha.zenziva.net/apps/smsapi.php"; 
+var apiurl = "https://alpha.zenziva.net/apps/smsapi.php";
 
 function Todo() {
 	this.testing = function(req,res){
-		var text = req.body.text; 
-		var panjang=text.length; 
+		var text = req.body.text;
+		var panjang=text.length;
 		if(panjang>160)
 		{
 			return res.send("Maksimal kirim sms adalah 160 karakter");
-		}else 
+		}else
 			return res.send("panjang karakter adalah"+panjang);
 	}
 
@@ -29,7 +29,7 @@ function Todo() {
 		var nomor = req.body.nomor;
 		var pesan = req.body.pesan;
 		var url = apiurl+"?userkey="+userkey+"&passkey="+passkey+"&nohp="+nomor+"&pesan="+pesan;
-		var panjang = pesan.length; 
+		var panjang = pesan.length;
 		if(pesan>160){
 			return res.json({status:400,message:'Maksimal pesan yang dikirim adalah 160',result:[]});
 		}else {
@@ -40,7 +40,7 @@ function Todo() {
 					return res.json({status:400,message:'Terjadi kesalahan',result:err});
 				}
 			});
-			
+
 		}
 	}
 
@@ -48,7 +48,7 @@ function Todo() {
 	var nomor=new Array();
 	function mulaikirim(data,callback){
 		data.forEach(function(item){
-			var userkey = "jac1ko"; 
+			var userkey = "jac1ko";
 			var passkey = "testing";
 			var nomor = item.no_telp;
 			var pesan = req.body.pesan;
@@ -66,13 +66,13 @@ function Todo() {
 			if(item.private_key!='') {
 				var telp = AES.decrypt(item.telp,item.private_key)
 				nomor.push({no_telp:telp});
-			} else 
+			} else
 			{
 				nomor.push({no_telp:item.telp});
 			}
 		});
 		callback(null,nomor);
-	}	
+	}
 
 	Sync(function(){
 		if(pesan.length>160)
@@ -83,7 +83,7 @@ function Todo() {
 			db.acquire(function(err,con){
 				if (err) throw err;
 
-				var kategori = req.params.kategori; 
+				var kategori = req.params.kategori;
 				if(kategori=="premium")
 				{
 					con.query("SELECT * FROM user_premium ORDER BY id_user DESC",function(err,data){
@@ -99,12 +99,12 @@ function Todo() {
 					});
 				}else if(kategori=="member"){
 					con.query("SELECT telp,private_key FROM USER WHERE STATUS=1 AND telp!=''",function(err,data){
-						con.release(); 
+						con.release();
 						decryptnomor.sync(null,data);
 						mulaikirim.sync(null,nomor)
 						return res.json({status:200,message: 'Berhasil mengirim pesan ke '+nomor.length+' nomor',result:[]});
 					});
-				} else 
+				} else
 				{
 					return res.json({status:400,message:'Fitur belum tersedia',result:[]});
 				}
