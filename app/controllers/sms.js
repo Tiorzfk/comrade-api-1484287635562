@@ -45,11 +45,10 @@ function Todo() {
 	}
 
 	this.kirimgroup = function(req,res){
+	var pesan = req.body.pesan;
 	var nomor=new Array();
-	function mulaikirim(data,callback){
+	function mulaikirim(data){
 		data.forEach(function(item){
-			var userkey = "jac1ko";
-			var passkey = "testing";
 			var nomor = item.no_telp;
 			var pesan = req.body.pesan;
 			var url = apiurl+"?userkey="+userkey+"&passkey="+passkey+"&nohp="+nomor+"&pesan="+pesan;
@@ -58,7 +57,7 @@ function Todo() {
         			console.log(err);
         	});
         });
-		callback(null,data);
+
 	}
 
 	function decryptnomor(data,callback){
@@ -93,7 +92,7 @@ function Todo() {
 			      		else if(!data.length)
 			        		return res.json({status:404,message:'User not found',result:[]})
 			        	else {
-			        		mulaikirim.sync(null,data);
+			        		mulaikirim(data);
 							return res.json({status:200,message: 'Berhasil mengirim pesan',result:[]});
 			        	}
 					});
@@ -101,7 +100,7 @@ function Todo() {
 					con.query("SELECT telp,private_key FROM USER WHERE STATUS=1 AND telp!=''",function(err,data){
 						con.release();
 						decryptnomor.sync(null,data);
-						mulaikirim.sync(null,nomor)
+						mulaikirim(nomor);
 						return res.json({status:200,message: 'Berhasil mengirim pesan ke '+nomor.length+' nomor',result:[]});
 					});
 				} else
