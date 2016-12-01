@@ -215,7 +215,7 @@ function rssAidsMap(req, res2, next) {
  setInterval(rssLiputan, 900000);
  setInterval(rssSciencedaily, 900000);
 //setInterval(rssMedicalxpress, 3000);
- setInterval(rssAidsMap, 3000);
+ setInterval(rssAidsMap, 900000);
 
 this.posting = function(req, res, next) {
     var jml = 0;
