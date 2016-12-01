@@ -18,7 +18,6 @@ function randomkey()
 }
 
 function Todo() {
-
 this.auth_user = function(req,res,next) {
 	req.checkBody("email", "Enter a valid email address.").isEmail();
 	var errors = req.validationErrors();
