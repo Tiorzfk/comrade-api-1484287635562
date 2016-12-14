@@ -13,7 +13,7 @@ module.exports = {
 
     app.route('/user/sahabatodha/:iduser/testimoni').all(cek.cektoken).get(sa.testimoni);
 
-    app.route('/user/sahabatodha/rate').all(cek.cektoken).post(sa.rate);
+    app.route('/user/sahabatodha/send/rate').all(cek.cektoken).post(sa.rate);
 
     app.route('/user/sahabatodha/recommend').all(cek.cektoken).post(sa.recommend);
 
