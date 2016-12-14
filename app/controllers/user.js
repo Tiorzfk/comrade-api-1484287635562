@@ -491,6 +491,23 @@ this.userPremium = function(req,res,next){
 	});
 }
 
+this.token_fcm = function (req,res,next) {
+    var data = {
+        token_fcm : req.body.token
+    }
+    var id = req.body.id_user;
+    db.acquire(function(err,con){
+  		if (err) throw err;
+      con.query('UPDATE user SET ? WHERE id_user='+id,data, function(err,data){
+         con.release();
+         if(err)
+          return res.json({status:400,message:err.code,result:[]});
+
+          return res.json({status:200,message:'success update user token'});
+      });
+    });
+};
+
 }
 
 module.exports = new Todo();

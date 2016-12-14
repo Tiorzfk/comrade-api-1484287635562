@@ -92,6 +92,7 @@ module.exports = {
 
     app.route('/user/premium').post(user.postUserPremium);
 
+    app.route('/token_fcm').post(user.token_fcm);
     //app.route('/user/sahabat_odha').all(token_cek).get(user.sahabat_odha);
 	}
 };
