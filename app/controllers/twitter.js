@@ -15,7 +15,7 @@ var mongoose = require('mongoose');
 var tweetmining = require('../models/twitter');
 
 
-mongoose.connect('mongodb://admin:admin@ds145365.mlab.com:45365/sentiment_support');
+//mongoose.connect('mongodb://admin:admin@ds145365.mlab.com:45365/sentiment_support');
 
 //setting twitter client
 var client = new Twitter({

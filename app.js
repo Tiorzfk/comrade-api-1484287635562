@@ -25,6 +25,7 @@ var sticker = require('./app/routes/sticker');
 var twitter = require('./app/routes/twitter');
 var user = require('./app/routes/user');
 var sms = require('./app/routes/sms');
+var healbox = require('./app/routes/healbox');
 var app = express();
 
 // Add headers
@@ -89,6 +90,7 @@ sticker.configure(app);
 twitter.configure(app);
 user.configure(app,passport);
 sms.configure(app);
+healbox.configure(app);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
