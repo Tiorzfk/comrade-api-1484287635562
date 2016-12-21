@@ -238,13 +238,14 @@ this.posting = function(req, res, next) {
         Sync(function(){
           jml_posting.sync();
           con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" ORDER BY tgl_posting LIMIT '+limit+' OFFSET '+offset, function(err,data){
-
+              con.release();
               var total_page = Math.ceil(jml / limit);
               if(err){
                   return res.json({status:400,message:err.code,result:[]});
               }else if(!data.length){
                   return res.json({status:404,message: 'Data not found',result:[]})
               }
+              console.log(data);
               return res.json({status:200,total_page:total_page,message:'success',result:data});
           });
         });
@@ -256,10 +257,6 @@ this.posting = function(req, res, next) {
 
 
 this.postingID = function(req, res, next) {
-  $slug = ('Link found between HIV treatment, neuronal degeneration').replace(/[^a-z0-9-]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-  var final =  $slug.toLowerCase();
-  var date = new Date();
-  var url = 'http://comrade-app.azurewebsites.net/'+date.getFullYear()+'/'+final;
     db.acquire(function(err,con){
       if (err) throw err;
         con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber,slug FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND id_posting='+req.params.id, function(err,data){
@@ -281,20 +278,11 @@ this.kategori = function(req, res, next) {
         var page = req.params.page;
         //var offset = (page - 1)  * limit;
         var offset = page;
-        var jml = 0;
-        function jml_posting(callback) {
-            con.query('SELECT COUNT(*) as jml FROM posting WHERE status="1" AND id_kategori="'+req.params.kategori+'"',function(err,data){
-              con.release();
-              if(err)
-                return res.json({status:400,message:err.code,result:[]})
 
-                jml = data[0].jml;
-                callback(null,jml);
-            });
-        }
         if(isNaN(req.params.kategori)) {
-            Sync(function(){
+
               con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber,slug FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND kategori.nama="'+req.params.kategori+'" ORDER BY tgl_posting DESC LIMIT '+limit+' OFFSET '+offset, function(err,data){
+                con.release();
                   if(err){
                     return res.json({status:400,message:err.code,result:[]});
                   }else if(!data.length){
@@ -302,22 +290,19 @@ this.kategori = function(req, res, next) {
                   }
                   return res.json({status:200,message:'success',result:data});
               });
-            });
+
         } else {
-          Sync(function(){
-            jml_posting.sync();
 
             con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber,slug FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND kategori.id_kategori='+req.params.kategori+' ORDER BY tgl_posting DESC LIMIT '+limit+' OFFSET '+offset, function(err,data){
-               var total_page = Math.ceil(jml / limit);
-
+              con.release();
                if(err){
                 return res.json({status:400,message:err.code,result:[]});
                 }else if(!data.length){
                     return res.json({status:404,message: 'Data not found',result:[]})
                 }
-                return res.json({status:200,total_page:total_page,message:'success',result:data});
+                return res.json({status:200,message:'success',result:data});
             });
-          });
+
         }
     });
 };
@@ -328,6 +313,7 @@ this.kategoriAll = function(req, res, next) {
         if(isNaN(req.params.kategori)) {
 
               con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND kategori.nama="'+req.params.kategori+'" ORDER BY tgl_posting DESC', function(err,data){
+                con.release();
                   if(err){
                     return res.json({status:400,message:err.code,result:[]});
                   }else if(!data.length){
@@ -337,7 +323,7 @@ this.kategoriAll = function(req, res, next) {
               });
         } else {
             con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND kategori.id_kategori='+req.params.kategori+' ORDER BY tgl_posting DESC', function(err,data){
-
+              con.release();
                if(err){
                 return res.json({status:400,message:err.code,result:[]});
                 }else if(!data.length){
@@ -358,19 +344,20 @@ this.postLang = function(req, res, next) {
         //var offset = (page - 1)  * limit;
         var offset = page;
         var jml = 0;
-        function jml_posting(callback) {
-            con.query('SELECT COUNT(*) as jml FROM posting WHERE status="1" AND id_kategori="'+req.params.kategori+'" AND lang="'+req.params.lang+'"',function(err,data){
-              con.release();
-              if(err)
-                return res.json({status:400,message:err.code,result:[]})
-
-                jml = data[0].jml;
-                callback(null,jml);
-            });
-        }
+        // function jml_posting(callback) {
+        //     con.query('SELECT COUNT(*) as jml FROM posting WHERE status="1" AND id_kategori="'+req.params.kategori+'" AND lang="'+req.params.lang+'"',function(err,data){
+        //       con.release();
+        //       if(err)
+        //         return res.json({status:400,message:err.code,result:[]})
+        //
+        //         jml = data[0].jml;
+        //         callback(null,jml);
+        //     });
+        // }
         if(isNaN(req.params.kategori)) {
-            Sync(function(){
+            // Sync(function(){
               con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND kategori.nama="'+req.params.kategori+'" AND lang="'+req.params.lang+'" ORDER BY tgl_posting DESC LIMIT '+limit+' OFFSET '+offset, function(err,data){
+                con.release();
                   if(err){
                     return res.json({status:400,message:err.code,result:[]});
                   }else if(!data.length){
@@ -378,22 +365,22 @@ this.postLang = function(req, res, next) {
                   }
                   return res.json({status:200,message:'success',result:data});
               });
-            });
+            // });
         } else {
-          Sync(function(){
-            jml_posting.sync();
+          // Sync(function(){
+          //   jml_posting.sync();
 
             con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND kategori.id_kategori='+req.params.kategori+' AND lang="'+req.params.lang+'" ORDER BY tgl_posting DESC LIMIT '+limit+' OFFSET '+offset, function(err,data){
-               var total_page = Math.ceil(jml / limit);
-
+              //  var total_page = Math.ceil(jml / limit);
+              con.release();
                if(err){
                 return res.json({status:400,message:err.code,result:[]});
                 }else if(!data.length){
                     return res.json({status:404,message: 'Data not found',result:[]})
                 }
-                return res.json({status:200,total_page:total_page,message:'success',result:data});
+                return res.json({status:200,message:'success',result:data});
             });
-          });
+          // });
         }
     });
 };
