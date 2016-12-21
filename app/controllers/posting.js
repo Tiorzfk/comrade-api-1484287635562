@@ -231,8 +231,6 @@ this.posting = function(req, res, next) {
           });
       }
       if (err) throw err;
-        // 1 2 3 4  5
-        // 0 8 16 24 32
         var limit = 8;
         var page = req.params.page;
         //var offset = (page - 1)  * limit;
@@ -258,12 +256,16 @@ this.posting = function(req, res, next) {
 
 
 this.postingID = function(req, res, next) {
+  $slug = ('Link found between HIV treatment, neuronal degeneration').replace(/[^a-z0-9-]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  var final =  $slug.toLowerCase();
+  var date = new Date();
+  var url = 'http://comrade-app.azurewebsites.net/'+date.getFullYear()+'/'+final;
     db.acquire(function(err,con){
       if (err) throw err;
         con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber,slug FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND id_posting='+req.params.id, function(err,data){
           con.release();
             if(err){
-                return res.json({status:400,message:err.code,result:[]});
+                return res.json({status:400,url:url,message:err.code,result:[]});
             }else if(!data.length){
                 return res.json({status:404,message: 'Data not found',result:[]})
             }

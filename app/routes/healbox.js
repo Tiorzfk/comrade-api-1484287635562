@@ -6,5 +6,7 @@ module.exports = {
 
     app.route('/healbox').post(healbox.updateID);
 
+    app.route('/arv_rminder').post(healbox.arv_reminder);
+
   }
 };
