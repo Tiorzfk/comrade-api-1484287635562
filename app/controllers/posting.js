@@ -238,7 +238,7 @@ this.posting = function(req, res, next) {
         Sync(function(){
           jml_posting.sync();
           con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" ORDER BY tgl_posting LIMIT '+limit+' OFFSET '+offset, function(err,data){
-              con.release();
+              //con.release();
               var total_page = Math.ceil(jml / limit);
               if(err){
                   return res.json({status:400,message:err.code,result:[]});
