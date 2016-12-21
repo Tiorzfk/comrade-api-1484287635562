@@ -25,10 +25,11 @@ this.postBanner = function(req,res,next) {
 		db.acquire(function(err,con){
       if (err) throw err;
       con.query('INSERT INTO banner SET ?',data,function(err,data){
+				con.release();
         if(err)
           return res.json(err)
 
-        return res.status(200).send({
+        return res.json({
           result: 'Success',
           status: 200,
           message: 'Banner berhasil disimpan.'
