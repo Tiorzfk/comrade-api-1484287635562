@@ -17,6 +17,27 @@ this.banner = function(req,res,next) {
 	});
 };
 
+this.postBanner = function(req,res,next) {
+    var data = {
+      nama_banner : req.body.nama_banner,
+      banner_img : req.body.banner_img
+    }
+		db.acquire(function(err,con){
+      if (err) throw err;
+      con.query('INSERT INTO banner SET ?',data,function(err,data){
+        if(err)
+          return res.json(err)
+
+        return res.status(200).send({
+          result: 'Success',
+          status: 200,
+          message: 'Banner berhasil disimpan.'
+        });
+
+      });
+		});
+}
+
 }
 
 module.exports = new Todo();
