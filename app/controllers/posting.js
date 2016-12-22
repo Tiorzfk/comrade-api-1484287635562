@@ -5,6 +5,7 @@ var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 var http = require('http');
 var striptags = require('striptags');
+var AES = require('./AES');
 
 function Todo() {
 
@@ -245,7 +246,6 @@ this.posting = function(req, res, next) {
               }else if(!data.length){
                   return res.json({status:404,message: 'Data not found',result:[]})
               }
-              console.log(data);
               return res.json({status:200,total_page:total_page,message:'success',result:data});
           });
         });
