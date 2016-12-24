@@ -77,6 +77,7 @@ this.arv_reminder = function (req,res,next) {
 
 this.put_arv_reminder = function (req,res,next) {
 	var data = {
+			id_healbox : req.body.id_healbox,
 			idarvtype : req.body.idarvtype,
 			tipearv : req.body.tipearv,
 			warnaLabel : req.body.warnaLabel,
