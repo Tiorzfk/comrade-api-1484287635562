@@ -75,6 +75,40 @@ this.arv_reminder = function (req,res,next) {
 	});
 };
 
+this.put_arv_reminder = function (req,res,next) {
+	var data = {
+			idarvtype : req.body.idarvtype,
+			tipearv : req.body.tipearv,
+			warnaLabel : req.body.warnaLabel,
+			kategori_jam : req.body.kategori_jam,
+			starthour : req.body.starthour,
+			startminute : req.body.startminute,
+			totalDetikStart : req.body.totalDetikStart,
+			idPiStart : req.body.idPiStart,
+			middlehour : req.body.middlehour,
+			middleminute : req.body.middleminute,
+			totalDetikMiddle : req.body.totalDetikMiddle,
+			idPiMiddle : req.body.idPiMiddle,
+			endhour : req.body.endhour,
+			endminute : req.body.endminute,
+			totalDetikEnd : req.body.totalDetikEnd,
+			idPiEnd : req.body.idPiEnd
+	}
+	var id = req.params.id;
+	db.acquire(function(err,con){
+		if (err) throw err;
+		con.query('UPDATE arv_reminder SET ? WHERE id='+id,data, function(err,data){
+			 con.release();
+			 if(err)
+				return res.json({status:400,message:err.code,result:[]});
+			 if(!data.affectedRows)
+ 			 	return res.json({status:404,message:'ID not found',result:[]});
+
+				return res.json({status:200,message:'success update reminder arv'});
+		});
+	});
+};
+
 }
 
 module.exports = new Todo();
