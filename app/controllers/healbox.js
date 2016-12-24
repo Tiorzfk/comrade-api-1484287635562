@@ -110,6 +110,22 @@ this.put_arv_reminder = function (req,res,next) {
 	});
 };
 
+this.healboxID = function(req,res,next) {
+	var id = req.params.id_user;
+	db.acquire(function(err,con){
+		if (err) throw err;
+		con.query('SELECT id_healbox FROM healbox WHERE id_user='+id, function(err,data){
+			 con.release();
+			 if(err)
+				return res.json({status:400,message:err.code,result:[]});
+			 if(!data.length)
+ 			 	return res.json({status:404,message:'ID not found',result:[]});
+
+				return res.json({status:200,message:'success',result:data});
+		});
+	});
+}
+
 }
 
 module.exports = new Todo();
