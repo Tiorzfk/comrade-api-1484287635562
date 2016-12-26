@@ -77,6 +77,7 @@ module.exports = {
         return res.json({result: 'Failed', message: req.flash('signupMessage') });
     });*/
     app.route('/user/auth').post(user.auth_user);
+    app.route('/admin/auth').post(user.auth_admin);
 
     app.route('/user/register').post(user.register);
 
