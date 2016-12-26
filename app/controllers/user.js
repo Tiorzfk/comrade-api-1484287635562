@@ -135,6 +135,8 @@ this.auth_admin = function(req,res,next) {
             komunitas:data[0].komunitas,
             jenis_admin: data[0].jenis_admin
           }
+          var sess = req.session;
+          sess.data=dataAdmin;
           return res.json({
                   message: 'Success',
                   status: 200,
