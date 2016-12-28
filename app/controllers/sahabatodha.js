@@ -226,7 +226,7 @@ this.rate = function(req,res,next){
 			if (err) {
     	  return res.json({
     	  	result: 'Failed',
-    	  	status: 403,
+    	  	status: 400,
     	  	message: 'Invalid Data',
     	  	errors: err
     	  });

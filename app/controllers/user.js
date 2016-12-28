@@ -107,6 +107,7 @@ this.auth_user = function(req,res,next) {
   	}
 };
 
+
 this.auth_admin = function(req,res,next) {
 	req.checkBody("email", "Enter a valid email address.").isEmail();
 	var errors = req.validationErrors();
@@ -129,18 +130,16 @@ this.auth_admin = function(req,res,next) {
   					return res.json({ status:400, message: 'Authentication failed. Email or Password is incorrect',result:[] });
 
           var dataAdmin = {
-            id_user: data[0].id_admin,
+            id_admin: data[0].id_admin,
             nama: data[0].nama,
             email: data[0].email,
             komunitas:data[0].komunitas,
             jenis_admin: data[0].jenis_admin
           }
-          var sess = req.session;
-          sess.data=dataAdmin;
           return res.json({
                   message: 'Success',
                   status: 200,
-                  result: [dataAdmin]
+                  result: dataAdmin
                 });
   			});
 		  });
