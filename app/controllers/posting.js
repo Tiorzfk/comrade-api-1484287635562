@@ -425,7 +425,7 @@ this.simpanPosting = function(req, res, next) {
         var notifbody = arrayisi.slice(0,6);
 
         var data = {
-            id_admin: req.user.id_admin,
+            id_admin: req.body.id_admin,
             judul: req.body.judul,
             slug : url,
             isi: req.body.isi,
