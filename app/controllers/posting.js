@@ -427,7 +427,7 @@ this.simpanPosting = function(req, res, next) {
         var data = {
             id_admin: req.body.id_admin,
             judul: req.body.judul,
-            slug : url,
+            slug : 'SLUG',
             isi: req.body.isi,
             deskripsi: sliceisi.join(' '),
             foto: req.file.filename,
