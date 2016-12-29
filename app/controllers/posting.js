@@ -385,5 +385,171 @@ this.postLang = function(req, res, next) {
     });
 };
 
+this.simpanPosting = function(req, res, next) {
+
+    var storage = multer.diskStorage({
+        destination: function (req, file, callback) {
+            callback(null, 'public/pic_posting');
+        },
+        filename: function (req, file, callback) {
+            callback(null, Date.now() + '-' + file.originalname);
+        }
+    });
+    var upload = multer({ storage : storage }).single('foto');
+    upload(req,res,function(errupload) {
+        /*if(req.body.isi.length<30){
+            req.flash('error', 'Maaf, Deskripsi yang anda masukan tidak boleh kurang dari 30.');
+            return res.redirect('/admin-komunitas/posting/new');
+        }*/
+        //error upload foto
+        if(errupload) {
+            return res.end("Error uploading file."+errupload);
+        }
+        var message = null;
+
+        //var now  = moment(new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''));
+        var now = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+
+        $slug = (req.body.judul).replace(/[^a-z0-9-]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+        var final =  $slug.toLowerCase();
+
+        var date = new Date();
+        var url = 'http://comrade-app.azurewebsites.net/'+date.getFullYear()+'/'+final;
+        //console.log(url);
+        //membuat isi untuk deskripsi
+        var arrayisi = striptags(req.body.isi).split(' ');
+        var sliceisi = arrayisi.slice(0,17);
+
+        var notifbody = arrayisi.slice(0,6);
+
+        var data = {
+            id_admin: req.user.id_admin,
+            judul: req.body.judul,
+            slug : url,
+            isi: req.body.isi,
+            deskripsi: sliceisi.join(' '),
+            foto: req.file.filename,
+            status: "0",
+            tgl_posting: now,
+            id_kategori: req.body.kategori,
+            sumber: req.body.sumber
+        }
+        db.acquire(function(err,con){
+        con.query('INSERT INTO posting SET ? ',data,function(err){
+          con.release();
+            //error simpan ke database
+            if (err) {
+                //res.json(err);
+                fs.unlink('public/pic_posting/'+data.foto);
+                return res.json({status:400,message:err});
+            }
+
+            // var data = {
+            //   fcm: {
+            //     notification: {
+            //         'title': 'comrade ',
+            //         'body': 'comrade your care for a better life comrade your care for a better life ',
+            //         'icon':  'comrade.png'
+            //     }
+            //   }
+            // }
+            //
+            // pusher.notify(["posting"], data, function(error, req, res) {
+            //   console.log(error, req, res);
+            // });
+
+            return res.json({status:200,message:'Success insert data'});
+        });
+        });
+    });
+};
+
+this.editPosting = function(req, res, next) {
+    var storage = multer.diskStorage({
+        destination: function (req, file, callback) {
+            callback(null, 'public/pic_posting');
+        },
+        filename: function (req, file, callback) {
+            callback(null, Date.now() + '-' + file.originalname);
+        }
+    });
+    var upload = multer({ storage : storage }).single('foto');
+    upload(req,res,function(errupload) {
+        //error upload foto
+        if(errupload) {
+            return res.end("Error uploading file."+errupload);
+        }
+        var message = null;
+
+        //res.json(req.file);
+        //membuat showmore
+        var arrayisi = striptags(req.body.isi).split(' ');
+        var sliceisi = arrayisi.slice(0,25);
+
+        var data = {
+            judul: req.body.judul,
+            deskripsi: sliceisi.join(' '),
+            isi: req.body.isi,
+            foto: req.body.img_old,
+            sumber: req.body.sumber
+        }
+
+        if(req.file) {
+            data = {
+                judul: req.body.judul,
+                deskripsi: sliceisi.join(' '),
+                isi: req.body.isi,
+                foto: req.file.filename,
+                sumber: req.body.sumber
+            }
+        }
+        db.acquire(function(err,con){
+        con.query('UPDATE posting SET ? WHERE id_posting='+req.params.id,data,function(err){
+          con.release();
+            if (err) {
+                if(req.file != null){
+                    fs.unlink('public/pic_posting/'+data.foto);
+                }
+                return res.json(err);
+            }
+            else {
+                if(req.file != null){
+                    fs.unlink('public/pic_posting/'+req.body.img_old,function(err){
+                      if(err)
+                        return res.json({status:200,message:'Success update data'});
+                    });
+                    
+                }
+                return res.json({status:200,message:'Success update data'});
+            }
+        });
+        });
+    });
+};
+
+this.deletePosting = function(req, res, next) {
+    var id_posting = req.params.id;
+    db.acquire(function(err,con){
+    con.query('SELECT * FROM posting WHERE id_posting='+id_posting,function(errselect,data){
+      con.release();
+        con.query('DELETE FROM posting WHERE id_posting='+id_posting,function(err){
+            if(err){
+                return res.json({status:400,message:err});
+            }else{
+                data.forEach(function(data){
+                    if(data.foto){
+                        fs.unlink('public/pic_posting/'+data.foto,function(err){
+                          if(err)
+                            return res.json({status:200,message:'Success delete data'});
+                        });
+                    }
+                });
+                return res.json({status:200,message:'Success delete data'});
+            }
+        });
+    });
+    });
+};
+
 }
 module.exports = new Todo();

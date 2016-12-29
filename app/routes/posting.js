@@ -8,6 +8,8 @@ module.exports = {
     app.route('/posting/kategori/:kategori/page/:page').get(posting.kategori);
     app.route('/posting/kategori/:kategori/:lang/page/:page').get(posting.postLang);
 
-    app.route('/posting/:id').get(posting.postingID);
+    app.route('/posting/:id').get(posting.postingID).put(posting.editPosting).delete(posting.deletePosting);
+
+    app.route('/posting').post(posting.simpanPosting);
   }
 };
