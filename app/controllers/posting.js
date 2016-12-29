@@ -6,6 +6,8 @@ var parser = new xml2js.Parser();
 var http = require('http');
 var striptags = require('striptags');
 var AES = require('./AES');
+var multer  = require('multer');
+const fs = require('fs');
 
 function Todo() {
 
@@ -477,9 +479,8 @@ this.editPosting = function(req, res, next) {
     upload(req,res,function(errupload) {
         //error upload foto
         if(errupload) {
-            return res.end("Error uploading file."+errupload);
+            return res.json({status:400,message:errupload});
         }
-        var message = null;
 
         //res.json(req.file);
         //membuat showmore
@@ -504,7 +505,7 @@ this.editPosting = function(req, res, next) {
             }
         }
         db.acquire(function(err,con){
-        con.query('UPDATE posting SET ? WHERE id_posting='+req.params.id,data,function(err){
+        con.query('UPDATE posting SET ? WHERE id_posting='+req.params.id,data,function(err,data){
           con.release();
             if (err) {
                 if(req.file != null){
@@ -512,15 +513,17 @@ this.editPosting = function(req, res, next) {
                 }
                 return res.json(err);
             }
-            else {
-                if(req.file != null){
-                    fs.unlink('public/pic_posting/'+req.body.img_old,function(err){
-                      if(err)
-                        return res.json({status:200,message:'Success update data'});
-                    });
-                    
-                }
-                return res.json({status:200,message:'Success update data'});
+
+            if(!data.affectedRows)
+			 	      return res.json({status:404,message:'ID not found',result:[]});
+
+            if(req.file != null){
+                fs.unlink('public/pic_posting/'+req.body.img_old,function(err){
+                  if(err)
+                     return res.json({status:200,message:'Success update data'});
+                });        
+            }else{
+              return res.json({status:200,message:'Success update data'});
             }
         });
         });
