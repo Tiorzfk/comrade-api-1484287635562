@@ -405,7 +405,7 @@ this.simpanPosting = function(req, res, next) {
         }*/
         //error upload foto
         if(errupload) {
-            return res.end("Error uploading file."+errupload);
+            return res.json(errupload);
         }
         var message = null;
 
@@ -422,12 +422,10 @@ this.simpanPosting = function(req, res, next) {
         var arrayisi = striptags(req.body.isi).split(' ');
         var sliceisi = arrayisi.slice(0,17);
 
-        var notifbody = arrayisi.slice(0,6);
-
         var data = {
             id_admin: req.body.id_admin,
             judul: req.body.judul,
-            slug : 'SLUG',
+            slug : url,
             isi: req.body.isi,
             deskripsi: sliceisi.join(' '),
             foto: req.file.filename,
@@ -436,6 +434,7 @@ this.simpanPosting = function(req, res, next) {
             id_kategori: req.body.kategori,
             sumber: req.body.sumber
         }
+        
         db.acquire(function(err,con){
         con.query('INSERT INTO posting SET ? ',data,function(err){
           con.release();
