@@ -530,7 +530,7 @@ this.editPosting = function(req, res, next) {
 };
 
 this.deletePosting = function(req, res, next) {
-    var id_posting = req.params.id;
+    var id_posting = req.body.id;
     db.acquire(function(err,con){
     con.query('SELECT * FROM posting WHERE id_posting='+id_posting,function(errselect,data){
       con.release();
