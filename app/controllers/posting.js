@@ -535,19 +535,20 @@ this.deletePosting = function(req, res, next) {
     con.query('SELECT * FROM posting WHERE id_posting='+id_posting,function(errselect,data){
       con.release();
         con.query('DELETE FROM posting WHERE id_posting='+id_posting,function(err){
-            if(err){
+            if(err)
                 return res.json({status:400,message:err});
-            }else{
+            
                 data.forEach(function(data){
                     if(data.foto){
                         fs.unlink('public/pic_posting/'+data.foto,function(err){
                           if(err)
                             return res.json({status:200,message:'Success delete data'});
                         });
+                    }else{
+                      return res.json({status:200,message:'Success delete data'});
                     }
                 });
-                return res.json({status:200,message:'Success delete data'});
-            }
+            
         });
     });
     });
