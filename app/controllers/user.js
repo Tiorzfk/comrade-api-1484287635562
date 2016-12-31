@@ -40,6 +40,8 @@ this.auth_user = function(req,res,next) {
             if(data[0].status == '0'){
               return res.json({message:'Maaf email yang anda masukan belum dikonfirmasi.',status:400,result:[]})
             }
+            
+            //login bukan google
             if(req.body.password){
               if(data[0].password){
                 var validPassword = bcrypt.compareSync(req.body.password,data[0].password);
@@ -75,6 +77,7 @@ this.auth_user = function(req,res,next) {
               return res.json({ result: 'Failed', message: 'Authentication failed. Wrong password.' });
             }
 
+            //login denga google
             var data = {
               id_user: data[0].id_user,
               nama: data[0].nama,
