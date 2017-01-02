@@ -2,6 +2,7 @@ var user = require('../controllers/user');
 var jwt = require('jsonwebtoken');
 var cektokenemail = require('../../config/cektokenemail');
 var cektoken = require('../../config/cektoken');
+var cektokenRstPass = require('../../config/cektokenrstpass');
 
 function isLoggedIn(req, res, next) {
 
@@ -81,11 +82,14 @@ module.exports = {
 
     app.route('/user/register').post(user.register);
 
+    app.route('/user/forget_password').post(user.forget);
+    app.route('/user/reset_password').all(cektokenRstPass.cektoken).post(user.resetPassword);
+
     app.route('/confirm/:email').all(cektokenemail.cektoken).get(user.confirmation);
 
     app.route('/user/profile').all(cektoken.cektoken).get(user.profile);
 
-		app.route('/user/profile/:id').all(cektoken.cektoken).get(user.profileID).post(user.setting_profile);
+	app.route('/user/profile/:id').all(cektoken.cektoken).get(user.profileID).post(user.setting_profile);
 
     app.route('/user/change_password/:id').all(cektoken.cektoken).post(user.change_password);
 

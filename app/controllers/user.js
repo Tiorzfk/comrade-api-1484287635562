@@ -242,6 +242,80 @@ this.register = function(req,res,next) {
 		});
 	}
 }
+this.forget = function(req,res,next) {
+	req.checkBody("email", "Enter a valid email address.").isEmail();
+
+	var errors = req.validationErrors();
+  	if (errors) {
+  		return res.send({
+  	  		result: 'Failed',
+  	  		status: 400,
+  	  		errors: errors
+  	  	});
+  	} else {
+    var pass = Math.floor(Math.random()*90000) + 10000;
+    var data = {
+      password : bcrypt.hashSync(pass, bcrypt.genSaltSync(8), null)
+    }
+		db.acquire(function(err,con){
+			if (err) throw err;
+          con.query("update user set ? WHERE email='"+AES.encrypt(req.body.email,'comrade@codelabs')+"'",data,function(err,rows){
+						con.release();
+                if (err)
+                    return res.json({status:'400',message:err});
+
+                if (!rows.affectedRows)
+                    return res.json({status:'400',result:'Failed',message:'Email not found.'});
+                
+                var token = jwt.sign(data, 'resetpasswordcomrade', {
+                    expiresIn: "2h" // expires in 24 hours
+                });
+
+                var templates = new EmailTemplates({root: 'app/views/emails'});
+                var locals = {
+                    email: req.body.email,
+                    token: token,
+                    new_password: pass,
+                    url: 'http://comrade-api.azurewebsites.net/user/reset_password'
+                };
+
+                templates.render('reset_password.ejs', locals, function(err, html) {
+                    if (err) {
+                      return res.json({
+                          result: 'Failed',
+                          status: 403,
+                          errors: err,
+                      });
+                    } else {
+                      transport.sendMail({
+                          from: 'Comrade app <Admin@comrade.com>',
+                          to: locals.email,
+                          subject: 'Reset Password.',
+                          html: html
+                      }, function(err, responseStatus) {
+                          if (err) {
+                              return res.json({
+                                  result: 'Failed',
+                                  status: 403,
+                                  errors: err,
+                              });
+                          } else {
+                              return res.json({status:'200',message:'New password has been sent to your email.'});
+                          }
+                      });
+                    }
+                });
+    	    });
+		});
+	  }
+}
+
+this.resetPassword = function(req,res,next) {
+   return res.render('emails/new_password',{
+             email: req.body.email,
+             new_password: req.body.new_password
+          });
+}
 
 this.confirmation = function(req,res,next) {
   db.acquire(function(err,con){
