@@ -8,7 +8,7 @@ module.exports = {
 
     app.route('/arv_reminder').post(healbox.arv_reminder);
 
-    app.route('/arv_reminder/:id').put(healbox.put_arv_reminder);
+    app.route('/arv_reminder/:id').put(healbox.put_arv_reminder).delete(healbox.del_arv_reminder);
 
     app.route('/healbox/:id_user').get(healbox.healboxID);
 

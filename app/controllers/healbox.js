@@ -126,6 +126,25 @@ this.healboxID = function(req,res,next) {
 	});
 }
 
+this.del_arv_reminder = function(req, res, next) {
+    var id = req.body.id;
+    db.acquire(function(err,con){
+		
+			con.query('DELETE FROM arv_reminder WHERE id='+id,function(err,data){
+				con.release();
+				if(err)
+					return res.json({status:400,message:err});
+
+				if(!data.affectedRows)
+					return res.json({status:400,message:'id not found'});
+				
+				return res.json({status:200,message:'Success delete data'});
+
+			});
+
+    });
+};
+
 }
 
 module.exports = new Todo();
