@@ -301,7 +301,7 @@ this.forget = function(req,res,next) {
                                   errors: err,
                               });
                           } else {
-                              return res.json({status:'200',message:'New password has been sent to your email.'});
+                              return res.json({status:200,message:'New password has been sent to your email.'});
                           }
                       });
                     }
