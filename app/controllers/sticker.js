@@ -105,7 +105,7 @@ this.sendsticker = function(req,res,next) {
 
 this.pic_sticker = function(req,res,next){
     db.acquire(function(err,con){
-			if (err) throw err;
+		if (err) throw err;
         con.query("select * from pic_sticker",function(err,rows){
 					con.release();
             if(err){

@@ -29,10 +29,7 @@ var ambiltweet = function(){
 	client.get('search/tweets',{q:'hiv aids',lang:'id'},function(error,tweets,response){
     var status = tweets.statuses;
 	db.acquire(function(err,con){
-    if (err) {
-        con.release();
-        throw err;
-    }
+    if (err) throw err;
     status.forEach(function(item){
         if(err) throw err;
         con.query("select * from tweet_support where id=?",item.id_str,function(err,rows){
@@ -67,10 +64,7 @@ var ambileng = function(){
 	client.get('search/tweets',{q:'hiv aids',lang:'en'},function(error,tweets,response){
     var status = tweets.statuses;
 	db.acquire(function(err,con){
-    if (err) {
-        con.release();
-        throw err;
-    }
+    if (err) throw err;
     status.forEach(function(item){
         if(err) throw err;
         con.query("select * from train_eng where id=?",item.id_str,function(err,rows){
@@ -113,10 +107,7 @@ function Todo() {
 
 this.sentimenbak = function(req,res,next){
   db.acquire(function(err,con){
-    if (err) {
-        con.release();
-        throw err;
-    }
+    if (err) throw err;
     con.query("SELECT * FROM tweet_support  WHERE klasifikasi='positif' and status='selesai' ORDER BY id DESC",function(err,rows){
       con.release();
       if(err)
@@ -129,10 +120,7 @@ this.sentimenbak = function(req,res,next){
 
 this.sentimen = function(req, res, next) {
 	db.acquire(function(err,con){
-    if (err) {
-        con.release();
-        throw err;
-    }
+    if (err) throw err;
 		var limit = 8;
 		var page = req.params.page;
 	    //var offset = (page - 1)  * limit;
@@ -173,10 +161,7 @@ this.sentimen = function(req, res, next) {
 
 this.sentiment_eng=function(req,res){
   db.acquire(function(err,con){
-    if (err) {
-        con.release();
-        throw err;
-    }
+    if (err) throw err;
     var limit = 8;
     var page = req.params.page;
       //var offset = (page - 1)  * limit;

@@ -19,10 +19,7 @@ function Todo() {
 this.eventLang = function(req, res, next) {
 	db.acquire(function(err,con){
 
-		if (err) {
-        	con.release();
-        	throw err;
-      	}
+		if (err) throw err;
 		var limit = 8;
 		var page = req.params.page;
 	    //var offset = (page - 1)  * limit;
@@ -78,10 +75,7 @@ this.eventLang = function(req, res, next) {
 this.event = function(req, res, next) {
 	db.acquire(function(err,con){
 
-		if (err) {
-        	con.release();
-        	throw err;
-      	}
+		if (err) throw err;
 		var limit = 8;
 		var page = req.params.page;
 	    //var offset = (page - 1)  * limit;
@@ -137,10 +131,7 @@ this.event = function(req, res, next) {
 this.eventAll = function(req, res, next) {
 	db.acquire(function(err,con){
 
-		if (err) {
-        	con.release();
-        	throw err;
-      	}
+		if (err) throw err;
 
 		var sql ='SELECT id_event,admin.nama as pengirim,event.nama,event.tempat,deskripsi,foto,event.status,tgl_posting,tgl_mulai,tgl_berakhir,longitude,latitude,kontak_person FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" AND event.tipe="public" ORDER BY tgl_posting';
 		
@@ -160,10 +151,7 @@ this.eventAll = function(req, res, next) {
 
 this.eventID = function(req, res, next) {
 	db.acquire(function(err,con){
-		if (err) {
-        	con.release();
-        	throw err;
-      	}
+		if (err) throw err;
     	con.query('SELECT id_event,admin.nama as pengirim,event.nama,event.tempat,deskripsi,foto,event.status,tgl_mulai,tgl_berakhir,tgl_posting,longitude,latitude,kontak_person FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" AND id_event='+req.params.id+' ORDER BY tgl_posting', function(err,data){
 					con.release();
 					if(err){
