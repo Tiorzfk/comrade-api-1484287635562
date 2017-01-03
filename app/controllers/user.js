@@ -313,8 +313,8 @@ this.forget = function(req,res,next) {
 
 this.resetPassword = function(req,res,next) {
    return res.render('emails/new_password',{
-             email: req.body.email,
-             new_password: req.body.new_password
+             email: req.params.email,
+             new_password: req.params.new_password
           });
 }
 

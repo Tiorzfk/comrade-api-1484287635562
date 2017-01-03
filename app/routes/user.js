@@ -83,7 +83,7 @@ module.exports = {
     app.route('/user/register').post(user.register);
 
     app.route('/user/forget_password').post(user.forget);
-    app.route('/user/reset_password').all(cektokenRstPass.cektoken).post(user.resetPassword);
+    app.route('/user/reset_password/:email/:new_password').all(cektokenRstPass.cektoken).post(user.resetPassword);
 
     app.route('/confirm/:email').all(cektokenemail.cektoken).get(user.confirmation);
 
