@@ -257,9 +257,10 @@ this.forget = function(req,res,next) {
     var data = {
       password : bcrypt.hashSync(pass, bcrypt.genSaltSync(8), null)
     }
+    var reqemail = req.body.email;
 		db.acquire(function(err,con){
 			if (err) throw err;
-          con.query("update user set ? WHERE email='"+AES.encrypt(req.body.email,'comrade@codelabs')+"'",data,function(err,rows){
+          con.query("update user set ? WHERE email='"+AES.encrypt(reqemail,'comrade@codelabs')+"'",data,function(err,rows){
 						con.release();
                 if (err)
                     return res.json({status:'400',message:err});
@@ -273,7 +274,7 @@ this.forget = function(req,res,next) {
 
                 var templates = new EmailTemplates({root: 'app/views/emails'});
                 var locals = {
-                    email: req.body.email,
+                    email: reqemail,
                     token: token,
                     new_password: pass,
                     url: 'http://comrade-api.azurewebsites.net/user/reset_password'
