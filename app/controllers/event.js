@@ -1,13 +1,28 @@
 var db = require('../../config/db');
 var request = require('request');
 var Sync = require('sync');
+var moment = require('moment');
+const fs = require('fs');
+var geocoderProvider = 'google';
+var httpAdapter = 'https';
+var multer  = require('multer');
+
+var extra = {
+    apiKey: 'AIzaSyDjE5MTfUt5RYaEdA_I_PVvaQJlkro5e80',
+    formatter: null
+};
+
+var geocoder = require('node-geocoder')(geocoderProvider, httpAdapter, extra); //menghasilkan address dari lat dan long
 
 function Todo() {
 
 this.eventLang = function(req, res, next) {
 	db.acquire(function(err,con){
 
-		if (err) throw err;
+		if (err) {
+        	con.release();
+        	throw err;
+      	}
 		var limit = 8;
 		var page = req.params.page;
 	    //var offset = (page - 1)  * limit;
@@ -63,7 +78,10 @@ this.eventLang = function(req, res, next) {
 this.event = function(req, res, next) {
 	db.acquire(function(err,con){
 
-		if (err) throw err;
+		if (err) {
+        	con.release();
+        	throw err;
+      	}
 		var limit = 8;
 		var page = req.params.page;
 	    //var offset = (page - 1)  * limit;
@@ -119,7 +137,10 @@ this.event = function(req, res, next) {
 this.eventAll = function(req, res, next) {
 	db.acquire(function(err,con){
 
-		if (err) throw err;
+		if (err) {
+        	con.release();
+        	throw err;
+      	}
 
 		var sql ='SELECT id_event,admin.nama as pengirim,event.nama,event.tempat,deskripsi,foto,event.status,tgl_posting,tgl_mulai,tgl_berakhir,longitude,latitude,kontak_person FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" AND event.tipe="public" ORDER BY tgl_posting';
 		
@@ -139,7 +160,10 @@ this.eventAll = function(req, res, next) {
 
 this.eventID = function(req, res, next) {
 	db.acquire(function(err,con){
-		if (err) throw err;
+		if (err) {
+        	con.release();
+        	throw err;
+      	}
     	con.query('SELECT id_event,admin.nama as pengirim,event.nama,event.tempat,deskripsi,foto,event.status,tgl_mulai,tgl_berakhir,tgl_posting,longitude,latitude,kontak_person FROM event INNER JOIN admin on admin.id_admin=event.id_admin WHERE event.status="1" AND id_event='+req.params.id+' ORDER BY tgl_posting', function(err,data){
 					con.release();
 					if(err){
@@ -152,6 +176,58 @@ this.eventID = function(req, res, next) {
     });
 };
 
+this.postEvent = function(req, res, next) {
+     var storage = multer.diskStorage({
+        destination: function (req, file, callback) {
+            callback(null, 'public/pic_event');
+        },
+        filename: function (req, file, callback) {
+            callback(null, Date.now() + '-' + file.originalname);
+        }
+    });
+    var upload = multer({ storage : storage }).single('foto');
+    upload(req,res,function(errupload) {
+        var message = null;
+
+        if(req.body.isi.length<30){
+        req.flash('error', 'Maaf, Deskripsi yang anda masukan tidak boleh kurang dari 30.');
+        return res.redirect('/admin-komunitas/event/new');
+        }
+        var now = moment().format('DD MMMM YYYY');
+        var tgl_mulai = moment(req.body.tgl_mulai, 'DD/MM/YYYY').format('DD MMMM YYYY');
+        var tgl_berakhir = moment(req.body.tgl_berakhir, 'DD/MM/YYYY').format('DD MMMM YYYY');
+        geocoder.geocode(req.body.posisi, function(err, result) {
+            var data = {
+                id_admin: req.body.id_admin,
+                nama: req.body.nama,
+                tempat: req.body.tempat,
+                deskripsi: req.body.isi,
+                status: "0",
+                foto: req.file.filename,
+                tgl_posting: now,
+                tgl_mulai: tgl_mulai+' '+req.body.waktu_mulai,
+                tgl_berakhir: tgl_berakhir+' '+req.body.waktu_berakhir,
+                latitude: result[0].latitude,
+                tipe: req.body.tipe,
+                longitude: result[0].longitude,
+                kontak_person: req.body.kontak_person
+            }
+            db.acquire(function(err,con){
+            con.query('INSERT INTO event SET ? ',data,function(err){
+              con.release();
+                //error simpan ke database
+                if (err) {
+                    fs.unlink('public/pic_event'+data.foto);
+                    return res.json({status:400,message:err});
+                    //req.flash('error', err.errors);
+                    //return res.redirect('/admin-komunitas/event/new');
+                }
+                return res.json({status:200,message:'success insert data'});
+            });
+            });
+        });
+    });
+};
 
 
 }

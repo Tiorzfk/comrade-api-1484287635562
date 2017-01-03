@@ -221,36 +221,39 @@ function rssAidsMap(req, res2, next) {
 //  setInterval(rssAidsMap, 900000);
 
 this.posting = function(req, res, next) {
-    var jml = 0;
+    // var jml = 0;
     db.acquire(function(err,con){
-      function jml_posting(callback) {
-          con.query('SELECT COUNT(*) as jml FROM posting WHERE status="1"',function(err,data){
-            con.release();
-            if(err)
-              return res.json({status:400,message:err.code,result:[]})
+      // function jml_posting(callback) {
+      //     con.query('SELECT COUNT(*) as jml FROM posting WHERE status="1"',function(err,data){
+      //       con.release();
+      //       if(err)
+      //         return res.json({status:400,message:err.code,result:[]})
 
-              jml = data[0].jml;
-              callback(null,jml);
-          });
+      //         jml = data[0].jml;
+      //         callback(null,jml);
+      //     });
+      // }
+      if (err) {
+        con.release();
+        throw err;
       }
-      if (err) throw err;
         var limit = 8;
         var page = req.params.page;
         //var offset = (page - 1)  * limit;
         var offset = page;
-        Sync(function(){
-          jml_posting.sync();
+        // Sync(function(){
+          //jml_posting.sync();
           con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" ORDER BY tgl_posting LIMIT '+limit+' OFFSET '+offset, function(err,data){
-              //con.release();
-              var total_page = Math.ceil(jml / limit);
+              con.release();
+              // var total_page = Math.ceil(jml / limit);
               if(err){
                   return res.json({status:400,message:err.code,result:[]});
               }else if(!data.length){
                   return res.json({status:404,message: 'Data not found',result:[]})
               }
-              return res.json({status:200,total_page:total_page,message:'success',result:data});
+              return res.json({status:200,message:'success',result:data});
           });
-        });
+        // });
         //con.release();
     });
 
@@ -260,7 +263,10 @@ this.posting = function(req, res, next) {
 
 this.postingID = function(req, res, next) {
     db.acquire(function(err,con){
-      if (err) throw err;
+      if (err) {
+        con.release();
+        throw err;
+      }
         con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber,slug FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND id_posting='+req.params.id, function(err,data){
           con.release();
             if(err){
@@ -275,7 +281,10 @@ this.postingID = function(req, res, next) {
 
 this.kategori = function(req, res, next) {
     db.acquire(function(err,con){
-      if (err) throw err;
+      if (err) {
+        con.release();
+        throw err;
+      }
         var limit = 8;
         var page = req.params.page;
         //var offset = (page - 1)  * limit;
@@ -311,7 +320,10 @@ this.kategori = function(req, res, next) {
 
 this.kategoriAll = function(req, res, next) {
     db.acquire(function(err,con){
-      if (err) throw err;
+      if (err) {
+        con.release();
+        throw err;
+      }
         if(isNaN(req.params.kategori)) {
 
               con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND kategori.nama="'+req.params.kategori+'" ORDER BY tgl_posting DESC', function(err,data){
@@ -340,7 +352,10 @@ this.kategoriAll = function(req, res, next) {
 
 this.postLang = function(req, res, next) {
     db.acquire(function(err,con){
-      if (err) throw err;
+      if (err) {
+        con.release();
+        throw err;
+      }
         var limit = 8;
         var page = req.params.page;
         //var offset = (page - 1)  * limit;
@@ -532,6 +547,10 @@ this.editPosting = function(req, res, next) {
 this.deletePosting = function(req, res, next) {
     var id_posting = req.body.id;
     db.acquire(function(err,con){
+      if (err) {
+        con.release();
+        throw err;
+      }
     con.query('SELECT * FROM posting WHERE id_posting='+id_posting,function(errselect,data){
       con.release();
         con.query('DELETE FROM posting WHERE id_posting='+id_posting,function(err){
