@@ -127,7 +127,7 @@ this.healboxID = function(req,res,next) {
 }
 
 this.del_arv_reminder = function(req, res, next) {
-    var id = req.body.id;
+    var id = req.params.id;
     db.acquire(function(err,con){
 		
 			con.query('DELETE FROM arv_reminder WHERE id='+id,function(err,data){
