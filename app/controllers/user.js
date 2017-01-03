@@ -279,7 +279,7 @@ this.forget = function(req,res,next) {
                     url: 'http://comrade-api.azurewebsites.net/user/reset_password'
                 };
 
-                templates.render('resets_password.ejs', locals, function(err, html) {
+                templates.render('reset_password.ejs', locals, function(err, html) {
                     if (err) {
                       return res.json({
                           result: 'Failed',
