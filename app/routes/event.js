@@ -6,5 +6,6 @@ module.exports = {
     app.route('/event/:tipe/page/:page').get(event.event);
     app.route('/event/:tipe/:lang/page/:page').get(event.eventLang);
     app.route('/event').get(event.eventAll).post(event.postEvent);
+    app.route('/event/:id').put(event.putEvent).delete(event.delete);
   }
 };

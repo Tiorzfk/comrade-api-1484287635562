@@ -521,6 +521,7 @@ this.editPosting = function(req, res, next) {
                   if(err)
                      return res.json({status:200,message:'Success update data'});
                 });        
+                return res.json({status:200,message:'Success update data'});
             }else{
               return res.json({status:200,message:'Success update data'});
             }
