@@ -239,7 +239,6 @@ this.posting = function(req, res, next) {
         //var offset = (page - 1)  * limit;
         var offset = page;
         // Sync(function(){
-          jml_posting.sync();
           con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" ORDER BY tgl_posting LIMIT '+limit+' OFFSET '+offset, function(err,data){
               con.release();
               // var total_page = Math.ceil(jml / limit);
@@ -552,6 +551,49 @@ this.deletePosting = function(req, res, next) {
             
         });
     });
+    });
+};
+
+this.admappBerita = function(req, res, next) {
+    db.acquire(function(err,con){
+      if (err) throw err;
+        con.query('SELECT id_posting,kategori.nama as kategori,judul,deskripsi,status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori WHERE kategori.nama="Berita" ORDER BY tgl_posting DESC', function(err,data){
+          con.release();
+            if(err){
+                return res.json({status:400,url:url,message:err.code,result:[]});
+            }else if(!data.length){
+                return res.json({status:404,message: 'Data not found',result:[]})
+            }
+            return res.json({status:200,message:'success',result:data});
+        });
+    });
+};
+this.admappArtikel = function(req, res, next) {
+    db.acquire(function(err,con){
+      if (err) throw err;
+        con.query('SELECT id_posting,kategori.nama as kategori,judul,deskripsi,status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori WHERE kategori.nama="Artikel" ORDER BY tgl_posting DESC', function(err,data){
+          con.release();
+            if(err){
+                return res.json({status:400,url:url,message:err.code,result:[]});
+            }else if(!data.length){
+                return res.json({status:404,message: 'Data not found',result:[]})
+            }
+            return res.json({status:200,message:'success',result:data});
+        });
+    });
+};
+this.admappEvent = function(req, res, next) {
+    db.acquire(function(err,con){
+      if (err) throw err;
+        con.query('SELECT id_event,event.status,event.nama,tgl_mulai,tgl_berakhir,tgl_posting,admin.nama as pengirim FROM event INNER JOIN admin on admin.id_admin = event.id_admin ORDER BY tgl_posting DESC', function(err,data){
+          con.release();
+            if(err){
+                return res.json({status:400,url:url,message:err.code,result:[]});
+            }else if(!data.length){
+                return res.json({status:404,message: 'Data not found',result:[]})
+            }
+            return res.json({status:200,message:'success',result:data});
+        });
     });
 };
 
