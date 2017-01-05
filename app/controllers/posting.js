@@ -255,14 +255,14 @@ this.posting = function(req, res, next) {
 
 };
 
-var posting = require('mongoose').model('posting');
+//var posting = require('mongoose').model('posting');
 this.tes = function(req, res, next) {
     posting.find({}, function(err, users) {
       if (err) {
-        return next(err);
+        return res.json(err);
       }
       else {
-        res.json(users);
+        return res.json(users);
       }
 	  });
     // var dataP = [];

@@ -16,6 +16,6 @@ module.exports = {
     app.route('/admapp/artikel').get(posting.admappArtikel);
     app.route('/admapp/event').get(posting.admappEvent);
 
-    app.route('/tes').get(posting.tes);
+    // app.route('/tes').get(posting.tes);
   }
 };

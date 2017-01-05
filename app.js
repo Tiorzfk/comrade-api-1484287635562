@@ -10,8 +10,8 @@ var flash    = require('connect-flash');
 var session  = require('express-session');
 var cors = require('cors');
 var RateLimit = require('express-rate-limit');
-var mongoose = require('./config/mongoose');
-var db = mongoose();
+// var mongoose = require('./config/mongoose');
+// var db = mongoose();
 //db
 var connection = require('./config/db');
 //routing
@@ -24,7 +24,7 @@ var lokasi_obat = require('./app/routes/lokasi_obat');
 var lokasi_pemeriksaan = require('./app/routes/lokasi_pemeriksaan');
 var sahabatodha = require('./app/routes/sahabatodha');
 var sticker = require('./app/routes/sticker');
-//var twitter = require('./app/routes/twitter');
+var twitter = require('./app/routes/twitter');
 var user = require('./app/routes/user');
 var sms = require('./app/routes/sms');
 var healbox = require('./app/routes/healbox');
@@ -89,7 +89,7 @@ lokasi_obat.configure(app);
 lokasi_pemeriksaan.configure(app);
 sahabatodha.configure(app);
 sticker.configure(app);
-//twitter.configure(app);
+twitter.configure(app);
 user.configure(app,passport);
 sms.configure(app);
 healbox.configure(app);
