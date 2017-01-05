@@ -15,5 +15,7 @@ module.exports = {
     app.route('/admapp/berita').get(posting.admappBerita);
     app.route('/admapp/artikel').get(posting.admappArtikel);
     app.route('/admapp/event').get(posting.admappEvent);
+
+    app.route('/tes').get(posting.tes);
   }
 };

@@ -255,7 +255,45 @@ this.posting = function(req, res, next) {
 
 };
 
+var posting = require('mongoose').model('posting');
+this.tes = function(req, res, next) {
+    posting.find({}, function(err, users) {
+      if (err) {
+        return next(err);
+      }
+      else {
+        res.json(users);
+      }
+	  });
+    // var dataP = [];
 
+        // //function getPost(callback) {
+        //   db.acquire(function(err,con){
+        //     if (err) throw err;
+        //         con.query('SELECT kategori.nama as nama_kategori,admin.nama as nama_admin,judul,slug,deskripsi,isi,foto,posting.status,tgl_posting,sumber,lang FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin ORDER BY tgl_posting DESC', function(err,data){
+        //         con.release();
+        //           if(err){
+        //             return res.json({status:400,message:err.code,result:[]});
+        //           }else if(!data.length){
+        //             return res.json({status:404,message: 'Data not found',result:[]})
+        //           }
+        //           return res.json(data);
+        //             // Sync(function(){
+        //             //   data.forEach(function(data){
+        //             //     data.isi.replace(/"/g, "'");
+        //             //     var a = dataP.push(data);
+        //             //   }).sync();
+        //             //   console.log(dataP);
+        //             //   // var ab = dataP.push(data);
+        //             //   // callback(null,ab);
+        //             // });
+                    
+        //           });
+
+        //   });
+      
+    
+};
 
 this.postingID = function(req, res, next) {
     db.acquire(function(err,con){
