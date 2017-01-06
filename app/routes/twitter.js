@@ -8,6 +8,6 @@ module.exports = {
     app.route('/sentiment/id/page/:page').get(twitter.sentimen);
     //app.route('/testing').get(twitter.ambil_eng2);
 
-  //  app.route('/ambiltweet').get(twitter.ambiltweet);
+    app.route('/ambiltweet').get(twitter.ambiltweet);
   }
 };

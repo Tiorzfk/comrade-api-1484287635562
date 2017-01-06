@@ -30,8 +30,7 @@ var ambiltweet = function(){
     if (err) throw err;
     status.forEach(function(item){
         if(err) throw err;
-        con.query("select * from tweet_support where id=?",item.id_str,function(err,rows){
-          con.release();
+        con.query("select * from tweet_support where id_string=?",item.id_str,function(err,rows){
           if(err)
             throw err;
             if(rows.length == 0)
@@ -45,10 +44,11 @@ var ambiltweet = function(){
         				 status:'baru',
         				 status_token:'0'
                 }
-                console.log(data);
                 con.query("insert into tweet_support set ?",data,function(err){
-				  if(err)
-                    throw err;
+                  if(err)
+                          throw err;
+                  else 
+                    console.log(data);
                 });
             }
         });
@@ -97,8 +97,8 @@ var prediksi = function() {
 	  }
 	});
 }
-//setInterval(ambiltweet,60000);
-//setInterval(prediksi,62000);
+setInterval(ambiltweet,60000);
+setInterval(prediksi,62000);
 //setInterval(ambileng,5000);
 
 function Todo() {
@@ -212,6 +212,12 @@ this.ambil_eng2 = function(req,res){
             return res.json({status:400,message: 'Data not found',result:[]})
       else
         return res.json({status:200,total_page:0,message:'success',result:doc});
+  });
+}
+
+this.ambiltweet = function(req,res){
+	client.get('search/tweets',{q:'hiv aids',lang:'id'},function(error,tweets,response){
+    res.send(tweets.statuses);
   });
 }
 
