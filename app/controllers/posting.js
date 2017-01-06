@@ -457,11 +457,6 @@ this.simpanPosting = function(req, res, next) {
         //var now  = moment(new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         var now = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
-        $slug = (req.body.judul).replace(/[^a-z0-9-]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-        var final =  $slug.toLowerCase();
-
-        var date = new Date();
-        var url = 'http://comrade-app.azurewebsites.net/'+date.getFullYear()+'/'+final;
         //console.log(url);
         //membuat isi untuk deskripsi
         var arrayisi = striptags(req.body.isi).split(' ');
@@ -470,7 +465,6 @@ this.simpanPosting = function(req, res, next) {
         var data = {
             id_admin: req.body.id_admin,
             judul: req.body.judul,
-            slug : url,
             isi: req.body.isi,
             deskripsi: sliceisi.join(' '),
             foto: req.file.filename,
@@ -481,7 +475,7 @@ this.simpanPosting = function(req, res, next) {
         }
         
         db.acquire(function(err,con){
-        con.query('INSERT INTO posting SET ? ',data,function(err){
+        con.query('INSERT INTO posting SET ? ',data,function(err, result){
           con.release();
             //error simpan ke database
             if (err) {
@@ -489,20 +483,22 @@ this.simpanPosting = function(req, res, next) {
                 fs.unlink('public/pic_posting/'+data.foto);
                 return res.json({status:400,message:err});
             }
+            console.log(result.insertId);
+            //update slug
+            $slug = (req.body.judul).replace(/[^a-z0-9-]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+            var final =  $slug.toLowerCase();
 
-            // var data = {
-            //   fcm: {
-            //     notification: {
-            //         'title': 'comrade ',
-            //         'body': 'comrade your care for a better life comrade your care for a better life ',
-            //         'icon':  'comrade.png'
-            //     }
-            //   }
-            // }
-            //
-            // pusher.notify(["posting"], data, function(error, req, res) {
-            //   console.log(error, req, res);
-            // });
+            var date = new Date();
+            var url = 'http://comrade-app.azurewebsites.net/'+date.getFullYear()+'/'+final+'/'+result.insertId;
+            var data = {
+              slug : url
+            }
+            
+            con.query('UPDATE posting SET ? WHERE id_posting='+result.insertId,data,function(err,data){
+              if (err) 
+                console.log(err);
+
+            });
 
             return res.json({status:200,message:'Success insert data'});
         });
