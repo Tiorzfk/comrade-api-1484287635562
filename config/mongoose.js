@@ -6,6 +6,6 @@ module.exports = function() {
 
 	require('../app/models/posting');
 	require('../app/models/twitter');
-
+	require('../app/models/event');
 	return db;
 };

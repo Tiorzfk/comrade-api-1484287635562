@@ -9,10 +9,11 @@ var PostingSchema = new Schema({
 	deskripsi: String,
 	isi: String,
 	foto: String,
-	status: String,
+	status: Boolean,
 	tgl_posting: String,
 	sumber: String,
-	lang: String
+	lang: String,
+	
 });
 
 
