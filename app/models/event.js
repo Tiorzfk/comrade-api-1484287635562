@@ -13,7 +13,8 @@ var EventSchema = new Schema({
 	longitude: Number,
 	latitude: Number,
 	kontak_person: String,
-    type:String
+    type:String,
+    status:String
 });
 
 mongoose.model("event", EventSchema);
