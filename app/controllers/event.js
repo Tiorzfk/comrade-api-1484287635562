@@ -7,6 +7,9 @@ var geocoderProvider = 'google';
 var httpAdapter = 'https';
 var multer  = require('multer');
 
+//import model 
+var event = require('mongoose').model('event');
+
 var extra = {
     apiKey: 'AIzaSyDjE5MTfUt5RYaEdA_I_PVvaQJlkro5e80',
     formatter: null
@@ -15,6 +18,41 @@ var extra = {
 var geocoder = require('node-geocoder')(geocoderProvider, httpAdapter, extra); //menghasilkan address dari lat dan long
 
 function Todo() {
+
+this.eventMongo = function(req,res){
+  var limit = 8;
+  var page = req.params.page;
+  //var offset = (page - 1)  * limit;
+  var offset = parseInt(page);
+  if(req.params.tipe=="public"){
+	  event.find({})
+		.where('status').equals("1")
+		.where('lang').equals(req.params.lang)
+		.where('type').equals("public")  
+		.skip(offset)
+		.limit(limit).exec(function(err,doc){
+		if(err)
+			return res.json({status:400,message:err,result:[]});
+			else if(!doc.length)
+				return res.json({status:400,message: 'Data not found',result:[]})
+		else
+			return res.json({status:200,message:'success',result:doc});
+	});
+  } else {
+	  event.find({})
+		.where('status').equals("1")
+		.where('lang').equals(req.params.lang)  
+		.skip(offset)
+		.limit(limit).exec(function(err,doc){
+		if(err)
+			return res.json({status:400,message:err,result:[]});
+			else if(!doc.length)
+				return res.json({status:400,message: 'Data not found',result:[]})
+		else
+			return res.json({status:200,message:'success',result:doc});
+	});
+  } 
+}
 
 this.eventLang = function(req, res, next) {
 	db.acquire(function(err,con){
