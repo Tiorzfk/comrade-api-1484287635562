@@ -14,4 +14,4 @@ TweettrainSchema = new Schema({
   statusToken:Number,
 });
 
-module.exports = mongoose.model("Tweetmining",TweettrainSchema);
+mongoose.model("Tweetmining",TweettrainSchema);

@@ -1,7 +1,7 @@
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema;
 
-var UserSchema = new Schema({
+var PostingSchema = new Schema({
 	nama_kategori: String,
 	nama_admin: String,
 	judul: String,
@@ -12,13 +12,8 @@ var UserSchema = new Schema({
 	status: String,
 	tgl_posting: String,
 	sumber: String,
-	lang: String,
-	username: {
-		type: String,
-		trim: true,
-		unique: true
-	}
+	lang: String
 });
 
 
-mongoose.model('posting', UserSchema);
+mongoose.model("posting", PostingSchema);

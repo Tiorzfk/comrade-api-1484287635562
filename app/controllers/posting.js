@@ -8,7 +8,7 @@ var striptags = require('striptags');
 var AES = require('./AES');
 var multer  = require('multer');
 const fs = require('fs');
-
+var posting = require('mongoose').model('posting');
 function Todo() {
 
 function rssLiputan(req,res2,next) {
@@ -215,7 +215,7 @@ function rssAidsMap(req, res2, next) {
 }
 
 //900000
-//  setInterval(rssLiputan, 900000);
+// setInterval(rssLiputan, 5000);
 //  setInterval(rssSciencedaily, 900000);
 //setInterval(rssMedicalxpress, 3000);
 //  setInterval(rssAidsMap, 900000);
@@ -255,45 +255,6 @@ this.posting = function(req, res, next) {
 
 };
 
-//var posting = require('mongoose').model('posting');
-this.tes = function(req, res, next) {
-    posting.find({}, function(err, users) {
-      if (err) {
-        return res.json(err);
-      }
-      else {
-        return res.json(users);
-      }
-	  });
-    // var dataP = [];
-
-        // //function getPost(callback) {
-        //   db.acquire(function(err,con){
-        //     if (err) throw err;
-        //         con.query('SELECT kategori.nama as nama_kategori,admin.nama as nama_admin,judul,slug,deskripsi,isi,foto,posting.status,tgl_posting,sumber,lang FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin ORDER BY tgl_posting DESC', function(err,data){
-        //         con.release();
-        //           if(err){
-        //             return res.json({status:400,message:err.code,result:[]});
-        //           }else if(!data.length){
-        //             return res.json({status:404,message: 'Data not found',result:[]})
-        //           }
-        //           return res.json(data);
-        //             // Sync(function(){
-        //             //   data.forEach(function(data){
-        //             //     data.isi.replace(/"/g, "'");
-        //             //     var a = dataP.push(data);
-        //             //   }).sync();
-        //             //   console.log(dataP);
-        //             //   // var ab = dataP.push(data);
-        //             //   // callback(null,ab);
-        //             // });
-                    
-        //           });
-
-        //   });
-      
-    
-};
 
 this.postingID = function(req, res, next) {
     db.acquire(function(err,con){
@@ -374,7 +335,54 @@ this.kategoriAll = function(req, res, next) {
         }
     });
 };
+this.postingMongo = function(req, res, next) {
+    var kat = req.params.kategori;
+    var lang = req.params.lang;
+    var page = req.params.page;
+    var offset = parseInt(page);
+    posting.find(
+    // [
+      {$and:[{status:1},{kategori:kat},{lang:lang}]},{},{sort: {tgl_posting: -1},skip:offset,limit:8},
+      // {$sort: { tgl_posting: -1} }
+    // ],
+    function(err, data) {
+      if (err) {
+        return res.json(err);
+      }
+      else {
+        
+        return res.json({status:200,result:data});
+      }
+	  });
+    // var dataP = [];
 
+        // //function getPost(callback) {
+        //   db.acquire(function(err,con){
+        //     if (err) throw err;
+        //         con.query('SELECT kategori.nama as nama_kategori,admin.nama as nama_admin,judul,slug,deskripsi,isi,foto,posting.status,tgl_posting,sumber,lang FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin ORDER BY tgl_posting DESC', function(err,data){
+        //         con.release();
+        //           if(err){
+        //             return res.json({status:400,message:err.code,result:[]});
+        //           }else if(!data.length){
+        //             return res.json({status:404,message: 'Data not found',result:[]})
+        //           }
+        //           return res.json(data);
+        //             // Sync(function(){
+        //             //   data.forEach(function(data){
+        //             //     data.isi.replace(/"/g, "'");
+        //             //     var a = dataP.push(data);
+        //             //   }).sync();
+        //             //   console.log(dataP);
+        //             //   // var ab = dataP.push(data);
+        //             //   // callback(null,ab);
+        //             // });
+                    
+        //           });
+
+        //   });
+      
+    
+};
 this.postLang = function(req, res, next) {
     db.acquire(function(err,con){
       if (err) throw err;
@@ -595,7 +603,7 @@ this.deletePosting = function(req, res, next) {
 this.admappBerita = function(req, res, next) {
     db.acquire(function(err,con){
       if (err) throw err;
-        con.query('SELECT id_posting,kategori.nama as kategori,judul,deskripsi,status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori WHERE kategori.nama="Berita" ORDER BY tgl_posting DESC', function(err,data){
+        con.query('SELECT id_posting,kategori.nama as kategori,judul,deskripsi,isi,status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori WHERE kategori.nama="Berita" ORDER BY tgl_posting DESC', function(err,data){
           con.release();
             if(err){
                 return res.json({status:400,url:url,message:err.code,result:[]});
@@ -609,7 +617,7 @@ this.admappBerita = function(req, res, next) {
 this.admappArtikel = function(req, res, next) {
     db.acquire(function(err,con){
       if (err) throw err;
-        con.query('SELECT id_posting,kategori.nama as kategori,judul,deskripsi,status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori WHERE kategori.nama="Artikel" ORDER BY tgl_posting DESC', function(err,data){
+        con.query('SELECT id_posting,kategori.nama as kategori,judul,deskripsi,isi,status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori WHERE kategori.nama="Artikel" ORDER BY tgl_posting DESC', function(err,data){
           con.release();
             if(err){
                 return res.json({status:400,url:url,message:err.code,result:[]});

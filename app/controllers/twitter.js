@@ -11,11 +11,9 @@ var EmailTemplates = require('swig-email-templates');
 var AES = require('./AES');
 const path = require('path');
 const fs = require('fs');
-var mongoose = require('mongoose');
-var tweetmining = require('../models/twitter');
-
-
-mongoose.connect('mongodb://admin:admin@ds145365.mlab.com:45365/sentiment_support');
+//var mongoose = require('mongoose');
+// var tweetmining = require('../models/twitter');
+var tweetmining = require('mongoose').model('Tweetmining');
 
 //setting twitter client
 var client = new Twitter({

@@ -15,6 +15,8 @@ var RateLimit = require('express-rate-limit');
 //db
 var connection = require('./config/db');
 //routing
+var mongoose = require('./config/mongoose');
+var db = mongoose();
 var posting = require('./app/routes/posting');
 var banner = require('./app/routes/banner');
 var event = require('./app/routes/event');
