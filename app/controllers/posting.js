@@ -360,7 +360,7 @@ this.posting5Mongo = function(req, res, next) {
     var kat = req.params.kategori;
     posting.find(
     // [
-      {$and:[{status:1},{kategori:kat}]},{},{sort: {tgl_posting: -1},limit:5},
+      {$and:[{status:1},{kategori:kat}]},{},{sort: {tgl_posting: -1},limit:10},
       // {$sort: { tgl_posting: -1} }
     // ],
     function(err, data) {
