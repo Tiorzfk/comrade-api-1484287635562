@@ -263,10 +263,10 @@ this.forget = function(req,res,next) {
           con.query("update user set ? WHERE email='"+AES.encrypt(reqemail,'comrade@codelabs')+"'",data,function(err,rows){
 						con.release();
                 if (err)
-                    return res.json({status:'400',message:err});
+                    return res.json({status:400,message:err});
 
                 if (!rows.affectedRows)
-                    return res.json({status:'400',result:'Failed',message:'Email not found.'});
+                    return res.json({status:400,result:'Failed',message:'Email not found.'});
                 
                 var token = jwt.sign(data, 'resetpasswordcomrade', {
                     expiresIn: "2h" // expires in 24 hours
@@ -284,7 +284,7 @@ this.forget = function(req,res,next) {
                     if (err) {
                       return res.json({
                           result: 'Failed',
-                          status: 403,
+                          status: 404,
                           errors: err,
                       });
                     } else {
@@ -297,7 +297,7 @@ this.forget = function(req,res,next) {
                           if (err) {
                               return res.json({
                                   result: 'Failed',
-                                  status: 403,
+                                  status: 404,
                                   errors: err,
                               });
                           } else {

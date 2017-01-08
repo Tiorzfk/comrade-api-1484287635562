@@ -54,6 +54,24 @@ this.eventMongo = function(req,res){
   } 
 }
 
+this.eventMongoAll = function(req, res, next) {
+    var tip = req.params.tipe;
+    event.find(
+    // [
+      {$and:[{status:1},{type:tip}]},{},{sort: {tgl_posting: -1}},
+      // {$sort: { tgl_posting: -1} }
+    // ],
+    function(err, data) {
+      if (err) {
+        return res.json(err);
+      }
+      else {
+        
+        return res.json({status:200,result:data});
+      }
+	  });
+};
+
 this.eventLang = function(req, res, next) {
 	db.acquire(function(err,con){
 

@@ -356,6 +356,42 @@ this.postingMongo = function(req, res, next) {
 	  });
 };
 
+this.posting5Mongo = function(req, res, next) {
+    var kat = req.params.kategori;
+    posting.find(
+    // [
+      {$and:[{status:1},{kategori:kat}]},{},{sort: {tgl_posting: -1},limit:5},
+      // {$sort: { tgl_posting: -1} }
+    // ],
+    function(err, data) {
+      if (err) {
+        return res.json(err);
+      }
+      else {
+        
+        return res.json({status:200,result:data});
+      }
+	  });
+};
+
+this.postingAllMongo = function(req, res, next) {
+    var kat = req.params.kategori;
+    posting.find(
+    // [
+      {$and:[{status:1},{kategori:kat}]},{},{sort: {tgl_posting: -1}},
+      // {$sort: { tgl_posting: -1} }
+    // ],
+    function(err, data) {
+      if (err) {
+        return res.json(err);
+      }
+      else {
+        
+        return res.json({status:200,result:data});
+      }
+	  });
+};
+
 this.postingIDMongo = function(req, res, next) {
     posting.find(
     // [
