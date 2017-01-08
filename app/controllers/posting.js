@@ -262,7 +262,7 @@ this.postingID = function(req, res, next) {
         con.query('SELECT id_posting,kategori.nama as kategori,admin.nama as pengirim,judul,deskripsi,isi,foto,posting.status,tgl_posting,sumber,slug FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin WHERE posting.status="1" AND id_posting='+req.params.id, function(err,data){
           con.release();
             if(err){
-                return res.json({status:400,url:url,message:err.code,result:[]});
+                return res.json({status:400,message:err.code,result:[]});
             }else if(!data.length){
                 return res.json({status:404,message: 'Data not found',result:[]})
             }
@@ -737,7 +737,7 @@ this.admappBerita = function(req, res, next) {
         con.query('SELECT id_posting,kategori.nama as kategori,judul,deskripsi,isi,status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori WHERE kategori.nama="Berita" ORDER BY tgl_posting DESC', function(err,data){
           con.release();
             if(err){
-                return res.json({status:400,url:url,message:err.code,result:[]});
+                return res.json({status:400,message:err.code,result:[]});
             }else if(!data.length){
                 return res.json({status:404,message: 'Data not found',result:[]})
             }
@@ -751,7 +751,7 @@ this.admappArtikel = function(req, res, next) {
         con.query('SELECT id_posting,kategori.nama as kategori,judul,deskripsi,isi,status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori WHERE kategori.nama="Artikel" ORDER BY tgl_posting DESC', function(err,data){
           con.release();
             if(err){
-                return res.json({status:400,url:url,message:err.code,result:[]});
+                return res.json({status:400,message:err.code,result:[]});
             }else if(!data.length){
                 return res.json({status:404,message: 'Data not found',result:[]})
             }
@@ -765,7 +765,7 @@ this.admappEvent = function(req, res, next) {
         con.query('SELECT id_event,event.status,event.nama,tgl_mulai,tgl_berakhir,tgl_posting,admin.nama as pengirim FROM event INNER JOIN admin on admin.id_admin = event.id_admin ORDER BY tgl_posting DESC', function(err,data){
           con.release();
             if(err){
-                return res.json({status:400,url:url,message:err.code,result:[]});
+                return res.json({status:400,message:err.code,result:[]});
             }else if(!data.length){
                 return res.json({status:404,message: 'Data not found',result:[]})
             }
