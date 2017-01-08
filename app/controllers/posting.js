@@ -792,16 +792,18 @@ this.VerifikasiPosting = function(req, res, next) {
             if (err)
                 return res.json({status:400,message:err,result:[]});
             
-            var arrayisi = striptags(data.deskripsi).split(' ');
+            var arrayisi = striptags(data[0].deskripsi).split(' ');
             var notifbody = arrayisi.slice(0,5);
             pusher.notify(['posting'], {
                fcm: {
                   notification: {
-                     'title': data.judul,
+                     'title': data[0].judul,
                      'body': notifbody.join(' '),
                      'icon':  'comrade.png'
                   }
                }
+            },function(error, req, res) {
+                console.log(error, req, res);
             });
             return res.json({status:200,message:'success verifikasi posting',result:data});
             
