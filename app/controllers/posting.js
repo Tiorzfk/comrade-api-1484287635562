@@ -354,35 +354,170 @@ this.postingMongo = function(req, res, next) {
         return res.json({status:200,result:data});
       }
 	  });
-    // var dataP = [];
-
-        // //function getPost(callback) {
-        //   db.acquire(function(err,con){
-        //     if (err) throw err;
-        //         con.query('SELECT kategori.nama as nama_kategori,admin.nama as nama_admin,judul,slug,deskripsi,isi,foto,posting.status,tgl_posting,sumber,lang FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori INNER JOIN admin on admin.id_admin=posting.id_admin ORDER BY tgl_posting DESC', function(err,data){
-        //         con.release();
-        //           if(err){
-        //             return res.json({status:400,message:err.code,result:[]});
-        //           }else if(!data.length){
-        //             return res.json({status:404,message: 'Data not found',result:[]})
-        //           }
-        //           return res.json(data);
-        //             // Sync(function(){
-        //             //   data.forEach(function(data){
-        //             //     data.isi.replace(/"/g, "'");
-        //             //     var a = dataP.push(data);
-        //             //   }).sync();
-        //             //   console.log(dataP);
-        //             //   // var ab = dataP.push(data);
-        //             //   // callback(null,ab);
-        //             // });
-                    
-        //           });
-
-        //   });
-      
-    
 };
+
+this.postingIDMongo = function(req, res, next) {
+    posting.find(
+    // [
+      {$and:[{status:1},{_id:req.params.id}]},{},{},
+      // {$sort: { tgl_posting: -1} }
+    // ],
+    function(err, data) {
+      if (err)
+        return res.json({status:400,message:err,result:[]});
+
+      return res.json({status:200,message:'success',result:data});
+      
+	  });
+};
+
+this.simpanPostingMongo = function(req, res, next) {
+
+    var storage = multer.diskStorage({
+        destination: function (req, file, callback) {
+            callback(null, 'public/pic_posting');
+        },
+        filename: function (req, file, callback) {
+            callback(null, Date.now() + '-' + file.originalname);
+        }
+    });
+    var upload = multer({ storage : storage }).single('foto');
+    upload(req,res,function(errupload) {
+        /*if(req.body.isi.length<30){
+            req.flash('error', 'Maaf, Deskripsi yang anda masukan tidak boleh kurang dari 30.');
+            return res.redirect('/admin-komunitas/posting/new');
+        }*/
+        //error upload foto
+        if(errupload) {
+            return res.json(errupload);
+        }
+        var message = null;
+
+        //var now  = moment(new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''));
+        var now = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+
+        //console.log(url);
+        //membuat isi untuk deskripsi
+        var arrayisi = striptags(req.body.isi).split(' ');
+        var sliceisi = arrayisi.slice(0,17);
+
+        var data = {
+            pengirim: req.body.pengirim,
+            judul: req.body.judul,
+            isi: req.body.isi,
+            deskripsi: sliceisi.join(' '),
+            foto: req.file.filename,
+            status: "0",
+            tgl_posting: now,
+            kategori: req.body.kategori,
+            sumber: req.body.sumber,
+            lang: req.body.lang
+        }
+        
+        var post = new posting(data);
+        post.save(function(err,data) {
+          if (err) {
+                //res.json(err);
+                fs.unlink('public/pic_posting/'+data.foto);
+                return res.json({status:400,message:err});
+            }
+          //update slug
+          $slug = (data.judul).replace(/[^a-z0-9-]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+          var final =  $slug.toLowerCase();
+
+          var date = new Date();
+          var url = 'http://comrade-app.azurewebsites.net/'+date.getFullYear()+'/'+final+'/'+data.id;
+          
+          posting.findOneAndUpdate({_id:data.id},{slug : url}, {}, function (err, tank) {
+            if (err) 
+               console.log(err);
+          });
+
+
+          return res.json({status:200,message:'Success insert data'});
+        });
+        
+    });
+};
+
+this.editPostingMongo = function(req, res, next) {
+    var storage = multer.diskStorage({
+        destination: function (req, file, callback) {
+            callback(null, 'public/pic_posting');
+        },
+        filename: function (req, file, callback) {
+            callback(null, Date.now() + '-' + file.originalname);
+        }
+    });
+    var upload = multer({ storage : storage }).single('foto');
+    upload(req,res,function(errupload) {
+        //error upload foto
+        if(errupload) {
+            return res.json({status:400,message:errupload});
+        }
+
+        //res.json(req.file);
+        //membuat showmore
+        var arrayisi = striptags(req.body.isi).split(' ');
+        var sliceisi = arrayisi.slice(0,25);
+
+        var data = {
+            judul: req.body.judul,
+            deskripsi: sliceisi.join(' '),
+            isi: req.body.isi,
+            foto: req.body.img_old,
+            sumber: req.body.sumber
+        }
+
+        if(req.file) {
+            data = {
+                judul: req.body.judul,
+                deskripsi: sliceisi.join(' '),
+                isi: req.body.isi,
+                foto: req.file.filename,
+                sumber: req.body.sumber
+            }
+        }
+        posting.findOneAndUpdate({_id:req.params.id},data, {}, function (err, datah) {
+          if (err) {
+              if(req.file != null){
+                  fs.unlink('public/pic_posting/'+datah.foto);
+              }
+              return res.json({status:400,message:err});
+          }
+
+          if(req.file != null){
+                fs.unlink('public/pic_posting/'+req.body.img_old,function(err){
+                  if(err)
+                     return res.json({status:200,message:'Success update data'});
+
+                  return res.json({status:200,message:'Success update data'});                        
+                });
+            }else{
+              return res.json({status:200,message:'Success update data'});
+            }
+        });
+    });
+};
+
+this.deletePostingMongo = function(req, res, next) {
+    posting.findOneAndRemove({_id:req.body.id}, function (err, data) {  
+      if(err)
+        return res.json({status:400,message:err});
+      if(!data)
+        return res.json({status:400,message:'Data not found'});
+      if(data.foto){
+          fs.unlink('public/pic_posting/'+data.foto,function(err){
+            if(err)
+                return res.json({status:200,message:'Success delete data'});
+            return res.json({status:200,message:'Success delete data'});
+          });
+      }else{
+          return res.json({status:200,message: "Data successfully deleted",id: data._id});
+      } 
+    });
+};
+
 this.postLang = function(req, res, next) {
     db.acquire(function(err,con){
       if (err) throw err;

@@ -2,8 +2,8 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema;
 
 var PostingSchema = new Schema({
-	nama_kategori: String,
-	nama_admin: String,
+	kategori: String,
+	pengirim: String,
 	judul: String,
 	slug: String,
 	deskripsi: String,
@@ -12,7 +12,8 @@ var PostingSchema = new Schema({
 	status: String,
 	tgl_posting: String,
 	sumber: String,
-	lang: String,
+	img_old: String,
+	lang: String
 	
 });
 
