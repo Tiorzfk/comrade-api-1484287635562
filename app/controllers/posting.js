@@ -20,11 +20,9 @@ function rssLiputan(req,res2,next) {
        res.on('data', function(data_) { data += data_.toString(); });
        res.on('end', function() {
          parser.parseString(data, function(err, result) {
-           db.acquire(function(err,con){
-             if (err) throw err;
-             var arrayisi = striptags(result.rss.channel[0].item[0].description[0]).split(' ');
-             var sliceisi = arrayisi.slice(0,17);
-             var dataposting = {
+            var arrayisi = striptags(result.rss.channel[0].item[0].description[0]).split(' ');
+            var sliceisi = arrayisi.slice(0,17);
+            var dataposting = {
                //id : result.rss.channel[0].item[0].guid[0]._,
                judul : result.rss.channel[0].item[0].title[0],
                deskripsi : sliceisi.join(' '),
@@ -36,20 +34,15 @@ function rssLiputan(req,res2,next) {
                lang : 'id',
                tgl_posting : moment().format('YYYY-MM-DD h:mm:ss'),
                sumber : result.rss.channel[0].item[0].link[0]
-             }
-             con.query('SELECT * FROM posting WHERE judul="'+dataposting.judul+'"',function(err,data){
-               if(!data.length){
-                 con.query('INSERT INTO posting SET ?',dataposting,function(err,data){
-                   con.release();
-                   if (err) throw err;
-
-                   //console.log('Berhasil menambah data');
-                 });
-               //}else{
-                 //console.log('data sudah ada');
-               }
-             });
-           });
+            }
+            var post = new posting(dataposting);
+            post.save(function(err,data) {
+                if (err) 
+                    console.log(err);
+                
+                console.log('Berhasil');
+            });
+           
            //return res2.json([data]);
          });
        });
@@ -66,8 +59,6 @@ function rssSciencedaily(req, res2, next) {
        res.on('data', function(data_) { data += data_.toString(); });
        res.on('end', function() {
          parser.parseString(data, function(err, result) {
-           db.acquire(function(err,con){
-             if (err) throw err;
              var arrayisi = striptags(result.rss.channel[0].item[0].description[0]).split(' ');
              var sliceisi = arrayisi.slice(0,17);
              var foto = result.rss.channel[0].item[0]['media:thumbnail'];
@@ -91,20 +82,14 @@ function rssSciencedaily(req, res2, next) {
              }
              //return res2.json(moment().format('YYYY-MM-DD'));
 
-             con.query('SELECT * FROM posting WHERE judul="'+dataposting.judul+'"',function(err,data){
-               if(!data.length){
-                 con.query('INSERT INTO posting SET ?',dataposting,function(err,data){
-                   con.release();
-                   if (err) throw err;
-                      //console.log(err);
-
-                   //console.log('Berhasil menambah data');
-                 });
-              //  }else{
-              //    console.log('data sudah ada');
-              }
-             });
-           });
+             var post = new posting(dataposting);
+                post.save(function(err,data) {
+                    if (err) 
+                        console.log(err);
+                    
+                    console.log('Berhasil');
+                });
+         
            //return res2.json([data]);
          });
        });
@@ -169,8 +154,6 @@ function rssAidsMap(req, res2, next) {
        res.on('data', function(data_) { data += data_.toString(); });
        res.on('end', function() {
          parser.parseString(data, function(err, result) {
-           db.acquire(function(err,con){
-             if (err) throw err;
              var arrayisi = striptags(result.rss.channel[0].item[0].description[0]).split(' ');
              var sliceisi = arrayisi.slice(0,17);
              var foto = result.rss.channel[0].item[0]['media:thumbnail'];
@@ -194,19 +177,13 @@ function rssAidsMap(req, res2, next) {
              }
              //return console.log(dataposting);
 
-             con.query('SELECT * FROM posting WHERE judul="'+dataposting.judul+'"',function(err,data){
-               if(!data.length){
-                 con.query('INSERT INTO posting SET ?',dataposting,function(err,data){
-                   con.release();
-                   if (err) throw err;
-
-                   //console.log('Berhasil menambah data');
-                 });
-               //}else {
-                 //console.log('data sudah ada');
-               }
-             });
-           });
+             var post = new posting(dataposting);
+                post.save(function(err,data) {
+                    if (err) 
+                        console.log(err);
+                    
+                    console.log('Berhasil');
+                });
            //return res2.json([data]);
          });
        });
@@ -215,10 +192,10 @@ function rssAidsMap(req, res2, next) {
 }
 
 //900000
-// setInterval(rssLiputan, 5000);
-//  setInterval(rssSciencedaily, 900000);
+// setInterval(rssLiputan, 10000);
+// setInterval(rssSciencedaily, 10000);
 //setInterval(rssMedicalxpress, 3000);
-//  setInterval(rssAidsMap, 900000);
+//  setInterval(rssAidsMap, 10000);
 
 this.posting = function(req, res, next) {
     // var jml = 0;
@@ -768,46 +745,36 @@ this.deletePosting = function(req, res, next) {
 };
 
 this.admappBerita = function(req, res, next) {
-    db.acquire(function(err,con){
-      if (err) throw err;
-        con.query('SELECT id_posting,kategori.nama as kategori,judul,deskripsi,isi,status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori WHERE kategori.nama="Berita" ORDER BY tgl_posting DESC', function(err,data){
-          con.release();
-            if(err){
-                return res.json({status:400,message:err.code,result:[]});
-            }else if(!data.length){
-                return res.json({status:404,message: 'Data not found',result:[]})
-            }
-            return res.json({status:200,message:'success',result:data});
-        });
-    });
+    posting.find(
+    // [
+      {$and:[{kategori:"Berita"}]},{},{sort: {tgl_posting: -1}},
+      // {$sort: { tgl_posting: -1} }
+    // ],
+    function(err, data) {
+      if (err) {
+        return res.json(err);
+      }
+      else {
+        
+        return res.json({status:200,result:data});
+      }
+	});
 };
 this.admappArtikel = function(req, res, next) {
-    db.acquire(function(err,con){
-      if (err) throw err;
-        con.query('SELECT id_posting,kategori.nama as kategori,judul,deskripsi,isi,status,tgl_posting FROM posting INNER JOIN kategori on kategori.id_kategori=posting.id_kategori WHERE kategori.nama="Artikel" ORDER BY tgl_posting DESC', function(err,data){
-          con.release();
-            if(err){
-                return res.json({status:400,message:err.code,result:[]});
-            }else if(!data.length){
-                return res.json({status:404,message: 'Data not found',result:[]})
-            }
-            return res.json({status:200,message:'success',result:data});
-        });
-    });
-};
-this.admappEvent = function(req, res, next) {
-    db.acquire(function(err,con){
-      if (err) throw err;
-        con.query('SELECT id_event,event.status,event.nama,tgl_mulai,tgl_berakhir,tgl_posting,admin.nama as pengirim FROM event INNER JOIN admin on admin.id_admin = event.id_admin ORDER BY tgl_posting DESC', function(err,data){
-          con.release();
-            if(err){
-                return res.json({status:400,message:err.code,result:[]});
-            }else if(!data.length){
-                return res.json({status:404,message: 'Data not found',result:[]})
-            }
-            return res.json({status:200,message:'success',result:data});
-        });
-    });
+    posting.find(
+    // [
+      {$and:[{kategori:"Artikel"}]},{},{sort: {tgl_posting: -1}},
+      // {$sort: { tgl_posting: -1} }
+    // ],
+    function(err, data) {
+      if (err) {
+        return res.json(err);
+      }
+      else {
+        
+        return res.json({status:200,result:data});
+      }
+	});
 };
 
 }

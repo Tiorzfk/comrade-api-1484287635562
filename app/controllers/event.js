@@ -365,6 +365,23 @@ this.delete = function(req, res, next) {
     });
 };
 
+this.admappEvent = function(req, res, next) {
+    event.find(
+    // [
+	  {},{},{sort: {tgl_posting: -1}},
+      // {$sort: { tgl_posting: -1} }
+    // ],
+    function(err, data) {
+      if (err) {
+        return res.json(err);
+      }
+      else {
+        
+        return res.json({status:200,result:data});
+      }
+	});
+};
+
 }
 
 module.exports = new Todo();
