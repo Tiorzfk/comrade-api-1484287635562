@@ -12,8 +12,11 @@ module.exports = {
 
     //app.route('/posting').post(posting.simpanPosting).delete(posting.deletePosting);
 
+    //admin
     app.route('/admapp/berita').get(posting.admappBerita);
     app.route('/admapp/artikel').get(posting.admappArtikel);
+    app.route('/verifikasi_posting').post(posting.VerifikasiPosting);
+    
 
     //mongodb
     app.route('/posting/:id').get(posting.postingIDMongo).post(posting.editPostingMongo);

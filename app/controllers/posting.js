@@ -9,6 +9,12 @@ var AES = require('./AES');
 var multer  = require('multer');
 const fs = require('fs');
 var posting = require('mongoose').model('posting');
+var Pusher = require('pusher');
+var pusher = new Pusher({
+  appId: '259913',
+  key: '1bba48d795f7e899c4d0',
+  secret: '0826f796c436807884b2'
+});
 function Todo() {
 
 function rssLiputan(req,res2,next) {
@@ -20,20 +26,20 @@ function rssLiputan(req,res2,next) {
        res.on('data', function(data_) { data += data_.toString(); });
        res.on('end', function() {
          parser.parseString(data, function(err, result) {
-            var arrayisi = striptags(result.rss.channel[0].item[0].description[0]).split(' ');
+            var arrayisi = striptags(result.rss.channel[0].item[2].description[0]).split(' ');
             var sliceisi = arrayisi.slice(0,17);
             var dataposting = {
                //id : result.rss.channel[0].item[0].guid[0]._,
-               judul : result.rss.channel[0].item[0].title[0],
+               judul : result.rss.channel[0].item[2].title[0],
                deskripsi : sliceisi.join(' '),
-               isi : result.rss.channel[0].item[0].description[0],
-               foto : result.rss.channel[0].item[0]['media:thumbnail'][0].$.url,
+               isi : result.rss.channel[0].item[2].description[0],
+               foto : result.rss.channel[0].item[2]['media:thumbnail'][0].$.url,
                status : '0',
-               id_kategori : 1,
-               id_admin : 1,
+               kategori : "Berita",
+               pengirim : "Admin",
                lang : 'id',
                tgl_posting : moment().format('YYYY-MM-DD h:mm:ss'),
-               sumber : result.rss.channel[0].item[0].link[0]
+               sumber : result.rss.channel[0].item[2].link[0]
             }
             var post = new posting(dataposting);
             post.save(function(err,data) {
@@ -169,8 +175,8 @@ function rssAidsMap(req, res2, next) {
                isi : result.rss.channel[0].item[0].description[0],
                foto : foto,
                status : '0',
-               id_kategori : 1,
-               id_admin : 1,
+               kategori : "Berita",
+               pengirim : "Admin",
                lang : 'en',
                tgl_posting : moment().format('YYYY-MM-DD h:mm:ss'),
                sumber : result.rss.channel[0].item[0].link[0]
@@ -192,7 +198,7 @@ function rssAidsMap(req, res2, next) {
 }
 
 //900000
-// setInterval(rssLiputan, 10000);
+//  setInterval(rssLiputan, 10000);
 // setInterval(rssSciencedaily, 10000);
 //setInterval(rssMedicalxpress, 3000);
 //  setInterval(rssAidsMap, 10000);
@@ -775,6 +781,32 @@ this.admappArtikel = function(req, res, next) {
         return res.json({status:200,result:data});
       }
 	});
+};
+this.VerifikasiPosting = function(req, res, next) {
+        posting.findOneAndUpdate({_id:req.body.id},{status : "1"}, {}, function (err, tank) {
+            if (err) 
+               console.log(err);
+        });
+        posting.find({_id:req.body.id},
+            function(err, data) {
+            if (err)
+                return res.json({status:400,message:err,result:[]});
+            
+            var arrayisi = striptags(data.deskripsi).split(' ');
+            var notifbody = arrayisi.slice(0,5);
+            pusher.notify(['posting'], {
+               fcm: {
+                  notification: {
+                     'title': data.judul,
+                     'body': notifbody.join(' '),
+                     'icon':  'comrade.png'
+                  }
+               }
+            });
+            return res.json({status:200,message:'success verifikasi posting',result:data});
+            
+        });
+               
 };
 
 }
