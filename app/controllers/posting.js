@@ -852,17 +852,17 @@ this.VerifikasiPosting = function(req, res, next) {
                
 };
 
-pusher.notify(['artikel'], {
-               fcm: {
-                  notification: {
-                     'title': 'TESTT',
-                     'body': 'Lorem ipsum dolor sit ametttt',
-                     'icon':  'comrade.png'
-                  }
-               }
-            },function(error, req, res) {
-                console.log(error, req, res);
-            });
+// pusher.notify(['artikel'], {
+//                fcm: {
+//                   notification: {
+//                      'title': 'TESTT',
+//                      'body': 'Lorem ipsum dolor sit ametttt',
+//                      'icon':  'comrade.png'
+//                   }
+//                }
+//             },function(error, req, res) {
+//                 console.log(error, req, res);
+//             });
 
 }
 module.exports = new Todo();
