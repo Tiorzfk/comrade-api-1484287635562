@@ -14,6 +14,6 @@ module.exports = {
     app.route('/admapp/event').get(event.admappEvent);
 
     app.route('/event').get(event.eventAll).post(event.postEventMongo);
-    app.route('/event/:id').get(event.eventIDMongo).put(event.putEvent).delete(event.delete);
+    app.route('/event/:id').get(event.eventIDMongo).put(event.putEventMongo).delete(event.deleteMongo);
   }
 };

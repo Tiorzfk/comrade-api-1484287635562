@@ -319,7 +319,7 @@ this.postEventMongo = function(req, res, next) {
         var tgl_berakhir = moment(req.body.tgl_berakhir, 'DD/MM/YYYY').format('DD MMMM YYYY');
         geocoder.geocode(req.body.posisi, function(err, result) {
             var data = {
-                id_admin: req.body.id_admin,
+                pengirim: req.body.pengirim,
                 nama: req.body.nama,
                 tempat: req.body.tempat,
                 deskripsi: req.body.isi,
@@ -329,9 +329,10 @@ this.postEventMongo = function(req, res, next) {
                 tgl_mulai: tgl_mulai+' '+req.body.waktu_mulai,
                 tgl_berakhir: tgl_berakhir+' '+req.body.waktu_berakhir,
                 latitude: result[0].latitude,
-                tipe: req.body.tipe,
+                type: req.body.tipe,
                 longitude: result[0].longitude,
-                kontak_person: req.body.kontak_person
+                kontak_person: req.body.kontak_person,
+				lang: "id"
             }
 			if(req.file) {
 				data.foto = req.file.filename
@@ -358,6 +359,62 @@ this.postEventMongo = function(req, res, next) {
 
 
 				return res.json({status:200,message:'Success insert data'});
+			});
+        });
+    });
+};
+
+this.putEventMongo = function(req, res, next) {
+    var storage = multer.diskStorage({
+        destination: function (req, file, callback) {
+            callback(null, 'public/pic_event');
+        },
+        filename: function (req, file, callback) {
+            callback(null, Date.now() + '-' + file.originalname);
+        }
+    });
+    var upload = multer({ storage : storage }).single('foto');
+    upload(req,res,function(errupload) {
+        //error upload foto
+        if(errupload) {
+			return res.json({status:400,message:errupload});
+        }
+        var tgl_mulai = moment(req.body.tgl_mulai, 'DD/MM/YYYY').format('DD MMMM YYYY');
+        var tgl_berakhir = moment(req.body.tgl_berakhir, 'DD/MM/YYYY').format('DD MMMM YYYY');
+        geocoder.geocode(req.body.posisi, function(err, result) {
+
+            var data = {
+                nama: req.body.nama,
+                tempat: req.body.tempat,
+                deskripsi: req.body.isi,
+                foto: req.body.img_old,
+                tgl_mulai: tgl_mulai+' '+req.body.waktu_mulai,
+                tgl_berakhir: tgl_berakhir+' '+req.body.waktu_berakhir,
+                latitude: result[0].latitude,
+                longitude: result[0].longitude,
+                kontak_person: req.body.kontak_person
+            };
+            if(req.file) {
+                data.foto = req.file.filename;
+            };
+			event.findOneAndUpdate({_id:req.params.id},data, {}, function (err, datah) {
+			if (err) {
+				if(req.file != null){
+					fs.unlink('public/pic_event/'+datah.foto);
+				}
+				return res.json({status:400,message:err});
+			}
+
+			if(req.file != null){
+					fs.unlink('public/pic_event/'+req.body.img_old,function(err){
+					if(err)
+						return res.json({status:200,message:'Success update data'});
+
+					return res.json({status:200,message:'Success update data'});                        
+					});
+				}else{
+				return res.json({status:200,message:'Success update data'});
+				}
 			});
         });
     });
@@ -419,6 +476,24 @@ this.putEvent = function(req, res, next) {
             });
             });
         });
+    });
+};
+
+this.deleteMongo = function(req, res, next) {
+    event.findOneAndRemove({_id:req.params.id}, function (err, data) {  
+      if(err)
+        return res.json({status:400,message:err});
+      if(!data)
+        return res.json({status:400,message:'Data not found'});
+      if(data.foto){
+          fs.unlink('public/pic_event/'+data.foto,function(err){
+            if(err)
+                return res.json({status:200,message:'Success delete data'});
+            return res.json({status:200,message:'Success delete data'});
+          });
+      }else{
+          return res.json({status:200,message: "Data successfully deleted",id: data._id});
+      } 
     });
 };
 
