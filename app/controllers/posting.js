@@ -782,6 +782,22 @@ this.admappArtikel = function(req, res, next) {
       }
 	});
 };
+this.admappPostingAll = function(req, res, next) {
+    posting.find(
+    // [
+      {$and:[{status:"1"}]},{},{sort: {tgl_posting: -1}},
+      // {$sort: { tgl_posting: -1} }
+    // ],
+    function(err, data) {
+      if (err) {
+        return res.json(err);
+      }
+      else {
+        
+        return res.json({status:200,result:data});
+      }
+	});
+};
 this.VerifikasiPosting = function(req, res, next) {
         posting.findOneAndUpdate({_id:req.body.id},{status : "1"}, {}, function (err, tank) {
             if (err) 

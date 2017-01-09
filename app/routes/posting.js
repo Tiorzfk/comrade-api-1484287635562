@@ -14,6 +14,7 @@ module.exports = {
 
     //admin
     app.route('/admapp/berita').get(posting.admappBerita);
+    app.route('/admapp/postingAll').get(posting.admappPostingAll);
     app.route('/admapp/artikel').get(posting.admappArtikel);
     app.route('/verifikasi_posting').post(posting.VerifikasiPosting);
     
