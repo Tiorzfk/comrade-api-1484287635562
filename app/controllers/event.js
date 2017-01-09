@@ -219,6 +219,22 @@ this.eventID = function(req, res, next) {
     	});
     });
 };
+
+this.eventIDMongo = function(req, res, next) {
+	event.find(
+
+      {_id:req.params.id},{},{sort: {tgl_posting: -1}},
+
+    function(err, data) {
+      if (err) {
+        return res.json(err);
+      }
+      else {
+        
+        return res.json({status:200,result:data});
+      }
+	});
+};
 // var tgl_mulaia = moment('19/02/1997', 'DD/MM/YYYY').format('DD MMMM YYYY');
 // console.log('sebelum convert : '+tgl_mulaia);
 // var tgl_mulai = moment('19 Februari 1997', 'DD MMMM YYYY').format('DD/MM/YYYY');
@@ -278,6 +294,71 @@ this.postEvent = function(req, res, next) {
                 return res.json({status:200,message:'success insert data'});
             });
             });
+        });
+    });
+};
+
+this.postEventMongo = function(req, res, next) {
+     var storage = multer.diskStorage({
+        destination: function (req, file, callback) {
+            callback(null, 'public/pic_event');
+        },
+        filename: function (req, file, callback) {
+            callback(null, Date.now() + '-' + file.originalname);
+        }
+    });
+    var upload = multer({ storage : storage }).single('foto');
+    upload(req,res,function(errupload) {
+		if(errupload) {
+			return res.json({status:400,message:errupload});
+        }
+        var message = null;
+
+        var now = moment().format('DD MMMM YYYY');
+        var tgl_mulai = moment(req.body.tgl_mulai, 'DD/MM/YYYY').format('DD MMMM YYYY');
+        var tgl_berakhir = moment(req.body.tgl_berakhir, 'DD/MM/YYYY').format('DD MMMM YYYY');
+        geocoder.geocode(req.body.posisi, function(err, result) {
+            var data = {
+                id_admin: req.body.id_admin,
+                nama: req.body.nama,
+                tempat: req.body.tempat,
+                deskripsi: req.body.isi,
+                status: "0",
+                //foto: req.file.filename,
+                tgl_posting: now,
+                tgl_mulai: tgl_mulai+' '+req.body.waktu_mulai,
+                tgl_berakhir: tgl_berakhir+' '+req.body.waktu_berakhir,
+                latitude: result[0].latitude,
+                tipe: req.body.tipe,
+                longitude: result[0].longitude,
+                kontak_person: req.body.kontak_person
+            }
+			if(req.file) {
+				data.foto = req.file.filename
+			}else{
+				data.foto = 'default.png'
+			}
+			var evt = new event(data);
+			evt.save(function(err,data) {
+				if (err) {
+					fs.unlink('public/pic_event/'+data.foto);
+                   	return res.json({status:400,message:err});
+				}
+				//update slug
+				$slug = (data.nama).replace(/[^a-z0-9-]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+				var final =  $slug.toLowerCase();
+
+				var date = new Date();
+				var url = 'http://comrade-app.azurewebsites.net/'+date.getFullYear()+'/'+final+'/'+data.id;
+				
+				event.findOneAndUpdate({_id:data.id},{slug : url}, {}, function (err, tank) {
+					if (err) 
+					console.log(err);
+				});
+
+
+				return res.json({status:200,message:'Success insert data'});
+			});
         });
     });
 };

@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
 var EventSchema = new Schema({
 	pengirim: String,
 	nama: String,
+	slug: String,
 	tempat: String,
 	deskripsi: String,
 	foto: String,
