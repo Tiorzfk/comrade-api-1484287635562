@@ -26,26 +26,38 @@ function rssLiputan(req,res2,next) {
        res.on('data', function(data_) { data += data_.toString(); });
        res.on('end', function() {
          parser.parseString(data, function(err, result) {
-            var arrayisi = striptags(result.rss.channel[0].item[2].description[0]).split(' ');
+            var arrayisi = striptags(result.rss.channel[0].item[3].description[0]).split(' ');
             var sliceisi = arrayisi.slice(0,17);
             var dataposting = {
                //id : result.rss.channel[0].item[0].guid[0]._,
-               judul : result.rss.channel[0].item[2].title[0],
+               judul : result.rss.channel[0].item[3].title[0],
                deskripsi : sliceisi.join(' '),
-               isi : result.rss.channel[0].item[2].description[0],
-               foto : result.rss.channel[0].item[2]['media:thumbnail'][0].$.url,
+               isi : result.rss.channel[0].item[3].description[0],
+               foto : result.rss.channel[0].item[3]['media:thumbnail'][0].$.url,
                status : '0',
                kategori : "Berita",
                pengirim : "Admin",
                lang : 'id',
                tgl_posting : moment().format('YYYY-MM-DD h:mm:ss'),
-               sumber : result.rss.channel[0].item[2].link[0]
+               sumber : result.rss.channel[0].item[3].link[0]
             }
             var post = new posting(dataposting);
             post.save(function(err,data) {
                 if (err) 
                     console.log(err);
                 
+                //update slug
+                $slug = (data.judul).replace(/[^a-z0-9-]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+                var final =  $slug.toLowerCase();
+
+                var date = new Date();
+                var url = 'http://comrade-app.azurewebsites.net/'+date.getFullYear()+'/'+final+'/'+data.id;
+                
+                posting.findOneAndUpdate({_id:data.id},{slug : url}, {}, function (err, tank) {
+                    if (err) 
+                    console.log(err);
+                });
+
                 console.log('Berhasil');
             });
            
@@ -114,36 +126,48 @@ function rssMedicalxpress(req, res2, next) {
          parser.parseString(data, function(err, result) {
            db.acquire(function(err,con){
              if (err) throw err;
-            //  var arrayisi = striptags(result.rss.channel[0].item[0].description[0]).split(' ');
-            //  var sliceisi = arrayisi.slice(0,17);
-            //  var dataposting = {
-            //    //id : result.rss.channel[0].item[0].guid[0]._,
-            //    judul : result.rss.channel[0].item[0].title[0],
-            //    deskripsi : sliceisi.join(' '),
-            //    isi : result.rss.channel[0].item[0].description[0],
-            //    foto : result.rss.channel[0].item[0]['media:thumbnail'][0].$.url,
-            //    status : '0',
-            //    id_kategori : 1,
-            //    id_admin : 1,
-            //    lang : 'en',
-            //    tgl_posting : moment().format('YYYY-MM-DD h:mm:ss'),
-            //    sumber : result.rss.channel[0].item[0].link[0]
-            //  }
-             return console.log(result);
+             var arrayisi = striptags(result.rss.channel[0].item[0].description[0]).split(' ');
+             var sliceisi = arrayisi.slice(0,17);
+             var foto = result.rss.channel[0].item[0]['media:thumbnail'];
+             if(!foto){
+                foto = 'http://cdn0-a.production.liputan6.static6.com/medias/1293020/big/005371100_1468993189-Ribbon1__avert_org_.jpg';
+             }else{
+                foto = result.rss.channel[0].item[0]['media:thumbnail'][0].$.url;
+             }
+             var dataposting = {
+               //id : result.rss.channel[0].item[0].guid[0]._,
+               judul : result.rss.channel[0].item[0].title[0],
+               deskripsi : sliceisi.join(' '),
+               isi : result.rss.channel[0].item[0].description[0],
+               foto : foto,
+               status : '0',
+               id_kategori : 1,
+               id_admin : 1,
+               lang : 'en',
+               tgl_posting : moment().format('YYYY-MM-DD h:mm:ss'),
+               sumber : result.rss.channel[0].item[0].link[0]
+             }
 
-            //  con.query('SELECT * FROM posting WHERE judul="'+dataposting.judul+'"',function(err,data){
-            //    if(!data.length){
-            //      con.query('INSERT INTO posting SET ?',dataposting,function(err,data){
-            //        con.release();
-            //        if (err) throw err;
-             //
-            //        //console.log('Berhasil menambah data');
-            //      });
-            //    //}else {
-            //      //console.log('data sudah ada');
-            //    }
-            //  });
-           });
+             var post = new posting(dataposting);
+             post.save(function(err,data) {
+                if (err) 
+                    console.log(err);
+                
+                //update slug
+                $slug = (data.judul).replace(/[^a-z0-9-]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+                var final =  $slug.toLowerCase();
+
+                var date = new Date();
+                var url = 'http://comrade-app.azurewebsites.net/'+date.getFullYear()+'/'+final+'/'+data.id;
+                
+                posting.findOneAndUpdate({_id:data.id},{slug : url}, {}, function (err, tank) {
+                    if (err) 
+                    console.log(err);
+                });
+
+                console.log('Berhasil');
+             });
+            });
            //return res2.json([data]);
          });
        });
@@ -200,7 +224,7 @@ function rssAidsMap(req, res2, next) {
 //900000
 //  setInterval(rssLiputan, 10000);
 // setInterval(rssSciencedaily, 10000);
-//setInterval(rssMedicalxpress, 3000);
+setInterval(rssMedicalxpress, 3000);
 //  setInterval(rssAidsMap, 10000);
 
 this.posting = function(req, res, next) {
@@ -799,6 +823,7 @@ this.admappPostingAll = function(req, res, next) {
 	});
 };
 this.VerifikasiPosting = function(req, res, next) {
+    console.log(req.body.id);
         posting.findOneAndUpdate({_id:req.body.id},{status : "1"}, {}, function (err, tank) {
             if (err) 
                console.log(err);
