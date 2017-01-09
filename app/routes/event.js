@@ -15,5 +15,6 @@ module.exports = {
 
     app.route('/event').get(event.eventAll).post(event.postEventMongo);
     app.route('/event/:id').get(event.eventIDMongo).put(event.putEventMongo).delete(event.deleteMongo);
+    app.route('/deleteevent/:id').post(event.deleteMongo);
   }
 };
