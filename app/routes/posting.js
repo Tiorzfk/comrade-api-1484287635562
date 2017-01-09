@@ -22,10 +22,11 @@ module.exports = {
     //mongodb
     app.route('/posting/:id').get(posting.postingIDMongo).post(posting.editPostingMongo);
     app.route('/postingMongo/kategori/:kategori/:lang/page/:page').get(posting.postingMongo);
+    app.route('/posting').post(posting.simpanPostingMongo).delete(posting.deletePostingMongo);
+    app.route('/deleteposting').post(posting.deletePostingMongo)
     //buat web
     app.route('/postingMongo5/kategori/:kategori').get(posting.posting5Mongo);
     app.route('/postingMongo/kategori/:kategori').get(posting.postingAllMongo);
     
-    app.route('/posting').post(posting.simpanPostingMongo).delete(posting.deletePostingMongo);
   }
 };
