@@ -31,6 +31,7 @@ var ambiltweet = function(){
     status.forEach(function(item){
         if(err) throw err;
         con.query("select * from tweet_support where id_string=?",item.id_str,function(err,rows){
+          con.release();
           if(err)
             throw err;
             if(rows.length == 0)
@@ -53,7 +54,6 @@ var ambiltweet = function(){
             }
         });
       });
-	  con.release();
     });
 	});
 }
@@ -85,7 +85,6 @@ var ambileng = function(){
             }
         });
       });
-	  con.release();
     });
 	});
 }
