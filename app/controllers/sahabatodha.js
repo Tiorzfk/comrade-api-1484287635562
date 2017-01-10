@@ -357,10 +357,10 @@ this.confirm = function(req,res,next) {
   var token = req.query.token;
   db.acquire(function(err,con){
     var q = '';
-    if(req.params.jenis_user == 'Sahabat Odha'){
-      q = 'select * from user where email = "'+req.params.email+'"';
-    }else{
+    if(req.params.jenis_user == 'Odha'){
       q = 'select * from user where email = "'+AES.encrypt(req.params.email,"comrade@codelabs")+'"';
+    }else{
+      q = 'select * from user where email = "'+req.params.email+'"';
     }
     con.query(q,function(err,rows){
 			con.release();
