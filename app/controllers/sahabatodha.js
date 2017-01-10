@@ -252,9 +252,21 @@ this.daftarsa = function(req, res, next) {
       private_key:'comrade@codelabs'
     }
     db.acquire(function(err,con){
+      con.query("select * from user where email = '"+AES.encrypt(req.body.email,"comrade@codelabs")+"'",function(err,rows){
+        con.release();
+        if (err)
+            return res.json(err);
+
+        if (rows.length)
+            return res.json({status:400,result:'Failed',message:'That email is already taken.'});
+            
       con.query('INSERT INTO user SET ? ',data,function(err,result){
+
         if (err)
            return next(err);
+        
+        if (rows.length)
+           return res.json({status:400,result:'Failed',message:'That email is already taken.'});
 
         var data2 = {
           id_user : result.insertId
@@ -302,6 +314,7 @@ this.daftarsa = function(req, res, next) {
           });
         });
       });
+      });
     });
 };
 
@@ -343,7 +356,7 @@ this.daftarsadetail = function(req, res, next) {
 this.confirm = function(req,res,next) {
   var token = req.query.token;
   db.acquire(function(err,con){
-    con.query("select * from user where email = '"+req.params.email+"'",function(err,rows){
+    con.query("select * from user where email = '"+AES.encrypt(req.params.email,"comrade@codelabs")+"'",function(err,rows){
 			con.release();
       if(err)
         return res.json(err);
