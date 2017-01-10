@@ -21,6 +21,6 @@ module.exports = {
 
     app.route('/user/daftarsahabatodhadetail').post(sa.daftarsadetail);
 
-    app.route('/confirm_sahabatodha/:email').all(cektokenemail.cektoken).get(sa.confirm);
+    app.route('/confirm_sahabatodha/:email/:jenis_user').all(cektokenemail.cektoken).get(sa.confirm);
   }
 };

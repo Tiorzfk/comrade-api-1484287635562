@@ -279,6 +279,7 @@ this.daftarsa = function(req, res, next) {
           var locals = {
               email: req.body.email,
               token: token,
+              jenis_user: data.jenis_user,
               url: 'http://comrade-api.azurewebsites.net/confirm_sahabatodha',
           };
 
@@ -352,17 +353,22 @@ this.daftarsadetail = function(req, res, next) {
       });
     });
 };
-
 this.confirm = function(req,res,next) {
   var token = req.query.token;
   db.acquire(function(err,con){
-    con.query("select * from user where email = '"+AES.encrypt(req.params.email,"comrade@codelabs")+"'",function(err,rows){
+    var q = '';
+    if(req.params.jenis_user == 'Sahabat Odha'){
+      q = 'select * from user where email = "'+req.params.email+'"';
+    }else{
+      q = 'select * from user where email = "'+AES.encrypt(req.params.email,"comrade@codelabs")+'"';
+    }
+    con.query(q,function(err,rows){
 			con.release();
       if(err)
         return res.json(err);
-
+      console.log(rows);
       if(!rows.length)
-        return res.json({status:400,result:'Failed',message:'email not found.'});
+        return res.send('email not found.');
       if(rows[0].status == '1'){
         return res.render('emails/failed_confirm_sahabatodha',{
           title: 'Failed !',
