@@ -344,6 +344,11 @@ this.kategoriAll = function(req, res, next) {
 };
 this.postingMongo = function(req, res, next) {
     var kat = req.params.kategori;
+    if (kat == 1){
+        kat = 'Berita';
+    }else{
+        kat = 'Artikel';
+    }
     var lang = req.params.lang;
     var page = req.params.page;
     var offset = parseInt(page);
