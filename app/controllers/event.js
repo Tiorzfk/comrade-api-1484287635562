@@ -538,6 +538,35 @@ this.admappEvent = function(req, res, next) {
 	});
 };
 
+this.VerifikasiEvent = function(req, res, next) {
+        event.findOneAndUpdate({_id:req.body.id},{status : "1"}, {}, function (err, tank) {
+            if (err) 
+               console.log(err);
+        });
+        event.find({_id:req.body.id},
+            function(err, data) {
+            if (err)
+                return res.json({status:400,message:err,result:[]});
+            
+            var arrayisi = striptags(data[0].deskripsi).split(' ');
+            var notifbody = arrayisi.slice(0,5);
+            pusher.notify(['posting'], {
+               fcm: {
+                  notification: {
+                     'title': data[0].nama,
+                     'body': notifbody.join(' '),
+                     'icon':  'comrade.png'
+                  }
+               }
+            },function(error, req, res) {
+                console.log(error, req, res);
+            });
+            return res.json({status:200,message:'success verifikasi event',result:data});
+            
+        });
+               
+};
+
 }
 
 module.exports = new Todo();

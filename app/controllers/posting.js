@@ -41,6 +41,8 @@ function rssLiputan(req,res2,next) {
                tgl_posting : moment().format('YYYY-MM-DD h:mm:ss'),
                sumber : result.rss.channel[0].item[7].link[0]
             }
+
+            if(dataposting.judul == "Bidan Erna Dorong Ibu Hamil Jalani Tes HIV"){
             var post = new posting(dataposting);
             post.save(function(err,data) {
                 if (err) 
@@ -60,6 +62,7 @@ function rssLiputan(req,res2,next) {
 
                 console.log('Berhasil');
             });
+            }
            
            //return res2.json([data]);
          });
@@ -828,7 +831,6 @@ this.admappPostingAll = function(req, res, next) {
 	});
 };
 this.VerifikasiPosting = function(req, res, next) {
-    console.log(req.body.id);
         posting.findOneAndUpdate({_id:req.body.id},{status : "1"}, {}, function (err, tank) {
             if (err) 
                console.log(err);

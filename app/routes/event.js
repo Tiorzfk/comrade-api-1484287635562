@@ -12,6 +12,7 @@ module.exports = {
 
     //admin
     app.route('/admapp/event').get(event.admappEvent);
+    app.route('/verifikasi_event').post(event.VerifikasiEvent);
 
     app.route('/event').get(event.eventAll).post(event.postEventMongo);
     app.route('/event/:id').get(event.eventIDMongo).put(event.putEventMongo).delete(event.deleteMongo);
