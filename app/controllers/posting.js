@@ -26,20 +26,20 @@ function rssLiputan(req,res2,next) {
        res.on('data', function(data_) { data += data_.toString(); });
        res.on('end', function() {
          parser.parseString(data, function(err, result) {
-            var arrayisi = striptags(result.rss.channel[0].item[3].description[0]).split(' ');
+            var arrayisi = striptags(result.rss.channel[0].item[7].description[0]).split(' ');
             var sliceisi = arrayisi.slice(0,17);
             var dataposting = {
                //id : result.rss.channel[0].item[0].guid[0]._,
-               judul : result.rss.channel[0].item[3].title[0],
+               judul : result.rss.channel[0].item[7].title[0],
                deskripsi : sliceisi.join(' '),
-               isi : result.rss.channel[0].item[3].description[0],
-               foto : result.rss.channel[0].item[3]['media:thumbnail'][0].$.url,
+               isi : result.rss.channel[0].item[7].description[0],
+               foto : result.rss.channel[0].item[7]['media:thumbnail'][0].$.url,
                status : '0',
                kategori : "Berita",
                pengirim : "Admin",
                lang : 'id',
                tgl_posting : moment().format('YYYY-MM-DD h:mm:ss'),
-               sumber : result.rss.channel[0].item[3].link[0]
+               sumber : result.rss.channel[0].item[7].link[0]
             }
             var post = new posting(dataposting);
             post.save(function(err,data) {
@@ -222,10 +222,10 @@ function rssAidsMap(req, res2, next) {
 }
 
 //900000
-//  setInterval(rssLiputan, 10000);
+// setInterval(rssLiputan, 10000);
 // setInterval(rssSciencedaily, 10000);
 // setInterval(rssMe dicalxpress, 3000);
-//  setInterval(rssAidsMap, 10000);
+// setInterval(rssAidsMap, 10000);
 
 this.posting = function(req, res, next) {
     // var jml = 0;
@@ -344,9 +344,9 @@ this.kategoriAll = function(req, res, next) {
 };
 this.postingMongo = function(req, res, next) {
     var kat = req.params.kategori;
-    if (kat == 1){
+    if (kat == '1'){
         kat = 'Berita';
-    }else{
+    }else if(kat == '2'){
         kat = 'Artikel';
     }
     var lang = req.params.lang;
