@@ -223,6 +223,19 @@ this.ambiltweet = function(req,res){
 this.coba = function(req,res) {
 		var password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8), null);
 		res.send(password);
-	}
+}
+
+this.listtweetsId = function(req, res, next) {
+    db.acquire(function(err,con){
+      con.query('SELECT id_string,status,screen_name,text,klasifikasi FROM tweet_support WHERE status="vertifikasi" LIMIT 200',function(err,data){
+        con.release();
+        if (err) {
+           return res.json({status:400,message:err});
+        } else {
+           return res.json({status:200,message:'success',result:data});            
+        }
+      });
+    });
+
 }
 module.exports = new Todo();
